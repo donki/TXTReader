@@ -34,7 +34,7 @@
         <!-- Main Content -->
         <ScrollView Grid.Row="1" Padding="20">
             <VerticalStackLayout Spacing="20">
-                
+
                 <!-- Action Card -->
                 <Frame BackgroundColor="White" 
                        CornerRadius="12" 
@@ -46,7 +46,7 @@
                             FontSize="20"
                             FontAttributes="Bold"
                             TextColor="#2C3E50" />
-                        
+
                         <Button
                             x:Name="SelectFileBtn"
                             Text="📁  Seleccionar Archivo"
@@ -76,7 +76,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            
+
                             <Label
                                 Grid.Column="0"
                                 Text="Archivos Recientes"
@@ -84,7 +84,7 @@
                                 FontAttributes="Bold"
                                 TextColor="#2C3E50"
                                 VerticalOptions="Center" />
-                            
+
                             <Label
                                 Grid.Column="1"
                                 Text="🕒"
@@ -112,7 +112,7 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            
+
                                             <Frame Grid.Column="0"
                                                    BackgroundColor="#E8F4FD"
                                                    CornerRadius="6"
@@ -124,7 +124,7 @@
                                                     FontSize="16"
                                                     TextColor="#3498DB" />
                                             </Frame>
-                                            
+
                                             <StackLayout Grid.Column="1" 
                                                          Spacing="2" 
                                                          Margin="12,0,0,0"
@@ -140,7 +140,7 @@
                                                     FontSize="12"
                                                     TextColor="#7F8C8D" />
                                             </StackLayout>
-                                            
+
                                             <Label
                                                 Grid.Column="2"
                                                 Text="▶"
@@ -173,7 +173,7 @@
                 <StackLayout Orientation="Horizontal" Spacing="15">
                     <Button
                         x:Name="AboutBtn"
-                        Text="ℹ️  Acerca de"
+                        Text="Acerca de"
                         FontSize="14"
                         BackgroundColor="#95A5A6"
                         TextColor="White"

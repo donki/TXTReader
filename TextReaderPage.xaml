@@ -108,17 +108,17 @@
                Padding="0" 
                HasShadow="False"
                Margin="10,5,10,10">
-            <ScrollView x:Name="ContentScrollView">
-                <Label
-                    x:Name="ContentLabel"
-                    Text=""
-                    FontSize="14"
-                    FontFamily="Consolas, Monaco, 'Courier New', monospace"
-                    Padding="20"
-                    LineBreakMode="WordWrap"
-                    TextColor="#2C3E50"
-                    VerticalOptions="Start" />
-            </ScrollView>
+            <Editor
+                x:Name="ContentEditor"
+                Text=""
+                FontSize="14"
+                FontFamily="Consolas, Monaco, 'Courier New', monospace"
+                BackgroundColor="White"
+                TextColor="#2C3E50"
+                IsReadOnly="False"
+                AutoSize="TextChanges"
+                TextChanged="OnContentEditorTextChanged"
+                Margin="15" />
         </Frame>
 
     </Grid>

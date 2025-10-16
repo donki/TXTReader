@@ -6,10 +6,12 @@ namespace TXTReader
     public partial class TextReaderPage : ContentPage
     {
         private string _originalContent = string.Empty;
+        private string _currentDisplayContent = string.Empty;
         private double _currentFontSize = 14;
         private const double MinFontSize = 8;
         private const double MaxFontSize = 32;
         private string _detectedEncoding = string.Empty;
+        private bool _isUpdatingContent = false;
 
         public TextReaderPage(string filePath, string fileName)
         {
@@ -24,8 +26,12 @@ namespace TXTReader
             {
                 var (content, encoding) = await EncodingDetectionService.ReadFileWithEncodingDetectionAsync(filePath);
                 _originalContent = content;
+                _currentDisplayContent = content;
                 _detectedEncoding = encoding;
-                ContentLabel.Text = _originalContent;
+                
+                _isUpdatingContent = true;
+                ContentEditor.Text = _originalContent;
+                _isUpdatingContent = false;
                 
                 // Mostrar información de codificación en el título
                 Title = $"{Path.GetFileName(filePath)} ({encoding})";
@@ -46,7 +52,10 @@ namespace TXTReader
         {
             if (string.IsNullOrWhiteSpace(e.NewTextValue))
             {
-                ContentLabel.Text = _originalContent;
+                _currentDisplayContent = _originalContent;
+                _isUpdatingContent = true;
+                ContentEditor.Text = _currentDisplayContent;
+                _isUpdatingContent = false;
                 return;
             }
 
@@ -56,7 +65,10 @@ namespace TXTReader
             
             // Buscar y resaltar coincidencias
             var highlightedContent = HighlightSearchText(content, searchText);
-            ContentLabel.Text = highlightedContent;
+            _currentDisplayContent = highlightedContent;
+            _isUpdatingContent = true;
+            ContentEditor.Text = _currentDisplayContent;
+            _isUpdatingContent = false;
         }
 
         private string HighlightSearchText(string content, string searchText)
@@ -90,7 +102,7 @@ namespace TXTReader
             if (_currentFontSize < MaxFontSize)
             {
                 _currentFontSize += 2;
-                ContentLabel.FontSize = _currentFontSize;
+                ContentEditor.FontSize = _currentFontSize;
                 UpdateFontSizeLabel();
             }
         }
@@ -100,7 +112,7 @@ namespace TXTReader
             if (_currentFontSize > MinFontSize)
             {
                 _currentFontSize -= 2;
-                ContentLabel.FontSize = _currentFontSize;
+                ContentEditor.FontSize = _currentFontSize;
                 UpdateFontSizeLabel();
             }
         }
@@ -108,6 +120,21 @@ namespace TXTReader
         private void UpdateFontSizeLabel()
         {
             FontSizeLabel.Text = $"{_currentFontSize:F0}px";
+        }
+
+        private void OnContentEditorTextChanged(object? sender, TextChangedEventArgs e)
+        {
+            // Si estamos actualizando el contenido programáticamente, no hacer nada
+            if (_isUpdatingContent)
+                return;
+
+            // Si el usuario intentó modificar el texto, restaurar el contenido original
+            if (e.NewTextValue != _currentDisplayContent)
+            {
+                _isUpdatingContent = true;
+                ContentEditor.Text = _currentDisplayContent;
+                _isUpdatingContent = false;
+            }
         }
     }
 }
