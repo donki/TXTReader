@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<defs>
+    <!-- Strong gradient for better visibility -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Document background -->
+    <linearGradient id="docGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#F1F5F9;stop-opacity:1" />
+    </linearGradient>
+</defs>
+
+<!-- Main background circle for better Android appearance -->
+<circle cx="256" cy="256" r="240" fill="url(#bgGradient)"/>
+
+<!-- Document shape - larger and more prominent -->
+<rect x="140" y="100" width="232" height="312" rx="16" ry="16" fill="url(#docGradient)" stroke="#E2E8F0" stroke-width="2"/>
+
+<!-- Document fold corner -->
+<path d="M 340 100 L 372 100 L 372 132 L 340 132 Z" fill="#CBD5E1"/>
+<path d="M 340 100 L 372 132 L 340 132 Z" fill="#94A3B8"/>
+
+<!-- Text lines - thicker and more visible -->
+<rect x="160" y="140" width="180" height="6" rx="3" fill="#64748B"/>
+<rect x="160" y="160" width="140" height="6" rx="3" fill="#64748B"/>
+<rect x="160" y="180" width="160" height="6" rx="3" fill="#64748B"/>
+<rect x="160" y="200" width="120" height="6" rx="3" fill="#64748B"/>
+
+<!-- Large TXT text with strong contrast -->
+<text x="256" y="280" font-family="Arial, sans-serif" font-size="80" font-weight="900" text-anchor="middle" fill="#1E293B" stroke="#FFFFFF" stroke-width="2">TXT</text>
+
+<!-- More text lines below -->
+<rect x="160" y="320" width="150" height="6" rx="3" fill="#64748B"/>
+<rect x="160" y="340" width="110" height="6" rx="3" fill="#64748B"/>
+<rect x="160" y="360" width="130" height="6" rx="3" fill="#64748B"/>
+
+<!-- Simple accent dot for visual interest -->
+<circle cx="350" cy="150" r="8" fill="#EF4444"/>
+
+</svg>

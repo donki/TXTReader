@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TXTReader.TextReaderPage"
+             Title="Lector de Texto"
+             BackgroundColor="#F8F9FA">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Modern Toolbar -->
+        <Frame Grid.Row="0" 
+               BackgroundColor="White" 
+               CornerRadius="0" 
+               Padding="0" 
+               HasShadow="True">
+            <Grid Padding="15,10" ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Close Button -->
+                <Button
+                    Grid.Column="0"
+                    x:Name="CloseBtn"
+                    Text="✕"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    BackgroundColor="#E74C3C"
+                    TextColor="White"
+                    WidthRequest="45"
+                    HeightRequest="45"
+                    CornerRadius="22"
+                    Clicked="OnCloseClicked">
+                    <Button.Shadow>
+                        <Shadow Brush="#E74C3C" Opacity="0.3" Radius="6" Offset="0,2" />
+                    </Button.Shadow>
+                </Button>
+
+                <!-- Search Entry -->
+                <Frame Grid.Column="1" 
+                       BackgroundColor="#F8F9FA" 
+                       CornerRadius="22" 
+                       Padding="0" 
+                       HasShadow="False"
+                       Margin="5,0">
+                    <Entry
+                        x:Name="SearchEntry"
+                        Placeholder="🔍 Buscar en el texto..."
+                        FontSize="14"
+                        BackgroundColor="Transparent"
+                        Margin="15,0"
+                        TextChanged="OnSearchTextChanged" />
+                </Frame>
+
+                <!-- Font Size Label -->
+                <Label
+                    Grid.Column="2"
+                    x:Name="FontSizeLabel"
+                    Text="14px"
+                    FontSize="12"
+                    TextColor="#7F8C8D"
+                    VerticalOptions="Center"
+                    Margin="5,0" />
+
+                <!-- Zoom Out Button -->
+                <Button
+                    Grid.Column="3"
+                    x:Name="ZoomOutBtn"
+                    Text="A-"
+                    FontSize="12"
+                    FontAttributes="Bold"
+                    BackgroundColor="#95A5A6"
+                    TextColor="White"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    CornerRadius="20"
+                    Clicked="OnZoomOutClicked" />
+
+                <!-- Zoom In Button -->
+                <Button
+                    Grid.Column="4"
+                    x:Name="ZoomInBtn"
+                    Text="A+"
+                    FontSize="12"
+                    FontAttributes="Bold"
+                    BackgroundColor="#3498DB"
+                    TextColor="White"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    CornerRadius="20"
+                    Clicked="OnZoomInClicked" />
+
+            </Grid>
+        </Frame>
+
+        <!-- Content Area -->
+        <Frame Grid.Row="1" 
+               BackgroundColor="White" 
+               CornerRadius="0" 
+               Padding="0" 
+               HasShadow="False"
+               Margin="10,5,10,10">
+            <ScrollView x:Name="ContentScrollView">
+                <Label
+                    x:Name="ContentLabel"
+                    Text=""
+                    FontSize="14"
+                    FontFamily="Consolas, Monaco, 'Courier New', monospace"
+                    Padding="20"
+                    LineBreakMode="WordWrap"
+                    TextColor="#2C3E50"
+                    VerticalOptions="Start" />
+            </ScrollView>
+        </Frame>
+
+    </Grid>
+
+</ContentPage>
