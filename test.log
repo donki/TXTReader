@@ -1,0 +1,23 @@
+2024-10-16 18:15:01 [INFO] Aplicación TXT Reader iniciada
+2024-10-16 18:15:02 [DEBUG] Cargando configuración de usuario
+2024-10-16 18:15:03 [INFO] Servicio de archivos recientes inicializado
+2024-10-16 18:15:04 [DEBUG] Verificando permisos de almacenamiento
+2024-10-16 18:15:05 [INFO] Permisos concedidos correctamente
+2024-10-16 18:15:06 [DEBUG] Inicializando detector de codificación
+2024-10-16 18:15:07 [INFO] Sistema listo para abrir archivos
+2024-10-16 18:15:08 [DEBUG] Esperando selección de archivo por parte del usuario
+2024-10-16 18:15:09 [INFO] Interfaz de usuario completamente cargada
+2024-10-16 18:15:10 [DEBUG] Aplicación en estado estable
+
+Este es un archivo de log de ejemplo para probar la funcionalidad
+de lectura de archivos .log en TXT Reader.
+
+Características soportadas:
+- Detección automática de codificación UTF-8
+- Búsqueda de texto integrada
+- Control de zoom de 8px a 32px
+- Historial de archivos recientes
+- Soporte para intents de Android
+
+2024-10-16 18:15:15 [INFO] Archivo de prueba .log creado exitosamente
+2024-10-16 18:15:16 [DEBUG] Listo para pruebas de funcionalidad

@@ -39,7 +39,7 @@
                         HorizontalOptions="Center" />
                     
                     <Label
-                        Text="© 2024 Socratic"
+                        Text="Socratic"
                         FontSize="12"
                         TextColor="#7F8C8D"
                         HorizontalOptions="Center"
@@ -65,6 +65,31 @@
                         <Label Text="🔍 Control de zoom avanzado" FontSize="14" TextColor="#34495E" />
                         <Label Text="🕒 Historial de archivos recientes" FontSize="14" TextColor="#34495E" />
                         <Label Text="📱 Apertura de archivos por intents" FontSize="14" TextColor="#34495E" />
+                        <Label Text="📄 Soporte completo para archivos .log" FontSize="14" TextColor="#34495E" />
+                    </StackLayout>
+                </StackLayout>
+            </Frame>
+
+            <!-- Supported Formats Card -->
+            <Frame BackgroundColor="White" 
+                   CornerRadius="12" 
+                   HasShadow="True" 
+                   Padding="0">
+                <StackLayout Padding="25,20" Spacing="15">
+                    <Label
+                        Text="📋 Formatos Soportados"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        TextColor="#2C3E50" />
+                    
+                    <StackLayout Spacing="8">
+                        <Label Text="📄 .txt - Archivos de texto plano" FontSize="14" TextColor="#34495E" />
+                        <Label Text="📊 .log - Archivos de registro y logs" FontSize="14" TextColor="#E74C3C" FontAttributes="Bold" />
+                        <Label Text="🔧 .json - Archivos JSON" FontSize="14" TextColor="#34495E" />
+                        <Label Text="🌐 .xml - Archivos XML" FontSize="14" TextColor="#34495E" />
+                        <Label Text="📝 .md - Archivos Markdown" FontSize="14" TextColor="#34495E" />
+                        <Label Text="⚙️ .ini, .cfg, .conf - Archivos de configuración" FontSize="14" TextColor="#34495E" />
+                        <Label Text="📈 .csv - Archivos CSV" FontSize="14" TextColor="#34495E" />
                     </StackLayout>
                 </StackLayout>
             </Frame>

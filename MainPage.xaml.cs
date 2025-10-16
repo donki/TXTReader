@@ -10,17 +10,31 @@ namespace TXTReader
 
         public MainPage()
         {
-            InitializeComponent();
-            _recentFilesService = new RecentFilesService();
-            RecentFiles = new ObservableCollection<RecentFile>();
-            BindingContext = this;
-            _ = LoadRecentFiles();
-            
-            // Suscribirse a archivos abiertos por intent
-            FileIntentService.FileOpened += async (filePath) =>
+            try
             {
-                await OpenFile(filePath, Path.GetFileName(filePath));
-            };
+                InitializeComponent();
+                _recentFilesService = new RecentFilesService();
+                RecentFiles = new ObservableCollection<RecentFile>();
+                BindingContext = this;
+                _ = LoadRecentFiles();
+                
+                // Suscribirse a archivos abiertos por intent
+                FileIntentService.FileOpened += async (filePath) =>
+                {
+                    try
+                    {
+                        await OpenFile(filePath, Path.GetFileName(filePath));
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error opening file from intent: {ex.Message}");
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error initializing MainPage: {ex.Message}");
+            }
         }
 
         protected override async void OnAppearing()
@@ -46,7 +60,7 @@ namespace TXTReader
                 var customFileType = new FilePickerFileType(
                     new Dictionary<DevicePlatform, IEnumerable<string>>
                     {
-                        { DevicePlatform.Android, new[] { "text/*", "application/json", "application/xml", "*/*" } },
+                        { DevicePlatform.Android, new[] { "text/*", "text/plain", "application/json", "application/xml", "text/x-log", "*/*" } },
                         { DevicePlatform.WinUI, new[] { ".txt", ".log", ".json", ".xml", ".csv", ".md", ".ini", ".cfg", ".conf" } }
                     });
 
