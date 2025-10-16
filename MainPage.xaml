@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TXTReader.MainPage"
+             BackgroundColor="#F8F9FA">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header Section -->
+        <Frame Grid.Row="0" 
+               BackgroundColor="#2C3E50" 
+               CornerRadius="0" 
+               Padding="0" 
+               HasShadow="True">
+            <StackLayout Padding="30,40,30,30" Spacing="10">
+                <Label
+                    Text="📖 TXT Reader"
+                    FontSize="32"
+                    FontAttributes="Bold"
+                    TextColor="White"
+                    HorizontalOptions="Center" />
+                <Label
+                    Text="Lector de archivos de texto"
+                    FontSize="16"
+                    TextColor="#BDC3C7"
+                    HorizontalOptions="Center" />
+            </StackLayout>
+        </Frame>
+
+        <!-- Main Content -->
+        <ScrollView Grid.Row="1" Padding="20">
+            <VerticalStackLayout Spacing="20">
+                
+                <!-- Action Card -->
+                <Frame BackgroundColor="White" 
+                       CornerRadius="12" 
+                       HasShadow="True" 
+                       Padding="0">
+                    <StackLayout Padding="25" Spacing="15">
+                        <Label
+                            Text="Abrir Archivo"
+                            FontSize="20"
+                            FontAttributes="Bold"
+                            TextColor="#2C3E50" />
+                        
+                        <Button
+                            x:Name="SelectFileBtn"
+                            Text="📁  Seleccionar Archivo"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            BackgroundColor="#3498DB"
+                            TextColor="White"
+                            CornerRadius="10"
+                            HeightRequest="55"
+                            Clicked="OnSelectFileClicked"
+                            HorizontalOptions="Fill">
+                            <Button.Shadow>
+                                <Shadow Brush="#3498DB" Opacity="0.3" Radius="8" Offset="0,4" />
+                            </Button.Shadow>
+                        </Button>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Recent Files Card -->
+                <Frame BackgroundColor="White" 
+                       CornerRadius="12" 
+                       HasShadow="True" 
+                       Padding="0">
+                    <StackLayout Padding="25,20" Spacing="15">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <Label
+                                Grid.Column="0"
+                                Text="Archivos Recientes"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                TextColor="#2C3E50"
+                                VerticalOptions="Center" />
+                            
+                            <Label
+                                Grid.Column="1"
+                                Text="🕒"
+                                FontSize="20"
+                                VerticalOptions="Center" />
+                        </Grid>
+
+                        <CollectionView
+                            x:Name="RecentFilesCollection"
+                            ItemsSource="{Binding RecentFiles}"
+                            HeightRequest="250">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame BackgroundColor="#F8F9FA" 
+                                           CornerRadius="8" 
+                                           Padding="0" 
+                                           Margin="0,5"
+                                           HasShadow="False">
+                                        <Grid Padding="15,12">
+                                            <Grid.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnRecentFileSelected" />
+                                            </Grid.GestureRecognizers>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <Frame Grid.Column="0"
+                                                   BackgroundColor="#E8F4FD"
+                                                   CornerRadius="6"
+                                                   Padding="8"
+                                                   HasShadow="False"
+                                                   VerticalOptions="Center">
+                                                <Label
+                                                    Text="📄"
+                                                    FontSize="16"
+                                                    TextColor="#3498DB" />
+                                            </Frame>
+                                            
+                                            <StackLayout Grid.Column="1" 
+                                                         Spacing="2" 
+                                                         Margin="12,0,0,0"
+                                                         VerticalOptions="Center">
+                                                <Label
+                                                    Text="{Binding FileName}"
+                                                    FontSize="14"
+                                                    FontAttributes="Bold"
+                                                    TextColor="#2C3E50"
+                                                    LineBreakMode="TailTruncation" />
+                                                <Label
+                                                    Text="{Binding LastOpened, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+                                                    FontSize="12"
+                                                    TextColor="#7F8C8D" />
+                                            </StackLayout>
+                                            
+                                            <Label
+                                                Grid.Column="2"
+                                                Text="▶"
+                                                FontSize="12"
+                                                TextColor="#BDC3C7"
+                                                VerticalOptions="Center" />
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            <CollectionView.EmptyView>
+                                <StackLayout Padding="20" HorizontalOptions="Center">
+                                    <Label
+                                        Text="📂"
+                                        FontSize="40"
+                                        TextColor="#BDC3C7"
+                                        HorizontalOptions="Center" />
+                                    <Label
+                                        Text="No hay archivos recientes"
+                                        FontSize="14"
+                                        TextColor="#7F8C8D"
+                                        HorizontalOptions="Center" />
+                                </StackLayout>
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Footer Actions -->
+                <StackLayout Orientation="Horizontal" Spacing="15">
+                    <Button
+                        x:Name="AboutBtn"
+                        Text="ℹ️  Acerca de"
+                        FontSize="14"
+                        BackgroundColor="#95A5A6"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HeightRequest="45"
+                        Clicked="OnAboutClicked"
+                        HorizontalOptions="FillAndExpand" />
+                </StackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>

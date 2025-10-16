@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TXTReader.SplashPage"
+             BackgroundColor="#2C3E50"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid>
+        <StackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="30">
+            
+            <!-- App Icon -->
+            <Frame BackgroundColor="White" 
+                   CornerRadius="40" 
+                   WidthRequest="120" 
+                   HeightRequest="120" 
+                   HasShadow="True"
+                   HorizontalOptions="Center">
+                <Label
+                    Text="📖"
+                    FontSize="60"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center" />
+            </Frame>
+
+            <!-- App Name -->
+            <Label
+                Text="TXT Reader"
+                FontSize="36"
+                FontAttributes="Bold"
+                TextColor="White"
+                HorizontalOptions="Center" />
+
+            <!-- Subtitle -->
+            <Label
+                Text="Lector de archivos de texto"
+                FontSize="16"
+                TextColor="#BDC3C7"
+                HorizontalOptions="Center" />
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator
+                x:Name="LoadingIndicator"
+                IsRunning="True"
+                Color="White"
+                WidthRequest="40"
+                HeightRequest="40"
+                HorizontalOptions="Center"
+                Margin="0,20,0,0" />
+
+            <!-- Copyright -->
+            <Label
+                Text="© 2024 Socratic"
+                FontSize="12"
+                TextColor="#7F8C8D"
+                HorizontalOptions="Center"
+                Margin="0,40,0,0" />
+
+        </StackLayout>
+    </Grid>
+
+</ContentPage>
