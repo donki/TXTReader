@@ -13,25 +13,34 @@ namespace TXTReader
             try
             {
                 // Simular carga de la aplicación
-                await Task.Delay(2000);
+                await Task.Delay(1500);
                 
-                // Navegar a la página principal de forma segura
+                // Navegar directamente a MainPage para evitar problemas con AppShell
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     if (Application.Current?.Windows.Count > 0)
                     {
-                        Application.Current.Windows[0].Page = new AppShell();
+                        Application.Current.Windows[0].Page = new NavigationPage(new MainPage());
+                    }
+                    else
+                    {
+                        Application.Current!.MainPage = new NavigationPage(new MainPage());
                     }
                 });
             }
             catch (Exception ex)
             {
-                // En caso de error, intentar navegación alternativa
+                // En caso de error, navegación más simple
                 System.Diagnostics.Debug.WriteLine($"Error en navegación: {ex.Message}");
-                await MainThread.InvokeOnMainThreadAsync(() =>
+                try
                 {
-                    Application.Current!.MainPage = new AppShell();
-                });
+                    Application.Current!.MainPage = new MainPage();
+                }
+                catch
+                {
+                    // Último recurso
+                    System.Diagnostics.Debug.WriteLine("Error crítico en navegación");
+                }
             }
         }
     }
