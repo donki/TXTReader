@@ -49,7 +49,7 @@
 
             <!-- Copyright -->
             <Label
-                Text="© 2024 Socratic"
+                Text="Socratic"
                 FontSize="12"
                 TextColor="#7F8C8D"
                 HorizontalOptions="Center"

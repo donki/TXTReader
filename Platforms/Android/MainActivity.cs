@@ -7,11 +7,10 @@ using TXTReader.Services;
 namespace TXTReader
 {
     [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
-    [IntentFilter(new[] { Intent.ActionView }, Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable }, DataMimeType = "text/*")]
-    [IntentFilter(new[] { Intent.ActionView }, Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable }, DataMimeType = "application/json")]
-    [IntentFilter(new[] { Intent.ActionView }, Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable }, DataMimeType = "application/xml")]
     public class MainActivity : MauiAppCompatActivity
     {
+        private string? _pendingFilePath;
+
         protected override void OnCreate(Bundle? savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -27,16 +26,53 @@ namespace TXTReader
             }
         }
 
+        protected override void OnResume()
+        {
+            base.OnResume();
+            
+            // Si hay un archivo pendiente, procesarlo después de que la aplicación esté completamente cargada
+            if (!string.IsNullOrEmpty(_pendingFilePath))
+            {
+                var filePath = _pendingFilePath;
+                _pendingFilePath = null;
+                
+                // Retrasar la notificación para asegurar que la aplicación esté lista
+                Task.Delay(1000).ContinueWith(_ =>
+                {
+                    System.Diagnostics.Debug.WriteLine($"Processing pending file: {filePath}");
+                    FileIntentService.NotifyFileOpened(filePath);
+                });
+            }
+        }
+
         private void HandleIntent(Intent? intent)
         {
-            if (intent?.Action == Intent.ActionView && intent.Data != null)
+            try
             {
-                var filePath = GetRealPathFromUri(intent.Data);
-                if (!string.IsNullOrEmpty(filePath))
+                if (intent?.Action == Intent.ActionView && intent.Data != null)
                 {
-                    // Pasar el archivo a la aplicación MAUI
-                    FileIntentService.NotifyFileOpened(filePath);
+                    var filePath = GetRealPathFromUri(intent.Data);
+                    if (!string.IsNullOrEmpty(filePath))
+                    {
+                        // Verificar si es un archivo soportado
+                        var extension = Path.GetExtension(filePath)?.ToLowerInvariant();
+                        var supportedExtensions = new[] { ".txt", ".log", ".json", ".xml", ".csv", ".md", ".ini", ".cfg", ".conf" };
+                        
+                        if (supportedExtensions.Contains(extension) || string.IsNullOrEmpty(extension))
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Intent received for file: {filePath} (extension: {extension})");
+                            _pendingFilePath = filePath;
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Unsupported file type: {extension}");
+                        }
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling intent: {ex.Message}");
             }
         }
 
