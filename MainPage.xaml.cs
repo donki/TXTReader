@@ -5,25 +5,27 @@ namespace TXTReader
 {
     public partial class MainPage : ContentPage
     {
-        private readonly RecentFilesService _recentFilesService;
-        public ObservableCollection<RecentFile> RecentFiles { get; set; }
+        private readonly RecentFilesService _recentFilesService = new();
+        public ObservableCollection<RecentFile> RecentFiles { get; set; } = new();
 
         public MainPage()
         {
             try
             {
                 InitializeComponent();
-                _recentFilesService = new RecentFilesService();
-                RecentFiles = new ObservableCollection<RecentFile>();
                 BindingContext = this;
                 _ = LoadRecentFiles();
-                
+
                 // Suscribirse a archivos abiertos por intent
                 FileIntentService.FileOpened += async (filePath) =>
                 {
                     try
                     {
-                        await OpenFile(filePath, Path.GetFileName(filePath));
+                        // Asegurar que la navegación se ejecute en el hilo principal
+                        await MainThread.InvokeOnMainThreadAsync(async () =>
+                        {
+                            await OpenFile(filePath, Path.GetFileName(filePath), true);
+                        });
                     }
                     catch (Exception ex)
                     {
@@ -45,9 +47,10 @@ namespace TXTReader
 
         private async Task LoadRecentFiles()
         {
-            var recentFiles = await _recentFilesService.GetRecentFilesAsync();
+            // Usar el método que automáticamente filtra archivos que no existen
+            var validRecentFiles = await _recentFilesService.GetValidRecentFilesAsync();
             RecentFiles.Clear();
-            foreach (var file in recentFiles)
+            foreach (var file in validRecentFiles)
             {
                 RecentFiles.Add(file);
             }
@@ -92,26 +95,41 @@ namespace TXTReader
                 }
                 else
                 {
-                    await DisplayAlertAsync("Error", "El archivo ya no existe en la ubicación especificada.", "OK");
+                    // Eliminar el archivo del historial y recargar la lista
+                    await _recentFilesService.RemoveRecentFileAsync(recentFile.FilePath);
+                    await LoadRecentFiles();
+                    await DisplayAlertAsync("Archivo eliminado", "El archivo ya no existe y ha sido eliminado del historial.", "OK");
                 }
             }
         }
 
-        private async Task OpenFile(string filePath, string fileName)
+        private async Task OpenFile(string filePath, string fileName, bool isIntent = false)
         {
             try
             {
-                // Agregar a archivos recientes
+                // Verificar que el archivo existe
+                if (!File.Exists(filePath))
+                {
+                    await DisplayAlertAsync("Error", "El archivo no existe o no se puede acceder.", "OK");
+                    return;
+                }
+
+                // Agregar a archivos recientes (siempre, incluso para intents)
                 await _recentFilesService.AddRecentFileAsync(filePath, fileName);
                 
-                // Recargar lista de archivos recientes
-                await LoadRecentFiles();
-                
+                // Recargar lista de archivos recientes si no es un intent
+                if (!isIntent)
+                {
+                    await LoadRecentFiles();
+                }
+
                 // Abrir el archivo en la página del lector
+                System.Diagnostics.Debug.WriteLine($"Opening file: {filePath} (Intent: {isIntent})");
                 await Navigation.PushAsync(new TextReaderPage(filePath, fileName));
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Error in OpenFile: {ex.Message}");
                 await DisplayAlertAsync("Error", $"Error al abrir archivo: {ex.Message}", "OK");
             }
         }

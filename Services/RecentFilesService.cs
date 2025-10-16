@@ -55,6 +55,47 @@ namespace TXTReader.Services
             }
         }
 
+        public async Task<List<RecentFile>> GetValidRecentFilesAsync()
+        {
+            var recentFiles = await GetRecentFilesAsync();
+            var validFiles = new List<RecentFile>();
+            bool hasChanges = false;
+
+            foreach (var file in recentFiles)
+            {
+                if (File.Exists(file.FilePath))
+                {
+                    validFiles.Add(file);
+                }
+                else
+                {
+                    hasChanges = true;
+                    System.Diagnostics.Debug.WriteLine($"Removing non-existent file from recent files: {file.FilePath}");
+                }
+            }
+
+            // Si hubo cambios, guardar la lista actualizada
+            if (hasChanges)
+            {
+                await SaveRecentFilesAsync(validFiles);
+            }
+
+            return validFiles;
+        }
+
+        public async Task RemoveRecentFileAsync(string filePath)
+        {
+            var recentFiles = await GetRecentFilesAsync();
+            var initialCount = recentFiles.Count;
+            
+            recentFiles.RemoveAll(f => f.FilePath == filePath);
+            
+            if (recentFiles.Count != initialCount)
+            {
+                await SaveRecentFilesAsync(recentFiles);
+            }
+        }
+
         public Task ClearRecentFilesAsync()
         {
             SecureStorage.Remove(RecentFilesKey);
