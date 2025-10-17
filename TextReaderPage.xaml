@@ -21,9 +21,6 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <!-- Close Button -->
@@ -31,16 +28,19 @@
                     Grid.Column="0"
                     x:Name="CloseBtn"
                     Text="✕"
-                    FontSize="14"
+                    FontSize="16"
                     FontAttributes="Bold"
-                    BackgroundColor="#E74C3C"
+                    BackgroundColor="#3498DB"
                     TextColor="White"
-                    WidthRequest="45"
-                    HeightRequest="45"
-                    CornerRadius="22"
+                    WidthRequest="42"
+                    HeightRequest="42"
+                    CornerRadius="21"
+                    Padding="0"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
                     Clicked="OnCloseClicked">
                     <Button.Shadow>
-                        <Shadow Brush="#E74C3C" Opacity="0.3" Radius="6" Offset="0,2" />
+                        <Shadow Brush="#3498DB" Opacity="0.3" Radius="6" Offset="0,2" />
                     </Button.Shadow>
                 </Button>
 
@@ -50,7 +50,7 @@
                        CornerRadius="22" 
                        Padding="0" 
                        HasShadow="False"
-                       Margin="5,0">
+                       Margin="10,0,0,0">
                     <Entry
                         x:Name="SearchEntry"
                         Placeholder="🔍 Buscar en el texto..."
@@ -60,66 +60,85 @@
                         TextChanged="OnSearchTextChanged" />
                 </Frame>
 
-                <!-- Font Size Label -->
-                <Label
-                    Grid.Column="2"
-                    x:Name="FontSizeLabel"
-                    Text="14px"
-                    FontSize="12"
-                    TextColor="#7F8C8D"
-                    VerticalOptions="Center"
-                    Margin="5,0" />
-
-                <!-- Zoom Out Button -->
-                <Button
-                    Grid.Column="3"
-                    x:Name="ZoomOutBtn"
-                    Text="A-"
-                    FontSize="12"
-                    FontAttributes="Bold"
-                    BackgroundColor="#95A5A6"
-                    TextColor="White"
-                    WidthRequest="40"
-                    HeightRequest="40"
-                    CornerRadius="20"
-                    Clicked="OnZoomOutClicked" />
-
-                <!-- Zoom In Button -->
-                <Button
-                    Grid.Column="4"
-                    x:Name="ZoomInBtn"
-                    Text="A+"
-                    FontSize="12"
-                    FontAttributes="Bold"
-                    BackgroundColor="#3498DB"
-                    TextColor="White"
-                    WidthRequest="40"
-                    HeightRequest="40"
-                    CornerRadius="20"
-                    Clicked="OnZoomInClicked" />
-
             </Grid>
         </Frame>
 
-        <!-- Content Area -->
-        <Frame Grid.Row="1" 
-               BackgroundColor="White" 
-               CornerRadius="0" 
-               Padding="0" 
-               HasShadow="False"
-               Margin="10,5,10,10">
-            <Editor
-                x:Name="ContentEditor"
-                Text=""
-                FontSize="14"
-                FontFamily="Consolas, Monaco, 'Courier New', monospace"
-                BackgroundColor="White"
-                TextColor="#2C3E50"
-                IsReadOnly="False"
-                AutoSize="TextChanges"
-                TextChanged="OnContentEditorTextChanged"
-                Margin="15" />
-        </Frame>
+        <!-- Content Area with Zoom Slider -->
+        <Grid Grid.Row="1" Margin="10,5,10,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Zoom Slider (Vertical) -->
+            <Frame Grid.Column="0" 
+                   BackgroundColor="White" 
+                   CornerRadius="25" 
+                   Padding="5" 
+                   HasShadow="True"
+                   Margin="0,20,5,20">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Zoom In Icon -->
+                    <Label Grid.Row="0" 
+                           Text="A+" 
+                           FontSize="12" 
+                           FontAttributes="Bold"
+                           TextColor="#3498DB" 
+                           HorizontalOptions="Center" 
+                           Margin="0,5" />
+
+                    <!-- Vertical Slider -->
+                    <Slider Grid.Row="1"
+                            x:Name="ZoomSlider"
+                            Minimum="8"
+                            Maximum="32"
+                            Value="14"
+                            Rotation="270"
+                            WidthRequest="150"
+                            HeightRequest="40"
+                            ThumbColor="#3498DB"
+                            MinimumTrackColor="#3498DB"
+                            MaximumTrackColor="#BDC3C7"
+                            ValueChanged="OnZoomSliderValueChanged"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center" />
+
+                    <!-- Zoom Out Icon -->
+                    <Label Grid.Row="2" 
+                           Text="A-" 
+                           FontSize="12" 
+                           FontAttributes="Bold"
+                           TextColor="#3498DB" 
+                           HorizontalOptions="Center" 
+                           Margin="0,5" />
+                </Grid>
+            </Frame>
+
+            <!-- Text Content -->
+            <Frame Grid.Column="1" 
+                   BackgroundColor="White" 
+                   CornerRadius="0" 
+                   Padding="0" 
+                   HasShadow="False">
+                <Editor
+                    x:Name="ContentEditor"
+                    Text=""
+                    FontSize="14"
+                    FontFamily="Consolas, Monaco, 'Courier New', monospace"
+                    BackgroundColor="White"
+                    TextColor="#2C3E50"
+                    IsReadOnly="False"
+                    AutoSize="TextChanges"
+                    TextChanged="OnContentEditorTextChanged"
+                    Margin="15" />
+            </Frame>
+        </Grid>
 
     </Grid>
 

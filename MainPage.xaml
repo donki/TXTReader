@@ -175,7 +175,7 @@
                         x:Name="AboutBtn"
                         Text="Acerca de"
                         FontSize="14"
-                        BackgroundColor="#95A5A6"
+                        BackgroundColor="#3498DB"
                         TextColor="White"
                         CornerRadius="8"
                         HeightRequest="45"
