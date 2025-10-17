@@ -33,6 +33,9 @@ namespace TXTReader
                 ContentEditor.Text = _originalContent;
                 _isUpdatingContent = false;
                 
+                // Sincronizar el slider con el tamaño de fuente inicial
+                ZoomSlider.Value = _currentFontSize;
+                
                 // Mostrar información de codificación en el título
                 Title = $"{Path.GetFileName(filePath)} ({encoding})";
             }
@@ -59,31 +62,35 @@ namespace TXTReader
                 return;
             }
 
-            // Resaltar texto encontrado (simulado con mayúsculas por simplicidad)
-            var searchText = e.NewTextValue.ToLower();
-            var content = _originalContent;
-            
             // Buscar y resaltar coincidencias
-            var highlightedContent = HighlightSearchText(content, searchText);
+            var searchText = e.NewTextValue;
+            var (highlightedContent, firstMatchPosition) = HighlightSearchText(_originalContent, searchText);
             _currentDisplayContent = highlightedContent;
+            
             _isUpdatingContent = true;
             ContentEditor.Text = _currentDisplayContent;
             _isUpdatingContent = false;
+
+            // Posicionar el cursor en la primera coincidencia encontrada
+            if (firstMatchPosition >= 0)
+            {
+                ContentEditor.CursorPosition = firstMatchPosition;
+                ContentEditor.SelectionLength = searchText.Length;
+            }
         }
 
-        private string HighlightSearchText(string content, string searchText)
+        private (string highlightedContent, int firstMatchPosition) HighlightSearchText(string content, string searchText)
         {
             if (string.IsNullOrEmpty(searchText))
-                return content;
+                return (content, -1);
 
-            // Por simplicidad, convertimos las coincidencias a mayúsculas
-            // En una implementación más avanzada, usarías FormattedString
             var result = new StringBuilder();
             var contentLower = content.ToLower();
             var searchLower = searchText.ToLower();
             
             int lastIndex = 0;
             int index = contentLower.IndexOf(searchLower);
+            int firstMatchPosition = index;
             
             while (index != -1)
             {
@@ -94,33 +101,10 @@ namespace TXTReader
             }
             
             result.Append(content.Substring(lastIndex));
-            return result.ToString();
+            return (result.ToString(), firstMatchPosition);
         }
 
-        private void OnZoomInClicked(object? sender, EventArgs e)
-        {
-            if (_currentFontSize < MaxFontSize)
-            {
-                _currentFontSize += 2;
-                ContentEditor.FontSize = _currentFontSize;
-                UpdateFontSizeLabel();
-            }
-        }
 
-        private void OnZoomOutClicked(object? sender, EventArgs e)
-        {
-            if (_currentFontSize > MinFontSize)
-            {
-                _currentFontSize -= 2;
-                ContentEditor.FontSize = _currentFontSize;
-                UpdateFontSizeLabel();
-            }
-        }
-
-        private void UpdateFontSizeLabel()
-        {
-            FontSizeLabel.Text = $"{_currentFontSize:F0}px";
-        }
 
         private void OnContentEditorTextChanged(object? sender, TextChangedEventArgs e)
         {
@@ -134,6 +118,15 @@ namespace TXTReader
                 _isUpdatingContent = true;
                 ContentEditor.Text = _currentDisplayContent;
                 _isUpdatingContent = false;
+            }
+        }
+
+        private void OnZoomSliderValueChanged(object? sender, ValueChangedEventArgs e)
+        {
+            if (sender is Slider slider)
+            {
+                _currentFontSize = slider.Value;
+                ContentEditor.FontSize = _currentFontSize;
             }
         }
     }
