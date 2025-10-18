@@ -1,44 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
 <defs>
-    <!-- Strong gradient for better visibility -->
-    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+    <!-- Document background - más gris para contraste -->
+    <linearGradient id="docGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#F8F9FA;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#E9ECEF;stop-opacity:1" />
     </linearGradient>
     
-    <!-- Document background -->
-    <linearGradient id="docGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#F1F5F9;stop-opacity:1" />
-    </linearGradient>
+    <!-- Shadow for depth -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="3" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
 </defs>
 
-<!-- Main background circle for better Android appearance -->
-<circle cx="256" cy="256" r="240" fill="url(#bgGradient)"/>
+<!-- Fondo blanco sólido para evitar tintes del sistema -->
+<rect x="0" y="0" width="512" height="512" fill="#FFFFFF"/>
 
-<!-- Document shape - larger and more prominent -->
-<rect x="140" y="100" width="232" height="312" rx="16" ry="16" fill="url(#docGradient)" stroke="#E2E8F0" stroke-width="2"/>
+<!-- Document shape - centered and prominent with shadow -->
+<rect x="120" y="80" width="272" height="352" rx="20" ry="20" fill="url(#docGradient)" stroke="#CBD5E1" stroke-width="3" filter="url(#shadow)"/>
 
-<!-- Document fold corner -->
-<path d="M 340 100 L 372 100 L 372 132 L 340 132 Z" fill="#CBD5E1"/>
-<path d="M 340 100 L 372 132 L 340 132 Z" fill="#94A3B8"/>
 
-<!-- Text lines - thicker and more visible -->
-<rect x="160" y="140" width="180" height="6" rx="3" fill="#64748B"/>
-<rect x="160" y="160" width="140" height="6" rx="3" fill="#64748B"/>
-<rect x="160" y="180" width="160" height="6" rx="3" fill="#64748B"/>
-<rect x="160" y="200" width="120" height="6" rx="3" fill="#64748B"/>
 
-<!-- Large TXT text with strong contrast -->
-<text x="256" y="280" font-family="Arial, sans-serif" font-size="80" font-weight="900" text-anchor="middle" fill="#1E293B" stroke="#FFFFFF" stroke-width="2">TXT</text>
+<!-- Text lines - more prominent -->
+<rect x="150" y="130" width="200" height="8" rx="4" fill="#64748B"/>
+<rect x="150" y="155" width="160" height="8" rx="4" fill="#64748B"/>
+<rect x="150" y="180" width="180" height="8" rx="4" fill="#64748B"/>
+<rect x="150" y="205" width="140" height="8" rx="4" fill="#64748B"/>
+
+<!-- Large TXT text - color más oscuro para mejor contraste -->
+<text x="256" y="290" font-family="Arial, sans-serif" font-size="90" font-weight="900" text-anchor="middle" fill="#1E293B">TXT</text>
 
 <!-- More text lines below -->
-<rect x="160" y="320" width="150" height="6" rx="3" fill="#64748B"/>
-<rect x="160" y="340" width="110" height="6" rx="3" fill="#64748B"/>
-<rect x="160" y="360" width="130" height="6" rx="3" fill="#64748B"/>
+<rect x="150" y="330" width="170" height="8" rx="4" fill="#64748B"/>
+<rect x="150" y="355" width="130" height="8" rx="4" fill="#64748B"/>
+<rect x="150" y="380" width="150" height="8" rx="4" fill="#64748B"/>
 
-<!-- Simple accent dot for visual interest -->
-<circle cx="350" cy="150" r="8" fill="#EF4444"/>
+<!-- Texto "oc" sutil en la esquina inferior derecha -->
+<text x="360" y="415" font-family="Arial, sans-serif" font-size="24" font-weight="600" text-anchor="middle" fill="#9CA3AF">oc</text>
+
+
 
 </svg>
