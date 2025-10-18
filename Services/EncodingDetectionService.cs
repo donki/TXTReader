@@ -4,29 +4,107 @@ namespace TXTReader.Services
 {
     public class EncodingDetectionService
     {
-        public static async Task<(string content, string detectedEncoding)> ReadFileWithEncodingDetectionAsync(string filePath)
+        public static async Task<(string content, string detectedEncoding)> ReadFileWithEncodingDetectionAsync(string filePathOrUri)
         {
             try
             {
-                // Leer los primeros bytes para detectar BOM
-                var bytes = await File.ReadAllBytesAsync(filePath);
+                await MobileLogService.LogAsync($"ReadFileWithEncodingDetectionAsync called with: {filePathOrUri}");
+                byte[] bytes;
+                
+                // Verificar si es una URI de content
+                if (filePathOrUri.StartsWith("content://"))
+                {
+                    await MobileLogService.LogAsync($"Detected content URI, attempting to read: {filePathOrUri}");
+                    bytes = await ReadContentUriAsync(filePathOrUri);
+                    await MobileLogService.LogAsync($"Successfully read {bytes.Length} bytes from content URI");
+                }
+                else
+                {
+                    await MobileLogService.LogAsync($"Detected local file path, reading: {filePathOrUri}");
+                    bytes = await File.ReadAllBytesAsync(filePathOrUri);
+                    await MobileLogService.LogAsync($"Successfully read {bytes.Length} bytes from local file");
+                }
+                
+                await MobileLogService.LogAsync($"Detecting encoding for {bytes.Length} bytes");
                 var encoding = DetectEncoding(bytes);
+                await MobileLogService.LogAsync($"Detected encoding: {encoding.EncodingName}");
                 
                 var content = encoding.GetString(bytes);
+                await MobileLogService.LogAsync($"Converted to string, length: {content.Length} characters");
                 
                 // Limpiar BOM si existe
                 if (content.Length > 0 && content[0] == '\uFEFF')
                 {
                     content = content.Substring(1);
+                    await MobileLogService.LogAsync("Removed BOM from content");
                 }
                 
                 return (content, encoding.EncodingName);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Fallback a UTF-8
-                var content = await File.ReadAllTextAsync(filePath, Encoding.UTF8);
-                return (content, "UTF-8");
+                await MobileLogService.LogAsync($"ERROR in ReadFileWithEncodingDetectionAsync: {ex.Message}");
+                await MobileLogService.LogAsync($"Stack trace: {ex.StackTrace}");
+                
+                // Fallback: intentar leer como archivo local con UTF-8
+                try
+                {
+                    if (!filePathOrUri.StartsWith("content://"))
+                    {
+                        await MobileLogService.LogAsync("Attempting fallback to UTF-8 local file read");
+                        var content = await File.ReadAllTextAsync(filePathOrUri, Encoding.UTF8);
+                        return (content, "UTF-8");
+                    }
+                }
+                catch (Exception fallbackEx)
+                {
+                    await MobileLogService.LogAsync($"Fallback also failed: {fallbackEx.Message}");
+                }
+                
+                throw; // Re-lanzar la excepción original
+            }
+        }
+
+        private static async Task<byte[]> ReadContentUriAsync(string contentUri)
+        {
+            try
+            {
+#if ANDROID
+                await MobileLogService.LogAsync($"ReadContentUriAsync: Parsing URI: {contentUri}");
+                var uri = Android.Net.Uri.Parse(contentUri);
+                
+                await MobileLogService.LogAsync($"ReadContentUriAsync: Getting context and content resolver");
+                var context = Platform.CurrentActivity ?? Android.App.Application.Context;
+                var contentResolver = context.ContentResolver;
+                
+                if (contentResolver == null)
+                {
+                    throw new InvalidOperationException("ContentResolver is null");
+                }
+                
+                await MobileLogService.LogAsync($"ReadContentUriAsync: Opening input stream for URI: {uri}");
+                using var inputStream = contentResolver.OpenInputStream(uri);
+                if (inputStream == null)
+                {
+                    throw new InvalidOperationException("Could not open content URI stream - inputStream is null");
+                }
+                
+                await MobileLogService.LogAsync($"ReadContentUriAsync: Successfully opened input stream, copying to memory");
+                using var memoryStream = new MemoryStream();
+                await inputStream.CopyToAsync(memoryStream);
+                
+                var bytes = memoryStream.ToArray();
+                await MobileLogService.LogAsync($"ReadContentUriAsync: Successfully read {bytes.Length} bytes from content URI");
+                return bytes;
+#else
+                throw new PlatformNotSupportedException("Content URIs are only supported on Android");
+#endif
+            }
+            catch (Exception ex)
+            {
+                await MobileLogService.LogAsync($"ERROR reading content URI: {ex.Message}");
+                await MobileLogService.LogAsync($"Stack trace: {ex.StackTrace}");
+                throw;
             }
         }
 

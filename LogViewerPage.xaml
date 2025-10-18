@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TXTReader.LogViewerPage"
+             Title="Debug Logs"
+             BackgroundColor="#F8F9FA">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <Frame Grid.Row="0" 
+               BackgroundColor="White" 
+               CornerRadius="0" 
+               Padding="0" 
+               HasShadow="True">
+            <Grid Padding="15,10" ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0"
+                       Text="Debug Logs"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="#2C3E50"
+                       VerticalOptions="Center" />
+
+                <Button Grid.Column="1"
+                        Text="Actualizar"
+                        FontSize="14"
+                        BackgroundColor="#3498DB"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HeightRequest="40"
+                        WidthRequest="80"
+                        Clicked="OnRefreshClicked" />
+
+                <Button Grid.Column="2"
+                        Text="Limpiar"
+                        FontSize="14"
+                        BackgroundColor="#E74C3C"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HeightRequest="40"
+                        WidthRequest="80"
+                        Clicked="OnClearClicked" />
+            </Grid>
+        </Frame>
+
+        <!-- Log Content -->
+        <Frame Grid.Row="1" 
+               BackgroundColor="White" 
+               CornerRadius="0" 
+               Padding="10" 
+               HasShadow="False"
+               Margin="10,5,10,10">
+            <ScrollView>
+                <Label x:Name="LogLabel"
+                       Text="Cargando logs..."
+                       FontSize="12"
+                       FontFamily="Consolas, Monaco, 'Courier New', monospace"
+                       TextColor="#2C3E50"
+                       VerticalOptions="Start" />
+            </ScrollView>
+        </Frame>
+    </Grid>
+
+</ContentPage>

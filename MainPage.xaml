@@ -181,6 +181,17 @@
                         HeightRequest="45"
                         Clicked="OnAboutClicked"
                         HorizontalOptions="FillAndExpand" />
+                    
+                    <Button
+                        x:Name="LogsBtn"
+                        Text="Debug Logs"
+                        FontSize="14"
+                        BackgroundColor="#95A5A6"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HeightRequest="45"
+                        Clicked="OnLogsClicked"
+                        HorizontalOptions="FillAndExpand" />
                 </StackLayout>
 
             </VerticalStackLayout>
