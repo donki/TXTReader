@@ -21,15 +21,20 @@ namespace TXTReader
                 {
                     try
                     {
+                        _ = MobileLogService.LogAsync($"MainPage: FileOpened event received with path: {filePath}");
+                        
                         // Asegurar que la navegación se ejecute en el hilo principal
                         await MainThread.InvokeOnMainThreadAsync(async () =>
                         {
+                            _ = MobileLogService.LogAsync($"MainPage: About to call OpenFile with: {filePath}");
                             await OpenFile(filePath, Path.GetFileName(filePath), true);
+                            _ = MobileLogService.LogAsync($"MainPage: OpenFile completed for: {filePath}");
                         });
                     }
                     catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine($"Error opening file from intent: {ex.Message}");
+                        _ = MobileLogService.LogAsync($"MainPage: ERROR in FileOpened event: {ex.Message}");
                     }
                 };
             }
@@ -107,29 +112,45 @@ namespace TXTReader
         {
             try
             {
-                // Verificar que el archivo existe
-                if (!File.Exists(filePath))
+                _ = MobileLogService.LogAsync($"OpenFile: Called with filePath='{filePath}', fileName='{fileName}', isIntent={isIntent}");
+                
+                // Verificar que el archivo existe (solo para archivos locales)
+                if (!filePath.StartsWith("content://") && !File.Exists(filePath))
                 {
+                    _ = MobileLogService.LogAsync($"OpenFile: Local file does not exist: {filePath}");
                     await DisplayAlertAsync("Error", "El archivo no existe o no se puede acceder.", "OK");
                     return;
                 }
+                
+                // Para URIs de content, no verificamos existencia local
+                if (filePath.StartsWith("content://"))
+                {
+                    System.Diagnostics.Debug.WriteLine($"Content URI detected: {filePath}");
+                    _ = MobileLogService.LogAsync($"OpenFile: Content URI detected: {filePath}");
+                }
 
+                _ = MobileLogService.LogAsync($"OpenFile: Adding to recent files");
                 // Agregar a archivos recientes (siempre, incluso para intents)
                 await _recentFilesService.AddRecentFileAsync(filePath, fileName);
                 
                 // Recargar lista de archivos recientes si no es un intent
                 if (!isIntent)
                 {
+                    _ = MobileLogService.LogAsync($"OpenFile: Reloading recent files");
                     await LoadRecentFiles();
                 }
 
                 // Abrir el archivo en la página del lector
                 System.Diagnostics.Debug.WriteLine($"Opening file: {filePath} (Intent: {isIntent})");
+                _ = MobileLogService.LogAsync($"OpenFile: About to navigate to TextReaderPage");
                 await Navigation.PushAsync(new TextReaderPage(filePath, fileName));
+                _ = MobileLogService.LogAsync($"OpenFile: Navigation to TextReaderPage completed");
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error in OpenFile: {ex.Message}");
+                _ = MobileLogService.LogAsync($"OpenFile: ERROR - {ex.Message}");
+                _ = MobileLogService.LogAsync($"OpenFile: Stack trace - {ex.StackTrace}");
                 await DisplayAlertAsync("Error", $"Error al abrir archivo: {ex.Message}", "OK");
             }
         }
@@ -137,6 +158,11 @@ namespace TXTReader
         private async void OnAboutClicked(object? sender, EventArgs e)
         {
             await Navigation.PushAsync(new AboutPage());
+        }
+
+        private async void OnLogsClicked(object? sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new LogViewerPage());
         }
     }
 }

@@ -1,23 +1,47 @@
 # TXT Reader
 
-📖 **Lector de archivos de texto moderno y profesional para Android y Windows**
+![.NET MAUI](https://img.shields.io/badge/.NET%20MAUI-10.0-blue)
+![Android](https://img.shields.io/badge/Android-5.0%2B-green)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen)
 
-Una aplicación multiplataforma desarrollada con .NET MAUI que permite leer archivos de texto con detección automática de codificación, búsqueda integrada y una interfaz moderna.
+📖 **Lector de archivos de texto moderno y profesional para Android**
 
-## ✨ Características
+Una aplicación Android desarrollada con .NET MAUI que permite leer archivos de texto con funcionalidades avanzadas, compatible con servicios de almacenamiento en la nube y archivos locales.
 
-- 📁 **Detección automática de codificación** - Soporte para UTF-8, UTF-16, UTF-32, Windows-1252
-- 🔍 **Búsqueda de texto integrada** - Encuentra texto rápidamente dentro de los archivos
-- 🔍 **Control de zoom avanzado** - Ajusta el tamaño de fuente de 8px a 32px
-- 🕒 **Historial de archivos recientes** - Acceso rápido a los últimos 5 archivos abiertos
-- 📱 **Apertura de archivos por intents** - Abre archivos desde otras aplicaciones (Android)
-- 🎨 **Interfaz moderna** - Diseño profesional con Material Design
-- 🚀 **SplashScreen elegante** - Pantalla de carga con branding
+## 📸 Capturas de Pantalla
+
+| Pantalla Principal | Lector de Texto | Búsqueda en Tiempo Real |
+|:--:|:--:|:--:|
+| Lista de archivos recientes | Texto con zoom y selección | Resaltado automático |
+
+> **Nota**: Las capturas de pantalla muestran la interfaz real de la aplicación con el tema azul unificado y navegación nativa de Android.
+
+## ✨ Características Principales
+
+### 🔍 **Lectura Avanzada**
+- 📁 **Detección automática de codificación** - UTF-8, UTF-16, UTF-32, Windows-1252, ISO-8859-1
+- 🔍 **Búsqueda en tiempo real** - Resaltado amarillo profesional mientras escribes
+- 📝 **Selección de texto real** - Copia y pega como en cualquier navegador web
+- 🔍 **Zoom intuitivo** - Barra deslizante vertical de 8px a 32px
+
+### ☁️ **Compatibilidad Total con la Nube**
+- 🌐 **OneDrive** - Funciona como Microsoft Edge, sin archivos temporales
+- 📱 **Google Drive** - Acceso directo a archivos en la nube
+- 📦 **Dropbox** - Soporte completo para archivos compartidos
+- 🔗 **URIs de Content** - Lectura nativa usando ContentResolver de Android
+
+### 🚀 **Funcionalidades Avanzadas**
+- 🕒 **Historial inteligente** - Últimos 10 archivos con limpieza automática
+- 📱 **Intents de Android** - Abre archivos .log desde otras aplicaciones
+- 🛡️ **Límite de seguridad** - Protección contra archivos > 50MB
+- 🐛 **Sistema de logging** - Diagnóstico integrado para desarrollo
+- 🎨 **Interfaz moderna** - Colores azules unificados y navegación nativa
 
 ## 📱 Plataformas Soportadas
 
-- **Android** (API 21+)
-- **Windows** (Windows 10 versión 1809+)
+- **Android** (API 21+ / Android 5.0+)
+- Optimizado para Android 10+ con soporte completo para Scoped Storage
 
 ## 📂 Formatos de Archivo Soportados
 
@@ -39,9 +63,8 @@ La aplicación puede abrir cualquier archivo de texto, incluyendo:
 ### Requisitos Previos
 
 - .NET 10.0 o superior
-- Visual Studio 2022 17.8+ o Visual Studio Code
-- Para Android: Android SDK y emulador/dispositivo
-- Para Windows: Windows 10 SDK
+- Visual Studio 2022 17.8+ con cargas de trabajo de .NET MAUI
+- Android SDK 34+ y dispositivo/emulador Android
 
 ### Compilación
 
@@ -56,46 +79,85 @@ dotnet restore
 # Compilar para Android
 dotnet build -f net10.0-android
 
-# Compilar para Windows
-dotnet build -f net10.0-windows10.0.19041.0
+# Instalar en dispositivo Android conectado
+dotnet build -f net10.0-android -t:Install
 
-# Instalar en dispositivo Android
+# Ejecutar en dispositivo
 dotnet build -f net10.0-android -t:Run
+```
+
+### APK Release
+
+Para generar un APK firmado para distribución:
+
+```bash
+dotnet publish -f net10.0-android -c Release
 ```
 
 ## 🎯 Uso
 
-### Abrir Archivos
+### 📂 Abrir Archivos
 
-1. **Desde la aplicación**: Usa el botón "📁 Seleccionar Archivo" en la pantalla principal
-2. **Desde otras aplicaciones** (Android): Comparte o abre archivos de texto con TXT Reader
-3. **Archivos recientes**: Accede rápidamente desde la lista de archivos recientes
+1. **Desde la aplicación**: Botón "📁 Seleccionar Archivo" en la pantalla principal
+2. **Desde servicios en la nube**: 
+   - OneDrive: Toca "Abrir con" → TXT Reader
+   - Google Drive: Comparte → TXT Reader  
+   - Dropbox: Exportar → TXT Reader
+3. **Desde otras aplicaciones**: Abre archivos .log, .txt desde cualquier app
+4. **Archivos recientes**: Lista inteligente con los últimos 10 archivos
 
-### Funciones del Lector
+### 🔍 Funciones del Lector
 
-- **Búsqueda**: Usa el campo de búsqueda en la parte superior para encontrar texto
-- **Zoom**: Usa los botones A+ y A- para ajustar el tamaño de fuente
-- **Navegación**: Desplázate por archivos largos con scroll suave
-- **Información**: El título muestra la codificación detectada del archivo
+- **Búsqueda en tiempo real**: Escribe en el campo superior, resaltado automático
+- **Zoom con barra**: Desliza la barra vertical para ajustar de 8px a 32px
+- **Selección de texto**: Mantén presionado para seleccionar y copiar
+- **Navegación nativa**: Botón "atrás" de Android para regresar
+- **Información técnica**: Codificación detectada en el título
 
-## 🏗️ Arquitectura
+### 🐛 Debug y Logs
+
+- **Acceso a logs**: Botón "Debug Logs" en la pantalla principal
+- **Limpiar logs**: Botón "Limpiar" para reiniciar el registro
+- **Diagnóstico**: Información detallada para resolución de problemas
+
+## 🏗️ Arquitectura Técnica
+
+### 📁 Estructura del Proyecto
 
 ```
 TXTReader/
 ├── Services/
 │   ├── EncodingDetectionService.cs    # Detección automática de codificación
-│   ├── RecentFilesService.cs          # Gestión de archivos recientes
-│   └── FileIntentService.cs           # Manejo de intents de archivos
+│   ├── RecentFilesService.cs          # Gestión inteligente de archivos recientes
+│   ├── FileIntentService.cs           # Manejo de intents de Android
+│   └── MobileLogService.cs            # Sistema de logging integrado
 ├── Pages/
-│   ├── MainPage.xaml                  # Pantalla principal
-│   ├── TextReaderPage.xaml            # Lector de texto
+│   ├── MainPage.xaml                  # Pantalla principal con historial
+│   ├── TextReaderPage.xaml            # Lector con WebView y búsqueda
 │   ├── AboutPage.xaml                 # Información de la aplicación
-│   └── SplashPage.xaml                # Pantalla de carga
-├── Platforms/
-│   ├── Android/                       # Código específico de Android
-│   └── Windows/                       # Código específico de Windows
-└── Resources/                         # Recursos de la aplicación
+│   ├── LogViewerPage.xaml             # Visor de logs de diagnóstico
+│   └── SplashPage.xaml                # Pantalla de carga elegante
+├── Platforms/Android/
+│   └── MainActivity.cs                # Manejo de URIs de content y intents
+└── Resources/                         # Iconos, colores y recursos
 ```
+
+### 🔧 Tecnologías Clave
+
+- **.NET MAUI** - Framework multiplataforma moderno
+- **WebView con HTML** - Renderizado de texto con selección real
+- **ContentResolver** - Acceso nativo a URIs de content de Android
+- **Scoped Storage** - Compatibilidad total con Android 10+
+- **Material Design** - Interfaz moderna y consistente
+
+### ⚡ Características Técnicas
+
+- **Sin archivos temporales** - Lectura directa desde URIs de content
+- **Detección inteligente de codificación** - Análisis de BOM y patrones de bytes
+- **Límite de seguridad** - Protección automática contra archivos > 50MB
+- **Logging integrado** - Sistema de diagnóstico para desarrollo y soporte
+- **Gestión de memoria eficiente** - Optimizado para archivos grandes
+- **Navegación nativa** - Integración completa con el sistema Android
 
 ## 🤝 Contribuir
 
@@ -115,9 +177,26 @@ Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](L
 
 Este software se proporciona 'tal como está', sin garantías de ningún tipo, expresas o implícitas. En ningún caso los autores serán responsables de cualquier reclamo, daño u otra responsabilidad. El uso de este software es bajo su propio riesgo.
 
+## 🎯 Casos de Uso
+
+### 👨‍💻 **Para Desarrolladores**
+- Leer logs de aplicaciones desde cualquier servicio
+- Revisar archivos de configuración en la nube
+- Analizar archivos JSON/XML compartidos
+
+### 📊 **Para Profesionales**
+- Abrir documentos de texto desde OneDrive corporativo
+- Revisar reportes CSV desde Google Drive
+- Leer archivos de configuración desde Dropbox
+
+### 🎓 **Para Estudiantes**
+- Acceder a apuntes en formato .txt desde la nube
+- Leer archivos Markdown de proyectos
+- Revisar código fuente compartido
+
 ## 👥 Autores
 
-- **Socratic** - *Desarrollo inicial* - © 2024
+- **Desarrollador Principal** - *Desarrollo completo* - © 2025
 
 ## 🙏 Agradecimientos
 
