@@ -1,11 +1,27 @@
-namespace TXTReader
+using TXTReader.Services;
+
+namespace TXTReader.Pages
 {
     public partial class SplashPage : ContentPage
     {
+        private readonly LocalizationService _localizationService;
+
         public SplashPage()
         {
             InitializeComponent();
+            _localizationService = LocalizationService.Instance;
+            UpdateTexts();
             NavigateToMainPage();
+        }
+
+        private void UpdateTexts()
+        {
+            // Force English for testing
+            var culture = new System.Globalization.CultureInfo("en");
+            var resourceManager = new System.Resources.ResourceManager(typeof(TXTReader.Resources.Strings.AppResources));
+            SubtitleLabel.Text = resourceManager.GetString("SplashSubtitle", culture) ?? "Text file reader";
+            
+            System.Diagnostics.Debug.WriteLine($"SplashPage: Setting subtitle to: {SubtitleLabel.Text}");
         }
 
         private async void NavigateToMainPage()
