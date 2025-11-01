@@ -1,7 +1,7 @@
 using System.Text;
 using TXTReader.Services;
 
-namespace TXTReader
+namespace TXTReader.Pages
 {
     public partial class TextReaderPage : ContentPage
     {
@@ -9,12 +9,27 @@ namespace TXTReader
         private double _currentFontSize = 14;
         private const double MinFontSize = 8;
         private const double MaxFontSize = 32;
+        private readonly LocalizationService _localizationService;
 
         public TextReaderPage(string filePath, string fileName)
         {
             InitializeComponent();
+            _localizationService = LocalizationService.Instance;
+            _localizationService.LanguageChanged += OnLanguageChanged;
             Title = fileName;
+            UpdateTexts();
             LoadFileContent(filePath);
+        }
+
+        private void UpdateTexts()
+        {
+            // No cambiar el Title ya que debe mostrar el nombre del archivo
+            SearchEntry.Placeholder = _localizationService.GetString("SearchPlaceholder");
+        }
+
+        private void OnLanguageChanged(object? sender, EventArgs e)
+        {
+            UpdateTexts();
         }
 
         private async void LoadFileContent(string filePath)
@@ -31,7 +46,7 @@ namespace TXTReader
             }
             catch (Exception ex)
             {
-                await DisplayAlertAsync("Error", $"No se pudo cargar el archivo: {ex.Message}", "OK");
+                await DisplayAlertAsync(_localizationService.GetString("Error"), $"{_localizationService.GetString("FileLoadError")}: {ex.Message}", _localizationService.GetString("OK"));
                 await Navigation.PopAsync();
             }
         }

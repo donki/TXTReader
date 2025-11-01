@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TXTReader.MainPage"
+             x:Class="TXTReader.Pages.MainPage"
              BackgroundColor="#F8F9FA">
 
     <Grid>
@@ -18,13 +18,13 @@
                HasShadow="True">
             <StackLayout Padding="30,40,30,30" Spacing="10">
                 <Label
-                    Text="📖 TXT Reader"
+                    x:Name="MainTitleLabel"
                     FontSize="32"
                     FontAttributes="Bold"
                     TextColor="White"
                     HorizontalOptions="Center" />
                 <Label
-                    Text="Lector de archivos de texto"
+                    x:Name="MainSubtitleLabel"
                     FontSize="16"
                     TextColor="#BDC3C7"
                     HorizontalOptions="Center" />
@@ -42,14 +42,13 @@
                        Padding="0">
                     <StackLayout Padding="25" Spacing="15">
                         <Label
-                            Text="Abrir Archivo"
+                            x:Name="OpenFileLabel"
                             FontSize="20"
                             FontAttributes="Bold"
                             TextColor="#2C3E50" />
 
                         <Button
                             x:Name="SelectFileBtn"
-                            Text="📁  Seleccionar Archivo"
                             FontSize="16"
                             FontAttributes="Bold"
                             BackgroundColor="#3498DB"
@@ -79,7 +78,7 @@
 
                             <Label
                                 Grid.Column="0"
-                                Text="Archivos Recientes"
+                                x:Name="RecentFilesLabel"
                                 FontSize="18"
                                 FontAttributes="Bold"
                                 TextColor="#2C3E50"
@@ -159,7 +158,7 @@
                                         TextColor="#BDC3C7"
                                         HorizontalOptions="Center" />
                                     <Label
-                                        Text="No hay archivos recientes"
+                                        Text="{Binding NoRecentFilesText}"
                                         FontSize="14"
                                         TextColor="#7F8C8D"
                                         HorizontalOptions="Center" />
@@ -170,29 +169,15 @@
                 </Frame>
 
                 <!-- Footer Actions -->
-                <StackLayout Orientation="Horizontal" Spacing="15">
-                    <Button
-                        x:Name="AboutBtn"
-                        Text="Acerca de"
-                        FontSize="14"
-                        BackgroundColor="#3498DB"
-                        TextColor="White"
-                        CornerRadius="8"
-                        HeightRequest="45"
-                        Clicked="OnAboutClicked"
-                        HorizontalOptions="FillAndExpand" />
-                    
-                    <Button
-                        x:Name="LogsBtn"
-                        Text="Debug Logs"
-                        FontSize="14"
-                        BackgroundColor="#95A5A6"
-                        TextColor="White"
-                        CornerRadius="8"
-                        HeightRequest="45"
-                        Clicked="OnLogsClicked"
-                        HorizontalOptions="FillAndExpand" />
-                </StackLayout>
+                <Button
+                    x:Name="AboutBtn"
+                    FontSize="14"
+                    BackgroundColor="#3498DB"
+                    TextColor="White"
+                    CornerRadius="8"
+                    HeightRequest="45"
+                    Clicked="OnAboutClicked"
+                    HorizontalOptions="Fill" />
 
             </VerticalStackLayout>
         </ScrollView>

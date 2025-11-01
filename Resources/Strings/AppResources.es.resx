@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- About Page -->
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Acerca de</value>
+  </data>
+  <data name="AppName" xml:space="preserve">
+    <value>TXT Reader</value>
+  </data>
+  <data name="AppVersion" xml:space="preserve">
+    <value>Versión 1.0</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>Lector de archivos de texto</value>
+  </data>
+  <data name="CompanyName" xml:space="preserve">
+    <value>Socratic</value>
+  </data>
+  <data name="ContactTitle" xml:space="preserve">
+    <value>📧 Contacto</value>
+  </data>
+  <data name="ContactInstruction" xml:space="preserve">
+    <value>Toca para enviar un correo electrónico</value>
+  </data>
+  <data name="DonationTitle" xml:space="preserve">
+    <value>☕ Apoya el Desarrollo</value>
+  </data>
+  <data name="DonationButton" xml:space="preserve">
+    <value>Ko-fi.com - Invítame un café</value>
+  </data>
+  <data name="DonationDescription" xml:space="preserve">
+    <value>Tu apoyo ayuda a mantener y mejorar esta aplicación</value>
+  </data>
+  <data name="LegalTitle" xml:space="preserve">
+    <value>⚖️ Aviso</value>
+  </data>
+  <data name="LegalText1" xml:space="preserve">
+    <value>Este software se proporciona 'tal como está', sin garantías de ningún tipo, expresas o implícitas.</value>
+  </data>
+  <data name="LegalText2" xml:space="preserve">
+    <value>En ningún caso los autores serán responsables de cualquier reclamo, daño, que surja del uso del software.</value>
+  </data>
+  <data name="WarningText" xml:space="preserve">
+    <value>⚠️ El uso de este software es bajo su propio riesgo. No se puede reclamar daños de ningún tipo.</value>
+  </data>
+  <data name="BackButton" xml:space="preserve">
+    <value>← Volver</value>
+  </data>
+  <data name="LanguageTitle" xml:space="preserve">
+    <value>🌐 Idioma</value>
+  </data>
+  <data name="LanguageDescription" xml:space="preserve">
+    <value>Selecciona tu idioma preferido</value>
+  </data>
+  
+  <!-- Error Messages -->
+  <data name="EmailNotAvailable" xml:space="preserve">
+    <value>El cliente de correo no está disponible en este dispositivo.</value>
+  </data>
+  <data name="EmailError" xml:space="preserve">
+    <value>No se pudo abrir el cliente de correo</value>
+  </data>
+  <data name="BrowserNotAvailableTitle" xml:space="preserve">
+    <value>Navegador no disponible</value>
+  </data>
+  <data name="BrowserNotAvailableMessage" xml:space="preserve">
+    <value>No se pudo abrir el navegador, pero se ha copiado el enlace al portapapeles</value>
+  </data>
+  <data name="BrowserError" xml:space="preserve">
+    <value>No se pudo abrir el navegador. Visita manualmente</value>
+  </data>
+  <data name="LinkErrorTitle" xml:space="preserve">
+    <value>Error al abrir enlace</value>
+  </data>
+  <data name="LinkErrorMessage" xml:space="preserve">
+    <value>No se pudo abrir el navegador</value>
+  </data>
+  <data name="ClipboardMessage" xml:space="preserve">
+    <value>pero se ha copiado el enlace al portapapeles</value>
+  </data>
+  <data name="FinalErrorMessage" xml:space="preserve">
+    <value>No se pudo abrir el enlace. Visita manualmente</value>
+  </data>
+  
+  <!-- Language Options -->
+  <data name="Spanish" xml:space="preserve">
+    <value>Español</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>Inglés</value>
+  </data>
+  <data name="SystemDefault" xml:space="preserve">
+    <value>Predeterminado del Sistema</value>
+  </data>
+  
+  <!-- Splash Page -->
+  <data name="SplashSubtitle" xml:space="preserve">
+    <value>Lector de archivos de texto</value>
+  </data>
+  
+  <!-- Main Page -->
+  <data name="MainTitle" xml:space="preserve">
+    <value>📖 TXT Reader</value>
+  </data>
+  <data name="MainSubtitle" xml:space="preserve">
+    <value>Lector de archivos de texto</value>
+  </data>
+  <data name="OpenFile" xml:space="preserve">
+    <value>Abrir Archivo</value>
+  </data>
+  <data name="SelectFile" xml:space="preserve">
+    <value>📁  Seleccionar Archivo</value>
+  </data>
+  <data name="RecentFiles" xml:space="preserve">
+    <value>Archivos Recientes</value>
+  </data>
+  <data name="NoRecentFiles" xml:space="preserve">
+    <value>No hay archivos recientes</value>
+  </data>
+  
+  <!-- Text Reader Page -->
+  <data name="TextReaderTitle" xml:space="preserve">
+    <value>Lector de Texto</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>🔍 Buscar en el texto...</value>
+  </data>
+  
+  <!-- Common -->
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="FileLoadError" xml:space="preserve">
+    <value>No se pudo cargar el archivo</value>
+  </data>
+  <data name="FileSelectError" xml:space="preserve">
+    <value>Error al seleccionar archivo</value>
+  </data>
+  <data name="FileDeletedTitle" xml:space="preserve">
+    <value>Archivo eliminado</value>
+  </data>
+  <data name="FileDeletedMessage" xml:space="preserve">
+    <value>El archivo ya no existe y ha sido eliminado del historial.</value>
+  </data>
+  <data name="FileNotExist" xml:space="preserve">
+    <value>El archivo no existe o no se puede acceder.</value>
+  </data>
+  <data name="FileOpenError" xml:space="preserve">
+    <value>Error al abrir archivo</value>
+  </data>
+  <data name="SelectFileTitle" xml:space="preserve">
+    <value>Selecciona un archivo de texto</value>
+  </data>
+</root>

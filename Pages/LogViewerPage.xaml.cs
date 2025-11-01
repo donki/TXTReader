@@ -1,6 +1,6 @@
 using TXTReader.Services;
 
-namespace TXTReader
+namespace TXTReader.Pages
 {
     public partial class LogViewerPage : ContentPage
     {

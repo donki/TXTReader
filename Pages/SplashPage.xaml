@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TXTReader.SplashPage"
+             x:Class="TXTReader.Pages.SplashPage"
              BackgroundColor="#2C3E50"
              NavigationPage.HasNavigationBar="False">
 
@@ -32,7 +32,7 @@
 
             <!-- Subtitle -->
             <Label
-                Text="Lector de archivos de texto"
+                x:Name="SubtitleLabel"
                 FontSize="16"
                 TextColor="#BDC3C7"
                 HorizontalOptions="Center" />

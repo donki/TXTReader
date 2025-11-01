@@ -1,3 +1,5 @@
+using TXTReader.Pages;
+
 namespace TXTReader
 {
     public partial class App : Application

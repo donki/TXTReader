@@ -1,19 +1,26 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using TXTReader.Services;
 
-namespace TXTReader
+namespace TXTReader.Pages
 {
-    public partial class MainPage : ContentPage
+    public partial class MainPage : ContentPage, INotifyPropertyChanged
     {
         private readonly RecentFilesService _recentFilesService = new();
+        private readonly LocalizationService _localizationService = LocalizationService.Instance;
         public ObservableCollection<RecentFile> RecentFiles { get; set; } = new();
+        
+        public string NoRecentFilesText => _localizationService.GetString("NoRecentFiles");
 
         public MainPage()
         {
             try
             {
                 InitializeComponent();
+
+                _localizationService.LanguageChanged += OnLanguageChanged;
                 BindingContext = this;
+                UpdateTexts();
                 _ = LoadRecentFiles();
 
                 // Suscribirse a archivos abiertos por intent
@@ -50,6 +57,23 @@ namespace TXTReader
             await LoadRecentFiles();
         }
 
+        private void UpdateTexts()
+        {
+            MainTitleLabel.Text = _localizationService.GetString("MainTitle");
+            MainSubtitleLabel.Text = _localizationService.GetString("MainSubtitle");
+            OpenFileLabel.Text = _localizationService.GetString("OpenFile");
+            SelectFileBtn.Text = _localizationService.GetString("SelectFile");
+            RecentFilesLabel.Text = _localizationService.GetString("RecentFiles");
+            // NoRecentFilesLabel está en un template, se manejará con binding
+            AboutBtn.Text = _localizationService.GetString("AboutTitle");
+        }
+
+        private void OnLanguageChanged(object? sender, EventArgs e)
+        {
+            UpdateTexts();
+            OnPropertyChanged(nameof(NoRecentFilesText));
+        }
+
         private async Task LoadRecentFiles()
         {
             // Usar el método que automáticamente filtra archivos que no existen
@@ -74,7 +98,7 @@ namespace TXTReader
 
                 var options = new PickOptions
                 {
-                    PickerTitle = "Selecciona un archivo de texto",
+                    PickerTitle = _localizationService.GetString("SelectFileTitle"),
                     FileTypes = customFileType
                 };
 
@@ -86,7 +110,7 @@ namespace TXTReader
             }
             catch (Exception ex)
             {
-                await DisplayAlertAsync("Error", $"Error al seleccionar archivo: {ex.Message}", "OK");
+                await DisplayAlertAsync(_localizationService.GetString("Error"), $"{_localizationService.GetString("FileSelectError")}: {ex.Message}", _localizationService.GetString("OK"));
             }
         }
 
@@ -103,7 +127,7 @@ namespace TXTReader
                     // Eliminar el archivo del historial y recargar la lista
                     await _recentFilesService.RemoveRecentFileAsync(recentFile.FilePath);
                     await LoadRecentFiles();
-                    await DisplayAlertAsync("Archivo eliminado", "El archivo ya no existe y ha sido eliminado del historial.", "OK");
+                    await DisplayAlertAsync(_localizationService.GetString("FileDeletedTitle"), _localizationService.GetString("FileDeletedMessage"), _localizationService.GetString("OK"));
                 }
             }
         }
@@ -118,7 +142,7 @@ namespace TXTReader
                 if (!filePath.StartsWith("content://") && !File.Exists(filePath))
                 {
                     _ = MobileLogService.LogAsync($"OpenFile: Local file does not exist: {filePath}");
-                    await DisplayAlertAsync("Error", "El archivo no existe o no se puede acceder.", "OK");
+                    await DisplayAlertAsync(_localizationService.GetString("Error"), _localizationService.GetString("FileNotExist"), _localizationService.GetString("OK"));
                     return;
                 }
                 
@@ -151,7 +175,7 @@ namespace TXTReader
                 System.Diagnostics.Debug.WriteLine($"Error in OpenFile: {ex.Message}");
                 _ = MobileLogService.LogAsync($"OpenFile: ERROR - {ex.Message}");
                 _ = MobileLogService.LogAsync($"OpenFile: Stack trace - {ex.StackTrace}");
-                await DisplayAlertAsync("Error", $"Error al abrir archivo: {ex.Message}", "OK");
+                await DisplayAlertAsync(_localizationService.GetString("Error"), $"{_localizationService.GetString("FileOpenError")}: {ex.Message}", _localizationService.GetString("OK"));
             }
         }
 
@@ -160,9 +184,11 @@ namespace TXTReader
             await Navigation.PushAsync(new AboutPage());
         }
 
-        private async void OnLogsClicked(object? sender, EventArgs e)
+        public new event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual new void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
         {
-            await Navigation.PushAsync(new LogViewerPage());
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

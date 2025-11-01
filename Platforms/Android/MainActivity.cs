@@ -44,7 +44,7 @@ namespace TXTReader
                 {
                     System.Diagnostics.Debug.WriteLine($"Processing pending file: {filePath}");
                     _ = MobileLogService.LogAsync($"OnResume: Processing pending file: {filePath}");
-                    
+
                     // Verificar que el archivo existe antes de procesarlo (solo para archivos locales)
                     if (filePath.StartsWith("content://") || File.Exists(filePath))
                     {
@@ -57,7 +57,7 @@ namespace TXTReader
                         {
                             _ = MobileLogService.LogAsync($"OnResume: Content URI detected, proceeding without file check");
                         }
-                        
+
                         // Asegurar que la notificación se ejecute en el hilo principal
                         MainThread.BeginInvokeOnMainThread(() =>
                         {
@@ -75,8 +75,8 @@ namespace TXTReader
                             if (Microsoft.Maui.Controls.Application.Current?.MainPage != null)
                             {
                                 await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(
-                                    "Archivo no disponible", 
-                                    "No se pudo crear una copia temporal del archivo.\n\nEsto puede ocurrir con archivos de almacenamiento en la nube que no están disponibles sin conexión.\n\nIntenta descargar el archivo localmente primero.", 
+                                    "Archivo no disponible",
+                                    "No se pudo crear una copia temporal del archivo.\n\nEsto puede ocurrir con archivos de almacenamiento en la nube que no están disponibles sin conexión.\n\nIntenta descargar el archivo localmente primero.",
                                     "OK");
                             }
                         });
@@ -93,26 +93,26 @@ namespace TXTReader
                 {
                     System.Diagnostics.Debug.WriteLine($"Handling intent with URI: {intent.Data}");
                     _ = MobileLogService.LogAsync($"HandleIntent: Received URI: {intent.Data}");
-                    
+
                     var filePath = GetRealPathFromUri(intent.Data);
                     System.Diagnostics.Debug.WriteLine($"GetRealPathFromUri returned: '{filePath}'");
                     _ = MobileLogService.LogAsync($"HandleIntent: GetRealPathFromUri returned: '{filePath}'");
-                    
+
                     if (!string.IsNullOrEmpty(filePath))
                     {
                         // Verificar si es un archivo soportado
                         string extension;
-                        
+
                         if (filePath.StartsWith("content://"))
                         {
                             // Para URIs de content, extraer la extensión del nombre del archivo en la URI
                             var uri = Android.Net.Uri.Parse(filePath);
                             var lastSegment = uri.LastPathSegment ?? "";
-                            
+
                             // Buscar .txt, .log, etc. en el último segmento de la URI
                             var dotIndex = lastSegment.LastIndexOf('.');
                             extension = dotIndex >= 0 ? lastSegment.Substring(dotIndex).ToLowerInvariant() : "";
-                            
+
                             _ = MobileLogService.LogAsync($"HandleIntent: Content URI - LastPathSegment: '{lastSegment}', Extension: '{extension}'");
                         }
                         else
@@ -120,7 +120,7 @@ namespace TXTReader
                             // Para archivos locales, usar Path.GetExtension normal
                             extension = Path.GetExtension(filePath)?.ToLowerInvariant() ?? "";
                         }
-                        
+
                         var supportedExtensions = new[] { ".txt", ".log", ".json", ".xml", ".csv", ".md", ".ini", ".cfg", ".conf" };
 
                         if (supportedExtensions.Contains(extension) || string.IsNullOrEmpty(extension))
@@ -148,7 +148,7 @@ namespace TXTReader
                                 var uriString = intent.Data?.ToString()?.ToLower() ?? "";
                                 string message;
                                 string title;
-                                
+
                                 if (uriString.Contains("onedrive"))
                                 {
                                     title = "OneDrive - Acceso restringido";
@@ -169,8 +169,8 @@ namespace TXTReader
                                     title = "Archivo no accesible";
                                     message = "No se pudo acceder al archivo desde el almacenamiento en la nube.\n\nIntenta descargar el archivo localmente primero.";
                                 }
-                                    
-                                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(title, message, "OK");
+
+                                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync(title, message, "OK");
                             }
                         });
                     }
@@ -203,9 +203,9 @@ namespace TXTReader
                 if (uri.Scheme?.Equals("content", StringComparison.OrdinalIgnoreCase) == true)
                 {
                     _ = MobileLogService.LogAsync($"GetRealPathFromUri: Processing content URI: {uri}");
-                    
+
                     // Para servicios en la nube (OneDrive, Google Drive, Dropbox), usar URI directamente
-                    if (uri.Authority?.Contains("skydrive") == true || 
+                    if (uri.Authority?.Contains("skydrive") == true ||
                         uri.Authority?.Contains("onedrive") == true ||
                         uri.Authority?.Contains("drive.google") == true ||
                         uri.Authority?.Contains("dropbox") == true)
@@ -213,7 +213,7 @@ namespace TXTReader
                         _ = MobileLogService.LogAsync($"GetRealPathFromUri: Cloud service detected, returning URI directly: {uri}");
                         return uri.ToString();
                     }
-                    
+
                     // Para archivos locales, intentar múltiples métodos para obtener la ruta
 
                     // Método 1: Usar cursor con _data
@@ -272,7 +272,7 @@ namespace TXTReader
                     System.Diagnostics.Debug.WriteLine("Attempting to use content URI directly");
                     _ = MobileLogService.LogAsync($"GetRealPathFromUri: Returning content URI directly: {uri}");
                     return uri.ToString();
-                    
+
                     // Método 5: Copiar el archivo a un directorio temporal (fallback)
                     // var tempFilePath = CopyUriToTempFile(uri);
                     // System.Diagnostics.Debug.WriteLine($"CopyUriToTempFile returned: {tempFilePath}");
@@ -325,16 +325,16 @@ namespace TXTReader
         private string? CopyUriToTempFile(Android.Net.Uri uri)
         {
             const long MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB límite máximo
-            
+
             try
             {
                 System.Diagnostics.Debug.WriteLine($"Attempting to copy URI to temp file: {uri}");
                 System.Diagnostics.Debug.WriteLine($"URI Authority: {uri.Authority}");
                 System.Diagnostics.Debug.WriteLine($"URI Host: {uri.Host}");
-                
+
                 var fileName = GetFileNameFromUri(uri) ?? $"temp_file_{DateTime.Now.Ticks}.txt";
                 System.Diagnostics.Debug.WriteLine($"File name: {fileName}");
-                
+
                 // Usar el directorio de archivos de la aplicación en lugar del cache
                 var tempDir = Path.Combine(Android.App.Application.Context.FilesDir?.AbsolutePath ?? "", "temp_files");
 
@@ -388,26 +388,26 @@ namespace TXTReader
                 if (fileSize > 0 && fileSize > MAX_FILE_SIZE)
                 {
                     System.Diagnostics.Debug.WriteLine($"File too large: {fileSize} bytes (max: {MAX_FILE_SIZE})");
-                    
+
                     MainThread.BeginInvokeOnMainThread(async () =>
                     {
                         await Task.Delay(500);
                         if (Microsoft.Maui.Controls.Application.Current?.MainPage != null)
                         {
                             var sizeMB = fileSize / (1024.0 * 1024.0);
-                            await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(
-                                "Archivo demasiado grande", 
-                                $"El archivo es demasiado grande ({sizeMB:F1} MB).\n\nTamaño máximo permitido: 50 MB\n\nPara archivos grandes, usa un editor de texto especializado.", 
+                            await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync(
+                                "Archivo demasiado grande",
+                                $"El archivo es demasiado grande ({sizeMB:F1} MB).\n\nTamaño máximo permitido: 50 MB\n\nPara archivos grandes, usa un editor de texto especializado.",
                                 "OK");
                         }
                     });
-                    
+
                     return null;
                 }
 
                 // Intentar diferentes métodos para acceder al contenido
                 System.IO.Stream? inputStream = null;
-                
+
                 try
                 {
                     // Método 1: OpenInputStream directo (funciona con Google Drive, Dropbox, etc.)
@@ -417,7 +417,7 @@ namespace TXTReader
                 catch (Exception ex1)
                 {
                     System.Diagnostics.Debug.WriteLine($"OpenInputStream failed: {ex1.Message}");
-                    
+
                     // Método 2: Intentar con FileDescriptor (para algunos proveedores)
                     try
                     {
@@ -433,14 +433,14 @@ namespace TXTReader
                     catch (Exception ex2)
                     {
                         System.Diagnostics.Debug.WriteLine($"FileDescriptor method failed: {ex2.Message}");
-                        
+
                         // Método 3: Intentar con diferentes modos para OneDrive
                         if (uri.ToString().ToLower().Contains("onedrive") || uri.Authority?.Contains("skydrive") == true)
                         {
                             try
                             {
                                 System.Diagnostics.Debug.WriteLine("Attempting OneDrive-specific access methods");
-                                
+
                                 // Intentar con modo "rw" en lugar de "r"
                                 var parcelFd = ContentResolver?.OpenFileDescriptor(uri, "rw");
                                 if (parcelFd != null)
@@ -454,7 +454,7 @@ namespace TXTReader
                             catch (Exception ex3)
                             {
                                 System.Diagnostics.Debug.WriteLine($"OneDrive rw mode failed: {ex3.Message}");
-                                
+
                                 // Método 4: Intentar con AssetFileDescriptor
                                 try
                                 {
@@ -481,7 +481,7 @@ namespace TXTReader
                 if (inputStream != null)
                 {
                     System.Diagnostics.Debug.WriteLine("Successfully opened input stream");
-                    
+
                     using (inputStream)
                     using (var outputStream = File.Create(tempFilePath))
                     {
@@ -489,38 +489,38 @@ namespace TXTReader
                         var buffer = new byte[8192];
                         long totalBytesRead = 0;
                         int bytesRead;
-                        
+
                         while ((bytesRead = inputStream.Read(buffer, 0, buffer.Length)) > 0)
                         {
                             totalBytesRead += bytesRead;
-                            
+
                             // Verificar límite durante la copia
                             if (totalBytesRead > MAX_FILE_SIZE)
                             {
                                 System.Diagnostics.Debug.WriteLine($"File exceeded size limit during copy: {totalBytesRead} bytes");
-                                
+
                                 MainThread.BeginInvokeOnMainThread(async () =>
                                 {
                                     await Task.Delay(500);
                                     if (Microsoft.Maui.Controls.Application.Current?.MainPage != null)
                                     {
-                                        await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(
-                                            "Archivo demasiado grande", 
-                                            "El archivo excede el límite de 50 MB durante la carga.\n\nPara archivos grandes, usa un editor especializado.", 
+                                        await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync(
+                                            "Archivo demasiado grande",
+                                            "El archivo excede el límite de 50 MB durante la carga.\n\nPara archivos grandes, usa un editor especializado.",
                                             "OK");
                                     }
                                 });
-                                
+
                                 if (File.Exists(tempFilePath))
                                 {
                                     File.Delete(tempFilePath);
                                 }
                                 return null;
                             }
-                            
+
                             outputStream.Write(buffer, 0, bytesRead);
                         }
-                        
+
                         outputStream.Flush();
                     }
 
@@ -529,7 +529,7 @@ namespace TXTReader
 
                     var fileInfo = new FileInfo(tempFilePath);
                     System.Diagnostics.Debug.WriteLine($"Copied URI to temp file: {tempFilePath} (Size: {fileInfo.Length} bytes)");
-                    
+
                     if (fileInfo.Length > 0 && File.Exists(tempFilePath))
                     {
                         // Verificar que podemos leer el archivo

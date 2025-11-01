@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- About Page -->
+  <data name="AboutTitle" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="AppName" xml:space="preserve">
+    <value>TXT Reader</value>
+  </data>
+  <data name="AppVersion" xml:space="preserve">
+    <value>Version 1.0</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>Text file reader</value>
+  </data>
+  <data name="CompanyName" xml:space="preserve">
+    <value>Socratic</value>
+  </data>
+  <data name="ContactTitle" xml:space="preserve">
+    <value>📧 Contact</value>
+  </data>
+  <data name="ContactInstruction" xml:space="preserve">
+    <value>Tap to send an email</value>
+  </data>
+  <data name="DonationTitle" xml:space="preserve">
+    <value>☕ Support Development</value>
+  </data>
+  <data name="DonationButton" xml:space="preserve">
+    <value>Ko-fi.com - Buy me a coffee</value>
+  </data>
+  <data name="DonationDescription" xml:space="preserve">
+    <value>Your support helps maintain and improve this application</value>
+  </data>
+  <data name="LegalTitle" xml:space="preserve">
+    <value>⚖️ Notice</value>
+  </data>
+  <data name="LegalText1" xml:space="preserve">
+    <value>This software is provided 'as is', without warranties of any kind, express or implied.</value>
+  </data>
+  <data name="LegalText2" xml:space="preserve">
+    <value>In no event shall the authors be liable for any claim, damage, arising from the use of the software.</value>
+  </data>
+  <data name="WarningText" xml:space="preserve">
+    <value>⚠️ Use of this software is at your own risk. No damages of any kind can be claimed.</value>
+  </data>
+  <data name="BackButton" xml:space="preserve">
+    <value>← Back</value>
+  </data>
+  <data name="LanguageTitle" xml:space="preserve">
+    <value>🌐 Language</value>
+  </data>
+  <data name="LanguageDescription" xml:space="preserve">
+    <value>Select your preferred language</value>
+  </data>
+  
+  <!-- Error Messages -->
+  <data name="EmailNotAvailable" xml:space="preserve">
+    <value>Email client is not available on this device.</value>
+  </data>
+  <data name="EmailError" xml:space="preserve">
+    <value>Could not open email client</value>
+  </data>
+  <data name="BrowserNotAvailableTitle" xml:space="preserve">
+    <value>Browser not available</value>
+  </data>
+  <data name="BrowserNotAvailableMessage" xml:space="preserve">
+    <value>Could not open browser, but the link has been copied to clipboard</value>
+  </data>
+  <data name="BrowserError" xml:space="preserve">
+    <value>Could not open browser. Visit manually</value>
+  </data>
+  <data name="LinkErrorTitle" xml:space="preserve">
+    <value>Error opening link</value>
+  </data>
+  <data name="LinkErrorMessage" xml:space="preserve">
+    <value>Could not open browser</value>
+  </data>
+  <data name="ClipboardMessage" xml:space="preserve">
+    <value>but the link has been copied to clipboard</value>
+  </data>
+  <data name="FinalErrorMessage" xml:space="preserve">
+    <value>Could not open link. Visit manually</value>
+  </data>
+  
+  <!-- Language Options -->
+  <data name="Spanish" xml:space="preserve">
+    <value>Spanish</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="SystemDefault" xml:space="preserve">
+    <value>System Default</value>
+  </data>
+  
+  <!-- Splash Page -->
+  <data name="SplashSubtitle" xml:space="preserve">
+    <value>Text file reader</value>
+  </data>
+  
+  <!-- Main Page -->
+  <data name="MainTitle" xml:space="preserve">
+    <value>📖 TXT Reader</value>
+  </data>
+  <data name="MainSubtitle" xml:space="preserve">
+    <value>Text file reader</value>
+  </data>
+  <data name="OpenFile" xml:space="preserve">
+    <value>Open File</value>
+  </data>
+  <data name="SelectFile" xml:space="preserve">
+    <value>📁  Select File</value>
+  </data>
+  <data name="RecentFiles" xml:space="preserve">
+    <value>Recent Files</value>
+  </data>
+  <data name="NoRecentFiles" xml:space="preserve">
+    <value>No recent files</value>
+  </data>
+  
+  <!-- Text Reader Page -->
+  <data name="TextReaderTitle" xml:space="preserve">
+    <value>Text Reader</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>🔍 Search in text...</value>
+  </data>
+  
+  <!-- Common -->
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="FileLoadError" xml:space="preserve">
+    <value>Could not load file</value>
+  </data>
+  <data name="FileSelectError" xml:space="preserve">
+    <value>Error selecting file</value>
+  </data>
+  <data name="FileDeletedTitle" xml:space="preserve">
+    <value>File deleted</value>
+  </data>
+  <data name="FileDeletedMessage" xml:space="preserve">
+    <value>The file no longer exists and has been removed from history.</value>
+  </data>
+  <data name="FileNotExist" xml:space="preserve">
+    <value>The file does not exist or cannot be accessed.</value>
+  </data>
+  <data name="FileOpenError" xml:space="preserve">
+    <value>Error opening file</value>
+  </data>
+  <data name="SelectFileTitle" xml:space="preserve">
+    <value>Select a text file</value>
+  </data>
+</root>
