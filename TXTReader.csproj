@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net10.0-android</TargetFrameworks>
@@ -17,15 +17,31 @@
 		<ApplicationId>com.socratic.txtreader</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+		<ApplicationDisplayVersion>2025.11.5.30</ApplicationDisplayVersion>
+		<ApplicationVersion>202511530</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-		<AssemblyVersion>2025.11.1.20</AssemblyVersion>
-		<FileVersion>4.11.1.20</FileVersion>
+		<AssemblyVersion>2025.11.5.30</AssemblyVersion>
+		<FileVersion>202511530</FileVersion>
+		<AndroidSigningKeyStore>socratic.keystore</AndroidSigningKeyStore>
+	</PropertyGroup>
+
+	<!-- Android Release Configuration -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<AndroidPackageFormat>aab</AndroidPackageFormat>
+		<AndroidLinkMode>SdkOnly</AndroidLinkMode>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-android|AnyCPU'">
+		<AndroidKeyStore>False</AndroidKeyStore>
+		<AndroidSigningStorePass>07052012</AndroidSigningStorePass>
+		<AndroidSigningKeyAlias></AndroidSigningKeyAlias>
+		<AndroidSigningKeyPass></AndroidSigningKeyPass>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-android|AnyCPU'">
+		<AndroidKeyStore>False</AndroidKeyStore>
 	</PropertyGroup>
 
 	<ItemGroup>
