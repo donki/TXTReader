@@ -105,13 +105,38 @@ namespace TXTReader.Pages
                 var result = await FilePicker.Default.PickAsync(options);
                 if (result != null)
                 {
-                    await OpenFile(result.FullPath, result.FileName);
+                    var filePath = await GetReadablePickedFilePathAsync(result);
+                    await OpenFile(filePath, result.FileName);
                 }
             }
             catch (Exception ex)
             {
                 await DisplayAlertAsync(_localizationService.GetString("Error"), $"{_localizationService.GetString("FileSelectError")}: {ex.Message}", _localizationService.GetString("OK"));
             }
+        }
+
+        private static async Task<string> GetReadablePickedFilePathAsync(FileResult result)
+        {
+            if (!string.IsNullOrWhiteSpace(result.FullPath))
+            {
+                return result.FullPath;
+            }
+
+            var cacheDirectory = Path.Combine(FileSystem.CacheDirectory, "picked_files");
+            Directory.CreateDirectory(cacheDirectory);
+
+            var safeFileName = string.Join("_", result.FileName.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
+            if (string.IsNullOrWhiteSpace(safeFileName))
+            {
+                safeFileName = $"selected_file_{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.txt";
+            }
+
+            var cachedPath = Path.Combine(cacheDirectory, $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}_{safeFileName}");
+            await using var inputStream = await result.OpenReadAsync();
+            await using var outputStream = File.Create(cachedPath);
+            await inputStream.CopyToAsync(outputStream);
+
+            return cachedPath;
         }
 
         private async void OnRecentFileSelected(object? sender, TappedEventArgs e)
@@ -139,7 +164,7 @@ namespace TXTReader.Pages
                 _ = MobileLogService.LogAsync($"OpenFile: Called with filePath='{filePath}', fileName='{fileName}', isIntent={isIntent}");
                 
                 // Verificar que el archivo existe (solo para archivos locales)
-                if (!filePath.StartsWith("content://") && !File.Exists(filePath))
+                if (!IsContentUri(filePath) && !File.Exists(filePath))
                 {
                     _ = MobileLogService.LogAsync($"OpenFile: Local file does not exist: {filePath}");
                     await DisplayAlertAsync(_localizationService.GetString("Error"), _localizationService.GetString("FileNotExist"), _localizationService.GetString("OK"));
@@ -147,7 +172,7 @@ namespace TXTReader.Pages
                 }
                 
                 // Para URIs de content, no verificamos existencia local
-                if (filePath.StartsWith("content://"))
+                if (IsContentUri(filePath))
                 {
                     System.Diagnostics.Debug.WriteLine($"Content URI detected: {filePath}");
                     _ = MobileLogService.LogAsync($"OpenFile: Content URI detected: {filePath}");
@@ -189,6 +214,11 @@ namespace TXTReader.Pages
         protected virtual new void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private static bool IsContentUri(string value)
+        {
+            return value.StartsWith("content://", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
