@@ -14,6 +14,12 @@ namespace TXTReader
             // Initialize localization service
             _ = LocalizationService.Instance;
 
+            // Dependency injection registration (constitucion.md, seccion 4).
+            // NOTA: los servicios de utilidad estaticos (Encoding, FileIntent, MobileLog)
+            // se migraran a inyeccion como mejora incremental planificada (seccion 13).
+            builder.Services.AddSingleton(LocalizationService.Instance);
+            builder.Services.AddSingleton<RecentFilesService>();
+
 #if DEBUG
             builder.Services.AddLogging(logging =>
             {
