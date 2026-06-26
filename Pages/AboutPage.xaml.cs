@@ -9,6 +9,7 @@ namespace TXTReader.Pages
         private const string KofiUrl = "https://ko-fi.com/josepsola";
 
         private readonly LocalizationService _localizationService;
+        private bool _isUpdatingPicker;
 
         public AboutPage()
         {
@@ -22,14 +23,23 @@ namespace TXTReader.Pages
 
         private void SetupLanguagePicker()
         {
-            var languages = _localizationService.GetAvailableLanguages();
-            LanguagePicker.ItemsSource = languages.Select(l => l.Name).ToList();
-            
-            var currentLanguage = _localizationService.GetCurrentLanguageCode();
-            var currentIndex = languages.FindIndex(l => l.Code == currentLanguage);
-            if (currentIndex >= 0)
+            // Evita reentrancia: fijar ItemsSource/SelectedIndex dispara SelectedIndexChanged.
+            _isUpdatingPicker = true;
+            try
             {
-                LanguagePicker.SelectedIndex = currentIndex;
+                var languages = _localizationService.GetAvailableLanguages();
+                LanguagePicker.ItemsSource = languages.Select(l => l.Name).ToList();
+
+                var currentLanguage = _localizationService.GetCurrentLanguageCode();
+                var currentIndex = languages.FindIndex(l => l.Code == currentLanguage);
+                if (currentIndex >= 0)
+                {
+                    LanguagePicker.SelectedIndex = currentIndex;
+                }
+            }
+            finally
+            {
+                _isUpdatingPicker = false;
             }
         }
 
@@ -60,12 +70,21 @@ namespace TXTReader.Pages
 
         private void OnLanguagePickerChanged(object? sender, EventArgs e)
         {
-            if (LanguagePicker.SelectedIndex >= 0)
+            if (_isUpdatingPicker || LanguagePicker.SelectedIndex < 0)
             {
-                var languages = _localizationService.GetAvailableLanguages();
-                var selectedLanguage = languages[LanguagePicker.SelectedIndex];
-                _localizationService.SetLanguage(selectedLanguage.Code);
+                return;
             }
+
+            var languages = _localizationService.GetAvailableLanguages();
+            var selectedLanguage = languages[LanguagePicker.SelectedIndex];
+
+            // No hacer nada si el idioma ya es el actual (evita ciclo de eventos).
+            if (selectedLanguage.Code == _localizationService.GetCurrentLanguageCode())
+            {
+                return;
+            }
+
+            _localizationService.SetLanguage(selectedLanguage.Code);
         }
 
         private async void OnBackClicked(object? sender, EventArgs e)

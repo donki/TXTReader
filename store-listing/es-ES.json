@@ -1,0 +1,5 @@
+{
+  "title": "TXT Reader",
+  "shortDescription": "Lee y busca texto en archivos TXT, LOG, JSON, XML, CSV y Markdown.",
+  "fullDescription": "TXT Reader es un lector sencillo para abrir archivos de texto en Android y consultar su contenido con comodidad.\n\nFunciones principales:\n- Abre archivos TXT, LOG, JSON, XML, CSV, Markdown, INI, CFG y otros formatos de texto.\n- Permite seleccionar archivos locales o abrir documentos compartidos desde otras aplicaciones.\n- Incluye busqueda dentro del texto con resaltado de coincidencias.\n- Ajusta el tamano del texto con control de zoom.\n- Detecta automaticamente codificaciones habituales como UTF-8, UTF-16, UTF-32, Windows-1252 e ISO-8859-1.\n- Mantiene una lista de archivos recientes para volver a abrirlos mas rapidamente.\n\nLa aplicacion funciona localmente en el dispositivo. Los archivos seleccionados se usan para mostrar su contenido y no se suben a servidores externos."
+}
