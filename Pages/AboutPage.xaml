@@ -2,212 +2,140 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TXTReader.Pages.AboutPage"
-             x:Name="AboutPageRoot"
-             BackgroundColor="#F8F9FA">
+             x:Name="AboutPageRoot">
 
     <ScrollView>
-        <StackLayout Padding="20" Spacing="20">
+        <VerticalStackLayout Padding="20" Spacing="20">
 
-            <!-- Header Card -->
-            <Frame BackgroundColor="White" 
-                   CornerRadius="12" 
-                   HasShadow="True" 
-                   Padding="0">
-                <StackLayout Padding="30,25" Spacing="15">
-                    <Label
-                        Text="📖"
-                        FontSize="60"
-                        HorizontalOptions="Center" />
+            <!-- Cabecera -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Padding="30,25" Spacing="15">
+                    <Label Text="📖" FontSize="60" HorizontalOptions="Center" />
 
-                    <Label
-                        Text="TXT Reader"
-                        FontSize="28"
-                        FontAttributes="Bold"
-                        TextColor="#2C3E50"
-                        HorizontalOptions="Center" />
+                    <Label Text="TXT Reader"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
+                           HorizontalOptions="Center" />
 
-                    <Label
-                        x:Name="VersionLabel"
-                        FontSize="16"
-                        TextColor="#7F8C8D"
-                        HorizontalOptions="Center" />
+                    <Label x:Name="VersionLabel"
+                           Style="{StaticResource HintText}"
+                           FontSize="16"
+                           HorizontalOptions="Center" />
 
-                    <Label
-                        x:Name="DescriptionLabel"
-                        FontSize="14"
-                        TextColor="#95A5A6"
-                        HorizontalOptions="Center" />
+                    <Label x:Name="DescriptionLabel"
+                           Style="{StaticResource HintText}"
+                           HorizontalOptions="Center" />
 
-                    <Label
-                        Text="Socratic"
-                        FontSize="12"
-                        TextColor="#7F8C8D"
-                        HorizontalOptions="Center"
-                        Margin="0,10,0,0" />
-                </StackLayout>
-            </Frame>
+                    <Label Text="Socratic"
+                           Style="{StaticResource HintText}"
+                           HorizontalOptions="Center"
+                           Margin="0,10,0,0" />
+                </VerticalStackLayout>
+            </Border>
 
-            <!-- Contact Card -->
-            <Frame BackgroundColor="White" 
-                   CornerRadius="12" 
-                   HasShadow="True" 
-                   Padding="0">
-                <StackLayout Padding="25,20" Spacing="15">
-                    <Label
-                        x:Name="ContactTitleLabel"
-                        FontSize="18"
-                        FontAttributes="Bold"
-                        TextColor="#3498DB" />
+            <!-- Contacto -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Padding="25,20" Spacing="15">
+                    <Label x:Name="ContactTitleLabel" Style="{StaticResource CardTitle}" />
 
-                    <Button
-                        Text="jsoladelarosa@gmail.com"
-                        FontSize="14"
-                        BackgroundColor="Transparent"
-                        TextColor="#3498DB"
-                        BorderColor="#3498DB"
-                        BorderWidth="1"
-                        CornerRadius="8"
-                        HeightRequest="45"
-                        Clicked="OnContactEmailClicked"
-                        HorizontalOptions="Fill">
-                        <Button.Shadow>
-                            <Shadow Brush="#3498DB" Opacity="0.2" Radius="4" Offset="0,2" />
-                        </Button.Shadow>
-                    </Button>
+                    <Button Text="jsoladelarosa@gmail.com"
+                            Style="{StaticResource OutlineButton}"
+                            Clicked="OnContactEmailClicked"
+                            HorizontalOptions="Fill" />
 
-                    <Label
-                        x:Name="ContactInstructionLabel"
-                        FontSize="12"
-                        TextColor="#7F8C8D"
-                        HorizontalOptions="Center" />
-                </StackLayout>
-            </Frame>
+                    <Label x:Name="ContactInstructionLabel"
+                           Style="{StaticResource HintText}"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
 
-            <!-- Donation Card -->
-            <Frame BackgroundColor="White" 
-                   CornerRadius="12" 
-                   HasShadow="True" 
-                   Padding="0">
-                <StackLayout Padding="25,20" Spacing="15">
-                    <Label
-                        x:Name="DonationTitleLabel"
-                        FontSize="18"
-                        FontAttributes="Bold"
-                        TextColor="#E67E22" />
+            <!-- Donacion -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Padding="25,20" Spacing="15">
+                    <Label x:Name="DonationTitleLabel"
+                           Style="{StaticResource CardTitle}"
+                           TextColor="{StaticResource Accent}" />
 
-                    <Button
-                        x:Name="DonationButton"
-                        FontSize="14"
-                        BackgroundColor="#E67E22"
-                        TextColor="White"
-                        CornerRadius="8"
-                        HeightRequest="45"
-                        Clicked="OnKofiClicked"
-                        HorizontalOptions="Fill">
-                        <Button.Shadow>
-                            <Shadow Brush="#E67E22" Opacity="0.3" Radius="8" Offset="0,4" />
-                        </Button.Shadow>
-                    </Button>
+                    <Button x:Name="DonationButton"
+                            Style="{StaticResource AccentButton}"
+                            Clicked="OnKofiClicked"
+                            HorizontalOptions="Fill" />
 
-                    <Label
-                        x:Name="DonationDescriptionLabel"
-                        FontSize="12"
-                        TextColor="#7F8C8D"
-                        HorizontalOptions="Center" />
-                </StackLayout>
-            </Frame>
+                    <Label x:Name="DonationDescriptionLabel"
+                           Style="{StaticResource HintText}"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
 
-            <!-- Language Selection Card -->
-            <Frame BackgroundColor="White" 
-                   CornerRadius="12" 
-                   HasShadow="True" 
-                   Padding="0">
-                <StackLayout Padding="25,20" Spacing="15">
-                    <Label
-                        x:Name="LanguageTitleLabel"
-                        FontSize="18"
-                        FontAttributes="Bold"
-                        TextColor="#9B59B6" />
+            <!-- Idioma -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Padding="25,20" Spacing="15">
+                    <Label x:Name="LanguageTitleLabel" Style="{StaticResource CardTitle}" />
 
-                    <Picker
-                        x:Name="LanguagePicker"
-                        FontSize="14"
-                        TextColor="#2C3E50"
-                        BackgroundColor="Transparent"
-                        SelectedIndexChanged="OnLanguagePickerChanged" />
+                    <Picker x:Name="LanguagePicker"
+                            FontSize="14"
+                            TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
+                            BackgroundColor="Transparent"
+                            SelectedIndexChanged="OnLanguagePickerChanged" />
 
-                    <Label
-                        x:Name="LanguageDescriptionLabel"
-                        FontSize="12"
-                        TextColor="#7F8C8D"
-                        HorizontalOptions="Center" />
-                </StackLayout>
-            </Frame>
+                    <Label x:Name="LanguageDescriptionLabel"
+                           Style="{StaticResource HintText}"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
 
-            <!-- Legal Disclaimer Card -->
-            <Frame BackgroundColor="White" 
-                   CornerRadius="12" 
-                   HasShadow="True" 
-                   Padding="0">
-                <StackLayout Padding="25,20" Spacing="15">
-                    <Label
-                        x:Name="LegalTitleLabel"
-                        FontSize="18"
-                        FontAttributes="Bold"
-                        TextColor="#E74C3C" />
+            <!-- Aviso legal -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Padding="25,20" Spacing="15">
+                    <Label x:Name="LegalTitleLabel"
+                           Style="{StaticResource CardTitle}"
+                           TextColor="{StaticResource Danger}" />
 
-                    <Frame BackgroundColor="#FDF2F2" 
-                           CornerRadius="8" 
-                           Padding="15" 
-                           HasShadow="False">
-                        <StackLayout Spacing="10">
-                            <Label
-                                x:Name="LegalText1Label"
-                                FontSize="13"
-                                LineHeight="1.4"
-                                TextColor="#2C3E50" />
+                    <Border StrokeThickness="0"
+                            Padding="15"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="10">
+                            <Label x:Name="LegalText1Label"
+                                   Style="{StaticResource BodyText}"
+                                   FontSize="13"
+                                   LineHeight="1.4" />
 
-                            <Label
-                                x:Name="LegalText2Label"
-                                FontSize="13"
-                                LineHeight="1.4"
-                                TextColor="#2C3E50" />
+                            <Label x:Name="LegalText2Label"
+                                   Style="{StaticResource BodyText}"
+                                   FontSize="13"
+                                   LineHeight="1.4" />
 
-                            <Frame BackgroundColor="#E74C3C" 
-                                   CornerRadius="6" 
-                                   Padding="12" 
-                                   HasShadow="False">
-                                <Label
-                                    x:Name="WarningTextLabel"
-                                    FontSize="13"
-                                    FontAttributes="Bold"
-                                    LineHeight="1.4"
-                                    TextColor="White"
-                                    HorizontalOptions="Center" />
-                            </Frame>
-                        </StackLayout>
-                    </Frame>
-                </StackLayout>
-            </Frame>
+                            <Border StrokeThickness="0"
+                                    Padding="12"
+                                    BackgroundColor="{StaticResource Danger}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="6" />
+                                </Border.StrokeShape>
+                                <Label x:Name="WarningTextLabel"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       LineHeight="1.4"
+                                       TextColor="{StaticResource White}"
+                                       HorizontalOptions="Center" />
+                            </Border>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
 
-            <!-- Back Button -->
-            <Button
-                x:Name="BackButton"
-                FontSize="16"
-                FontAttributes="Bold"
-                BackgroundColor="#3498DB"
-                TextColor="White"
-                CornerRadius="10"
-                HeightRequest="50"
-                Clicked="OnBackClicked"
-                HorizontalOptions="Fill"
-                Margin="0,10,0,20">
-                <Button.Shadow>
-                    <Shadow Brush="#3498DB" Opacity="0.3" Radius="8" Offset="0,4" />
-                </Button.Shadow>
-            </Button>
+            <!-- Volver -->
+            <Button x:Name="BackButton"
+                    Style="{StaticResource PrimaryButton}"
+                    HeightRequest="50"
+                    Clicked="OnBackClicked"
+                    HorizontalOptions="Fill"
+                    Margin="0,10,0,20" />
 
-        </StackLayout>
+        </VerticalStackLayout>
     </ScrollView>
 
 </ContentPage>

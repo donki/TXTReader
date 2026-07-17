@@ -89,10 +89,15 @@ namespace TXTReader.Pages
         {
             try
             {
+                // Solo ficheros de texto: se quita el comodin "*/*", que hacia que el selector
+                // mostrara todo (PDF, imagenes, video...). "text/*" cubre txt, csv, html, markdown,
+                // xml y demas subtipos de texto; se anaden json y xml, que Android reporta con su
+                // propio MIME. Un .log o .ini que el sistema marque como octet-stream puede no
+                // aparecer: es el precio de filtrar de verdad en el Storage Access Framework.
                 var customFileType = new FilePickerFileType(
                     new Dictionary<DevicePlatform, IEnumerable<string>>
                     {
-                        { DevicePlatform.Android, new[] { "text/*", "text/plain", "application/json", "application/xml", "text/x-log", "*/*" } },
+                        { DevicePlatform.Android, new[] { "text/*", "application/json", "application/xml" } },
                         { DevicePlatform.WinUI, new[] { ".txt", ".log", ".json", ".xml", ".csv", ".md", ".ini", ".cfg", ".conf" } }
                     });
 

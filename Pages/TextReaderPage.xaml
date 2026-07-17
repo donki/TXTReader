@@ -3,66 +3,45 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:TXTReader.Controls"
              x:Class="TXTReader.Pages.TextReaderPage"
-             x:Name="TextReaderPageRoot"
-             BackgroundColor="#F8F9FA">
+             x:Name="TextReaderPageRoot">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="Auto,*">
 
-        <!-- Search Toolbar -->
-        <Frame Grid.Row="0" 
-               BackgroundColor="White" 
-               CornerRadius="0" 
-               Padding="0" 
-               HasShadow="True">
-            <Frame BackgroundColor="#F8F9FA" 
-                   CornerRadius="22" 
-                   Padding="0" 
-                   HasShadow="False"
-                   Margin="15,10">
-                <Entry
-                    x:Name="SearchEntry"
-                    FontSize="14"
-                    BackgroundColor="Transparent"
-                    Margin="15,0"
-                    TextChanged="OnSearchTextChanged" />
-            </Frame>
-        </Frame>
+        <!-- Barra de busqueda -->
+        <Border Grid.Row="0"
+                Style="{StaticResource Card}"
+                Margin="10,10,10,4">
+            <Border StrokeThickness="0"
+                    Padding="0"
+                    Margin="12,8"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="22" />
+                </Border.StrokeShape>
+                <Entry x:Name="SearchEntry"
+                       FontSize="14"
+                       BackgroundColor="Transparent"
+                       Margin="15,0"
+                       TextChanged="OnSearchTextChanged" />
+            </Border>
+        </Border>
 
-        <!-- Content Area with Zoom Slider -->
-        <Grid Grid.Row="1" Margin="10,5,10,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <!-- Contenido con control de zoom -->
+        <Grid Grid.Row="1" Margin="10,4,10,10" ColumnDefinitions="50,*">
 
-            <!-- Zoom Slider (Vertical) -->
-            <Frame Grid.Column="0" 
-                   BackgroundColor="White" 
-                   CornerRadius="25" 
-                   Padding="5" 
-                   HasShadow="True"
-                   Margin="0,20,5,20">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <!-- Zoom In Icon -->
-                    <Label Grid.Row="0" 
-                           Text="A+" 
-                           FontSize="12" 
+            <!-- Zoom (slider vertical) -->
+            <Border Grid.Column="0"
+                    Style="{StaticResource Card}"
+                    Margin="0,20,5,20">
+                <Grid RowDefinitions="Auto,*,Auto" Padding="5">
+                    <Label Grid.Row="0"
+                           Text="A+"
+                           FontSize="12"
                            FontAttributes="Bold"
-                           TextColor="#3498DB" 
-                           HorizontalOptions="Center" 
+                           TextColor="{StaticResource Primary}"
+                           HorizontalOptions="Center"
                            Margin="0,5" />
 
-                    <!-- Vertical Slider -->
                     <Slider Grid.Row="1"
                             x:Name="ZoomSlider"
                             Minimum="8"
@@ -71,39 +50,36 @@
                             Rotation="270"
                             WidthRequest="150"
                             HeightRequest="40"
-                            ThumbColor="#3498DB"
-                            MinimumTrackColor="#3498DB"
-                            MaximumTrackColor="#BDC3C7"
+                            ThumbColor="{StaticResource Primary}"
+                            MinimumTrackColor="{StaticResource Primary}"
+                            MaximumTrackColor="{AppThemeBinding Light={StaticResource SeparatorLight}, Dark={StaticResource SeparatorDark}}"
                             ValueChanged="OnZoomSliderValueChanged"
                             VerticalOptions="Center"
                             HorizontalOptions="Center" />
 
-                    <!-- Zoom Out Icon -->
-                    <Label Grid.Row="2" 
-                           Text="A-" 
-                           FontSize="12" 
+                    <Label Grid.Row="2"
+                           Text="A-"
+                           FontSize="12"
                            FontAttributes="Bold"
-                           TextColor="#3498DB" 
-                           HorizontalOptions="Center" 
+                           TextColor="{StaticResource Primary}"
+                           HorizontalOptions="Center"
                            Margin="0,5" />
                 </Grid>
-            </Frame>
+            </Border>
 
-            <!-- Text Content -->
-            <Frame Grid.Column="1" 
-                   BackgroundColor="White" 
-                   CornerRadius="0" 
-                   Padding="0" 
-                   HasShadow="False">
+            <!-- Texto -->
+            <Border Grid.Column="1"
+                    Style="{StaticResource Card}">
                 <controls:SelectableHighlightedTextView
                     x:Name="ContentViewer"
+                    Margin="14"
                     FontSize="14"
-                    FontFamily="Consolas, Monaco, 'Courier New', monospace"
-                    HighlightBackgroundColor="#ffff00"
+                    FontFamily="Monospace"
+                    HighlightBackgroundColor="#FFE08A"
                     HighlightTextColor="#000000"
-                    Foreground="#2C3E50"
+                    Foreground="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
                     SearchTerm="{Binding Text, Source={x:Reference SearchEntry}}" />
-            </Frame>
+            </Border>
         </Grid>
 
     </Grid>

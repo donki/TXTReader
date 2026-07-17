@@ -2,60 +2,56 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TXTReader.Pages.SplashPage"
-             BackgroundColor="#2C3E50"
+             BackgroundColor="{StaticResource Primary}"
              NavigationPage.HasNavigationBar="False">
 
     <Grid>
-        <StackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="30">
-            
-            <!-- App Icon -->
-            <Frame BackgroundColor="White" 
-                   CornerRadius="40" 
-                   WidthRequest="120" 
-                   HeightRequest="120" 
-                   HasShadow="True"
-                   HorizontalOptions="Center">
-                <Label
-                    Text="📖"
-                    FontSize="60"
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center" />
-            </Frame>
+        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="30">
 
-            <!-- App Name -->
-            <Label
-                Text="TXT Reader"
-                FontSize="36"
-                FontAttributes="Bold"
-                TextColor="White"
-                HorizontalOptions="Center" />
+            <!-- Icono en pastilla -->
+            <Border WidthRequest="120"
+                    HeightRequest="120"
+                    BackgroundColor="{StaticResource White}"
+                    StrokeThickness="0"
+                    HorizontalOptions="Center">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="40" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="{StaticResource Black}" Opacity="0.2" Radius="12" Offset="0,4" />
+                </Border.Shadow>
+                <Label Text="📖"
+                       FontSize="60"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </Border>
 
-            <!-- Subtitle -->
-            <Label
-                x:Name="SubtitleLabel"
-                FontSize="16"
-                TextColor="#BDC3C7"
-                HorizontalOptions="Center" />
+            <Label Text="TXT Reader"
+                   FontSize="36"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource White}"
+                   HorizontalOptions="Center" />
 
-            <!-- Loading Indicator -->
-            <ActivityIndicator
-                x:Name="LoadingIndicator"
-                IsRunning="True"
-                Color="White"
-                WidthRequest="40"
-                HeightRequest="40"
-                HorizontalOptions="Center"
-                Margin="0,20,0,0" />
+            <Label x:Name="SubtitleLabel"
+                   FontSize="16"
+                   TextColor="#D9CEF7"
+                   HorizontalOptions="Center" />
 
-            <!-- Copyright -->
-            <Label
-                Text="Socratic"
-                FontSize="12"
-                TextColor="#7F8C8D"
-                HorizontalOptions="Center"
-                Margin="0,40,0,0" />
+            <ActivityIndicator x:Name="LoadingIndicator"
+                               IsRunning="True"
+                               Color="{StaticResource White}"
+                               WidthRequest="40"
+                               HeightRequest="40"
+                               HorizontalOptions="Center"
+                               Margin="0,20,0,0" />
 
-        </StackLayout>
+            <Label Text="Socratic"
+                   FontSize="12"
+                   TextColor="#C4B6F0"
+                   HorizontalOptions="Center"
+                   Margin="0,40,0,0" />
+
+        </VerticalStackLayout>
     </Grid>
 
 </ContentPage>
