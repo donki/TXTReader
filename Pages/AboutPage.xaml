@@ -10,7 +10,10 @@
             <!-- Cabecera -->
             <Border Style="{StaticResource Card}">
                 <VerticalStackLayout Padding="30,25" Spacing="15">
-                    <Label Text="📖" FontSize="60" HorizontalOptions="Center" />
+                    <Image Source="app_logo.png"
+                           HeightRequest="84"
+                           WidthRequest="84"
+                           HorizontalOptions="Center" />
 
                     <Label Text="TXT Reader"
                            FontSize="28"

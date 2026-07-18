@@ -65,7 +65,7 @@
     <value>TXT Reader</value>
   </data>
   <data name="AppVersion" xml:space="preserve">
-    <value>Versión 2025.11.5.30</value>
+    <value>Versión {0}</value>
   </data>
   <data name="AppDescription" xml:space="preserve">
     <value>Lector de archivos de texto</value>
@@ -74,49 +74,49 @@
     <value>Socratic</value>
   </data>
   <data name="ContactTitle" xml:space="preserve">
-    <value>📧 Contacto</value>
+    <value>Contacto</value>
   </data>
   <data name="ContactInstruction" xml:space="preserve">
     <value>Toca para enviar un correo electrónico</value>
   </data>
   <data name="DonationTitle" xml:space="preserve">
-    <value>☕ Apoya el Desarrollo</value>
+    <value>Apoya el Desarrollo</value>
   </data>
   <data name="DonationButton" xml:space="preserve">
     <value>Ko-fi.com - Invítame un café</value>
   </data>
   <data name="DonationDescription" xml:space="preserve">
-    <value>Tu apoyo ayuda a mantener y mejorar esta aplicación</value>
+    <value>Tu apoyo ayuda a mantener y mejorar la aplicación</value>
   </data>
   <data name="LegalTitle" xml:space="preserve">
-    <value>⚖️ Aviso</value>
+    <value>Aviso Legal</value>
   </data>
   <data name="LegalText1" xml:space="preserve">
-    <value>Este software se proporciona 'tal como está', sin garantías de ningún tipo, expresas o implícitas.</value>
+    <value>Este software se proporciona «tal cual», sin garantías de ningún tipo. El usuario es responsable del uso adecuado de la aplicación y del cumplimiento de las leyes locales.</value>
   </data>
   <data name="LegalText2" xml:space="preserve">
-    <value>En ningún caso los autores serán responsables de cualquier reclamo, daño, que surja del uso del software.</value>
+    <value>En ningún caso los autores serán responsables de daños directos, indirectos, incidentales o consecuentes que resulten del uso de este software.</value>
   </data>
   <data name="PrivacyTitle" xml:space="preserve">
     <value>Privacidad</value>
   </data>
   <data name="PrivacyText" xml:space="preserve">
-    <value>TXT Reader abre y muestra tus archivos de texto únicamente en tu dispositivo. No se recopilan ni comparten datos personales.</value>
+    <value>Esta aplicación no recopila tus datos personales ni los envía a los desarrolladores. La información se procesa en tu dispositivo para la función propia de la app.</value>
   </data>
   <data name="LicenseTitle" xml:space="preserve">
     <value>Licencia</value>
   </data>
   <data name="LicenseText" xml:space="preserve">
-    <value>TXT Reader es software libre distribuido bajo licencia MIT.</value>
+    <value>Esta aplicación es software libre distribuido bajo licencia MIT.</value>
   </data>
   <data name="WarningText" xml:space="preserve">
     <value>⚠️ Uso bajo su propio riesgo</value>
   </data>
   <data name="BackButton" xml:space="preserve">
-    <value>← Volver</value>
+    <value>Volver</value>
   </data>
   <data name="LanguageTitle" xml:space="preserve">
-    <value>🌐 Idioma</value>
+    <value>Idioma</value>
   </data>
   <data name="LanguageDescription" xml:space="preserve">
     <value>Selecciona tu idioma preferido</value>
@@ -169,7 +169,7 @@
   
   <!-- Main Page -->
   <data name="MainTitle" xml:space="preserve">
-    <value>📖 TXT Reader</value>
+    <value>TXT Reader</value>
   </data>
   <data name="MainSubtitle" xml:space="preserve">
     <value>Lector de archivos de texto</value>
@@ -178,7 +178,7 @@
     <value>Abrir Archivo</value>
   </data>
   <data name="SelectFile" xml:space="preserve">
-    <value>📁  Seleccionar Archivo</value>
+    <value>Seleccionar Archivo</value>
   </data>
   <data name="RecentFiles" xml:space="preserve">
     <value>Archivos Recientes</value>
@@ -192,7 +192,7 @@
     <value>Lector de Texto</value>
   </data>
   <data name="SearchPlaceholder" xml:space="preserve">
-    <value>🔍 Buscar en el texto...</value>
+    <value>Buscar en el texto...</value>
   </data>
   
   <!-- Common -->

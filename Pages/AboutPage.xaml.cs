@@ -35,7 +35,7 @@ namespace TXTReader.Pages
         private void UpdateTexts()
         {
             Title = _localizationService.GetString("AboutTitle");
-            VersionLabel.Text = _localizationService.GetString("AppVersion");
+            VersionLabel.Text = string.Format(_localizationService.GetString("AppVersion"), AppInfo.Current.VersionString);
             DescriptionLabel.Text = _localizationService.GetString("AppDescription");
             ContactTitleLabel.Text = _localizationService.GetString("ContactTitle");
             ContactInstructionLabel.Text = _localizationService.GetString("ContactInstruction");
@@ -85,7 +85,7 @@ namespace TXTReader.Pages
             try
             {
                 var appName = "TXT Reader";
-                var appVersion = _localizationService.GetString("AppVersion");
+                var appVersion = AppInfo.Current.VersionString;
                 var deviceInfo = $"{DeviceInfo.Platform} {DeviceInfo.VersionString}";
                 
                 var emailBody = $"\n\n---\n{appName} {appVersion}\n{deviceInfo}\n{DateTime.Now:yyyy-MM-dd HH:mm}";
