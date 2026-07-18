@@ -73,11 +73,23 @@
                 <VerticalStackLayout Padding="25,20" Spacing="15">
                     <Label x:Name="LanguageTitleLabel" Style="{StaticResource CardTitle}" />
 
-                    <Picker x:Name="LanguagePicker"
-                            FontSize="14"
-                            TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
-                            BackgroundColor="Transparent"
-                            SelectedIndexChanged="OnLanguagePickerChanged" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Button Grid.Column="0"
+                                x:Name="SpanishButton"
+                                Text="🇪🇸 Español"
+                                FontSize="14"
+                                LineBreakMode="WordWrap"
+                                Padding="10,10"
+                                Clicked="OnSpanishClicked" />
+
+                        <Button Grid.Column="1"
+                                x:Name="EnglishButton"
+                                Text="🇺🇸 English"
+                                FontSize="14"
+                                LineBreakMode="WordWrap"
+                                Padding="10,10"
+                                Clicked="OnEnglishClicked" />
+                    </Grid>
 
                     <Label x:Name="LanguageDescriptionLabel"
                            Style="{StaticResource HintText}"

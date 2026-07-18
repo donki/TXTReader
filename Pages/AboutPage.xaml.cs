@@ -9,39 +9,28 @@ namespace TXTReader.Pages
         private const string KofiUrl = "https://ko-fi.com/josepsola";
 
         private readonly LocalizationService _localizationService;
-        private bool _isUpdatingPicker;
 
         public AboutPage()
         {
             InitializeComponent();
             _localizationService = LocalizationService.Instance;
             _localizationService.LanguageChanged += OnLanguageChanged;
-            
-            SetupLanguagePicker();
+
+            UpdateLanguageButtons();
             UpdateTexts();
         }
 
-        private void SetupLanguagePicker()
+        // Botones de idioma con bandera, iguales a las demas apps (ver constitucion, anexo A.9):
+        // el idioma activo usa el estilo primario, el otro el de contorno.
+        private void UpdateLanguageButtons()
         {
-            // Evita reentrancia: fijar ItemsSource/SelectedIndex dispara SelectedIndexChanged.
-            _isUpdatingPicker = true;
-            try
-            {
-                var languages = _localizationService.GetAvailableLanguages();
-                LanguagePicker.ItemsSource = languages.Select(l => l.Name).ToList();
-
-                var currentLanguage = _localizationService.GetCurrentLanguageCode();
-                var currentIndex = languages.FindIndex(l => l.Code == currentLanguage);
-                if (currentIndex >= 0)
-                {
-                    LanguagePicker.SelectedIndex = currentIndex;
-                }
-            }
-            finally
-            {
-                _isUpdatingPicker = false;
-            }
+            var isSpanish = _localizationService.GetCurrentLanguageCode() == "es";
+            SpanishButton.Style = LookupStyle(isSpanish ? "PrimaryButton" : "OutlineButton");
+            EnglishButton.Style = LookupStyle(isSpanish ? "OutlineButton" : "PrimaryButton");
         }
+
+        private static Style? LookupStyle(string key)
+            => Application.Current?.Resources.TryGetValue(key, out var s) == true ? s as Style : null;
 
         private void UpdateTexts()
         {
@@ -69,26 +58,21 @@ namespace TXTReader.Pages
         private void OnLanguageChanged(object? sender, EventArgs e)
         {
             UpdateTexts();
-            SetupLanguagePicker();
+            UpdateLanguageButtons();
         }
 
-        private void OnLanguagePickerChanged(object? sender, EventArgs e)
+        private void OnSpanishClicked(object? sender, EventArgs e) => SetLanguage("es");
+
+        private void OnEnglishClicked(object? sender, EventArgs e) => SetLanguage("en");
+
+        private void SetLanguage(string code)
         {
-            if (_isUpdatingPicker || LanguagePicker.SelectedIndex < 0)
+            if (code == _localizationService.GetCurrentLanguageCode())
             {
                 return;
             }
 
-            var languages = _localizationService.GetAvailableLanguages();
-            var selectedLanguage = languages[LanguagePicker.SelectedIndex];
-
-            // No hacer nada si el idioma ya es el actual (evita ciclo de eventos).
-            if (selectedLanguage.Code == _localizationService.GetCurrentLanguageCode())
-            {
-                return;
-            }
-
-            _localizationService.SetLanguage(selectedLanguage.Code);
+            _localizationService.SetLanguage(code);
         }
 
         private async void OnBackClicked(object? sender, EventArgs e)

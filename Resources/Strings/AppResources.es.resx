@@ -110,7 +110,7 @@
     <value>TXT Reader es software libre distribuido bajo licencia MIT.</value>
   </data>
   <data name="WarningText" xml:space="preserve">
-    <value>⚠️ El uso de este software es bajo su propio riesgo. No se puede reclamar daños de ningún tipo.</value>
+    <value>⚠️ Uso bajo su propio riesgo</value>
   </data>
   <data name="BackButton" xml:space="preserve">
     <value>← Volver</value>
