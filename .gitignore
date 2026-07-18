@@ -21,3 +21,8 @@ build_and_sign.ps1
 *-Signed.aab
 *-Signed.apk
 txtreader-mumu.apk
+
+# Material de firma y logs (no versionar)
+socratic.keystore
+*.keystore
+*.log
