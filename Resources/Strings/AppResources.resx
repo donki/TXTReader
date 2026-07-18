@@ -97,6 +97,18 @@
   <data name="LegalText2" xml:space="preserve">
     <value>In no event shall the authors be liable for any claim, damage, arising from the use of the software.</value>
   </data>
+  <data name="PrivacyTitle" xml:space="preserve">
+    <value>Privacy</value>
+  </data>
+  <data name="PrivacyText" xml:space="preserve">
+    <value>TXT Reader opens and displays your text files only on your device. No personal data is collected or shared.</value>
+  </data>
+  <data name="LicenseTitle" xml:space="preserve">
+    <value>License</value>
+  </data>
+  <data name="LicenseText" xml:space="preserve">
+    <value>TXT Reader is free software distributed under the MIT license.</value>
+  </data>
   <data name="WarningText" xml:space="preserve">
     <value>⚠️ Use of this software is at your own risk. No damages of any kind can be claimed.</value>
   </data>

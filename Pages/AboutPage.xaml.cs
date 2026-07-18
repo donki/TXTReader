@@ -55,6 +55,10 @@ namespace TXTReader.Pages
             DonationDescriptionLabel.Text = _localizationService.GetString("DonationDescription");
             LanguageTitleLabel.Text = _localizationService.GetString("LanguageTitle");
             LanguageDescriptionLabel.Text = _localizationService.GetString("LanguageDescription");
+            PrivacyTitleLabel.Text = _localizationService.GetString("PrivacyTitle");
+            PrivacyTextLabel.Text = _localizationService.GetString("PrivacyText");
+            LicenseTitleLabel.Text = _localizationService.GetString("LicenseTitle");
+            LicenseTextLabel.Text = _localizationService.GetString("LicenseText");
             LegalTitleLabel.Text = _localizationService.GetString("LegalTitle");
             LegalText1Label.Text = _localizationService.GetString("LegalText1");
             LegalText2Label.Text = _localizationService.GetString("LegalText2");
