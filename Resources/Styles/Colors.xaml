@@ -27,4 +27,12 @@
     <Color x:Key="White">#FFFFFF</Color>
     <Color x:Key="Black">#000000</Color>
 
+    <!-- Texto atenuado sobre la superficie de marca (Primary, identica en ambos temas).
+         Se usa en la cabecera de MainPage y en la SplashPage. -->
+    <Color x:Key="TextOnPrimaryMuted">#D9CEF7</Color>
+    <Color x:Key="TextOnPrimaryFaint">#C4B6F0</Color>
+
+    <!-- Fondo del resaltado de busqueda del lector (color literal centralizado, seccion 24). -->
+    <Color x:Key="HighlightBackground">#FFE08A</Color>
+
 </ResourceDictionary>

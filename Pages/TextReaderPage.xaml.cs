@@ -16,6 +16,12 @@ namespace TXTReader.Pages
             InitializeComponent();
             _localizationService = LocalizationService.Instance;
             _localizationService.LanguageChanged += OnLanguageChanged;
+
+            // Colores del resaltado desde los tokens centralizados (seccion 24). La propiedad
+            // del control es string (color CSS), por eso se convierte el token a hex aqui.
+            ContentViewer.HighlightBackgroundColor = ResourceHex("HighlightBackground");
+            ContentViewer.HighlightTextColor = ResourceHex("Black");
+
             Title = fileName;
             UpdateTexts();
             LoadFileContent(filePath);
@@ -30,6 +36,15 @@ namespace TXTReader.Pages
         private void OnLanguageChanged(object? sender, EventArgs e)
         {
             UpdateTexts();
+        }
+
+        // Devuelve el color de un token de Colors.xaml como hex "#RRGGBB" para usarlo como
+        // color CSS en el visor. Centraliza el valor (seccion 24) en lugar del literal en XAML.
+        private static string ResourceHex(string key)
+        {
+            if (Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color)
+                return color.ToArgbHex();
+            return "#000000";
         }
 
         private async void LoadFileContent(string filePath)

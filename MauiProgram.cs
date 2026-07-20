@@ -20,6 +20,9 @@ namespace TXTReader
             builder.Services.AddSingleton(LocalizationService.Instance);
             builder.Services.AddSingleton<RecentFilesService>();
 
+            // Comprobacion de version al arrancar (constitucion, seccion 15).
+            builder.Services.AddSingleton<UpdateService>();
+
 #if DEBUG
             builder.Services.AddLogging(logging =>
             {

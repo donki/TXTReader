@@ -21,7 +21,7 @@
                        HorizontalOptions="Center" />
                 <Label x:Name="MainSubtitleLabel"
                        FontSize="16"
-                       TextColor="#D9CEF7"
+                       TextColor="{StaticResource TextOnPrimaryMuted}"
                        HorizontalOptions="Center" />
             </VerticalStackLayout>
         </Border>
@@ -51,9 +51,10 @@
                                    x:Name="RecentFilesLabel"
                                    Style="{StaticResource CardTitle}"
                                    VerticalOptions="Center" />
-                            <Label Grid.Column="1"
-                                   Text="🕒"
-                                   FontSize="20"
+                            <Image Grid.Column="1"
+                                   Source="ic_recent.png"
+                                   WidthRequest="20"
+                                   HeightRequest="20"
                                    VerticalOptions="Center" />
                         </Grid>
 
@@ -74,9 +75,10 @@
                                                 <TapGestureRecognizer Tapped="OnRecentFileSelected" />
                                             </Grid.GestureRecognizers>
 
-                                            <Label Grid.Column="0"
-                                                   Text="📄"
-                                                   FontSize="18"
+                                            <Image Grid.Column="0"
+                                                   Source="ic_file.png"
+                                                   WidthRequest="18"
+                                                   HeightRequest="18"
                                                    VerticalOptions="Center" />
 
                                             <VerticalStackLayout Grid.Column="1"

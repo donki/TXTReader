@@ -77,7 +77,13 @@ namespace TXTReader.Pages
 
         private async void OnBackClicked(object? sender, EventArgs e)
         {
-            await Navigation.PopAsync();
+            // Si se llego pulsando "Acerca de" en MainPage, hay pila que desapilar. Si se llego
+            // por el menu hamburguesa (AboutPage es raiz de su seccion), la pila esta vacia:
+            // en ese caso se vuelve a la pantalla principal por ruta de Shell.
+            if (Navigation.NavigationStack.Count > 1)
+                await Navigation.PopAsync();
+            else if (Shell.Current != null)
+                await Shell.Current.GoToAsync("//MainPage");
         }
 
         private async void OnContactEmailClicked(object? sender, EventArgs e)

@@ -70,13 +70,15 @@
             <!-- Texto -->
             <Border Grid.Column="1"
                     Style="{StaticResource Card}">
+                <!-- HighlightBackgroundColor / HighlightTextColor son propiedades string (se
+                     inyectan como color CSS en el WebView), asi que sus valores se asignan
+                     desde el code-behind a partir de los tokens de Colors.xaml (seccion 24),
+                     en lugar de escribir el color literal aqui. -->
                 <controls:SelectableHighlightedTextView
                     x:Name="ContentViewer"
                     Margin="14"
                     FontSize="14"
                     FontFamily="Monospace"
-                    HighlightBackgroundColor="#FFE08A"
-                    HighlightTextColor="#000000"
                     Foreground="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
                     SearchTerm="{Binding Text, Source={x:Reference SearchEntry}}" />
             </Border>

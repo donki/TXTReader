@@ -55,10 +55,18 @@ namespace TXTReader.Pages
         {
             base.OnAppearing();
             await LoadRecentFiles();
+
+            // Comprobacion de version al arrancar (constitucion, seccion 15): no bloqueante y
+            // silenciosa si ya se esta al dia o no hay red.
+            var updateService = (Handler?.MauiContext?.Services ?? IPlatformApplication.Current?.Services)
+                ?.GetService<UpdateService>();
+            if (updateService != null)
+                _ = updateService.CheckAndPromptAsync(this);
         }
 
         private void UpdateTexts()
         {
+            Title = _localizationService.GetString("AppName");
             MainTitleLabel.Text = _localizationService.GetString("MainTitle");
             MainSubtitleLabel.Text = _localizationService.GetString("MainSubtitle");
             OpenFileLabel.Text = _localizationService.GetString("OpenFile");

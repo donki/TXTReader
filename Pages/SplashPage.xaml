@@ -34,7 +34,7 @@
 
             <Label x:Name="SubtitleLabel"
                    FontSize="16"
-                   TextColor="#D9CEF7"
+                   TextColor="{StaticResource TextOnPrimaryMuted}"
                    HorizontalOptions="Center" />
 
             <ActivityIndicator x:Name="LoadingIndicator"
@@ -47,7 +47,7 @@
 
             <Label Text="Socratic"
                    FontSize="12"
-                   TextColor="#C4B6F0"
+                   TextColor="{StaticResource TextOnPrimaryFaint}"
                    HorizontalOptions="Center"
                    Margin="0,40,0,0" />
 
