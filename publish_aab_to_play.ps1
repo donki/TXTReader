@@ -1,10 +1,10 @@
-#requires -Version 7.0
-
 [CmdletBinding()]
 param(
     [string]$ServiceAccountJson,
     [string]$PackageName,
     [string]$AabPath,
+    [switch]$BuildFirst,
+    [string]$BuildScriptPath,
     [string]$Track,
     [ValidateSet('draft', 'completed', 'inProgress')]
     [string]$Status,
@@ -13,12 +13,12 @@ param(
     [string]$ReleaseNotes,
     [string]$StoreIconPath,
     [string]$StoreListingLanguage = 'es-ES',
-    [string]$ListingJsonPath,
+    [string]$StoreListingPath,
     [string]$StoreTitle,
     [string]$StoreShortDescription,
     [string]$StoreFullDescription,
-    [switch]$SkipStoreIcon,
     [switch]$SkipStoreListing,
+    [switch]$SkipStoreIcon,
     [switch]$SkipAabUpload,
     [switch]$ReuseExistingVersionCode,
     [string]$ExistingVersionCode,
@@ -30,14 +30,24 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    throw 'Este script necesita PowerShell 7 o superior por la firma JWT de la cuenta de servicio. Ejecutalo con: pwsh .\publish_aab_to_play.ps1'
+}
+
 $ApiRoot = 'https://androidpublisher.googleapis.com/androidpublisher/v3'
 $UploadRoot = 'https://androidpublisher.googleapis.com/upload/androidpublisher/v3'
 $AndroidPublisherScope = 'https://www.googleapis.com/auth/androidpublisher'
 $ProjectRoot = $PSScriptRoot
-$ProjectPath = Join-Path $ProjectRoot 'TXTReader.csproj'
-$DefaultServiceAccountJson = Join-Path $ProjectRoot 'hiker-433118-98861f2881fa.json'
+$ProjectPath = (Get-ChildItem -LiteralPath $ProjectRoot -Filter '*.csproj' | Select-Object -First 1).FullName
+$DefaultServiceAccountJson = if (-not [string]::IsNullOrWhiteSpace($env:GOOGLE_APPLICATION_CREDENTIALS)) {
+    $env:GOOGLE_APPLICATION_CREDENTIALS
+}
+else {
+    Join-Path $ProjectRoot 'hiker-433118-98861f2881fa.json'
+}
 $DefaultStoreIconPath = Join-Path $ProjectRoot 'Resources\AppIcon\play_store_icon.png'
-$DefaultListingJsonPath = Join-Path $ProjectRoot 'store-listing\es-ES.json'
+$DefaultStoreListingPath = Join-Path $ProjectRoot 'PlayStoreListing.es-ES.json'
+$DefaultTargetFramework = 'net9.0-android36.0'
 $AccessToken = $null
 
 function Write-Section {
@@ -62,6 +72,10 @@ function Read-Default {
         $value = Read-Host "$Prompt [$DefaultValue]"
     }
 
+    if ($null -eq $value) {
+        return $DefaultValue
+    }
+
     if ([string]::IsNullOrWhiteSpace($value)) {
         return $DefaultValue
     }
@@ -79,7 +93,12 @@ function Read-YesNo {
 
     $suffix = if ($DefaultYes) { '[S/n]' } else { '[s/N]' }
     while ($true) {
-        $value = (Read-Host "$Prompt $suffix").Trim()
+        $rawValue = Read-Host "$Prompt $suffix"
+        if ($null -eq $rawValue) {
+            return $DefaultYes
+        }
+
+        $value = $rawValue.Trim()
         if ([string]::IsNullOrWhiteSpace($value)) {
             return $DefaultYes
         }
@@ -117,40 +136,6 @@ function Get-ProjectValue {
     }
 
     return $null
-}
-
-function Get-StoreListingFromJson {
-    param([Parameter(Mandatory = $true)][string]$Path)
-
-    $listing = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
-    return @{
-        title = [string]$listing.title
-        shortDescription = [string]$listing.shortDescription
-        fullDescription = [string]$listing.fullDescription
-    }
-}
-
-function Test-StoreListingText {
-    param(
-        [Parameter(Mandatory = $true)][string]$Title,
-        [Parameter(Mandatory = $true)][string]$ShortDescription,
-        [Parameter(Mandatory = $true)][string]$FullDescription
-    )
-
-    if ($Title.Length -gt 30) {
-        throw "El titulo de Play Console supera 30 caracteres: $($Title.Length)."
-    }
-    if ($ShortDescription.Length -gt 80) {
-        throw "La descripcion corta supera 80 caracteres: $($ShortDescription.Length)."
-    }
-    if ($FullDescription.Length -gt 4000) {
-        throw "La descripcion completa supera 4000 caracteres: $($FullDescription.Length)."
-    }
-    if ($Title.Trim().Equals($ShortDescription.Trim(), [StringComparison]::OrdinalIgnoreCase) -or
-        $Title.Trim().Equals($FullDescription.Trim(), [StringComparison]::OrdinalIgnoreCase) -or
-        $ShortDescription.Trim().Equals($FullDescription.Trim(), [StringComparison]::OrdinalIgnoreCase)) {
-        throw 'La ficha de Play no puede tener titulo y descripciones identicos.'
-    }
 }
 
 function ConvertTo-Base64Url {
@@ -312,29 +297,118 @@ function Escape-PathSegment {
     return [Uri]::EscapeDataString($Value)
 }
 
+function Normalize-ListingText {
+    param([string]$Value)
+
+    if ($null -eq $Value) {
+        return ''
+    }
+
+    return ($Value -replace '\s+', ' ').Trim()
+}
+
+function Get-StoreListingConfig {
+    param([string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        $Path = $DefaultStoreListingPath
+    }
+
+    $Path = Resolve-InputPath $Path
+    if (-not (Test-Path -LiteralPath $Path)) {
+        throw "No existe el fichero de ficha de Play Console: $Path"
+    }
+
+    $listing = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+    return @{
+        Path = $Path
+        Language = [string]$listing.language
+        Title = [string]$listing.title
+        ShortDescription = [string]$listing.shortDescription
+        FullDescription = [string]$listing.fullDescription
+    }
+}
+
+function Test-StoreListingPolicy {
+    param(
+        [Parameter(Mandatory = $true)][string]$Title,
+        [Parameter(Mandatory = $true)][string]$ShortDescription,
+        [Parameter(Mandatory = $true)][string]$FullDescription
+    )
+
+    $normalizedTitle = Normalize-ListingText $Title
+    $normalizedShort = Normalize-ListingText $ShortDescription
+    $normalizedFull = Normalize-ListingText $FullDescription
+
+    if ([string]::IsNullOrWhiteSpace($normalizedTitle)) {
+        throw 'El titulo de la ficha no puede estar vacio.'
+    }
+    if ([string]::IsNullOrWhiteSpace($normalizedShort)) {
+        throw 'La descripcion corta de la ficha no puede estar vacia.'
+    }
+    if ([string]::IsNullOrWhiteSpace($normalizedFull)) {
+        throw 'La descripcion completa de la ficha no puede estar vacia.'
+    }
+    if ($normalizedTitle.Length -gt 30) {
+        throw "El titulo de Google Play debe tener 30 caracteres o menos. Actual: $($normalizedTitle.Length)."
+    }
+    if ($normalizedShort.Length -gt 80) {
+        throw "La descripcion corta de Google Play debe tener 80 caracteres o menos. Actual: $($normalizedShort.Length)."
+    }
+    if ($normalizedFull.Length -gt 4000) {
+        throw "La descripcion completa de Google Play debe tener 4000 caracteres o menos. Actual: $($normalizedFull.Length)."
+    }
+    if ($normalizedTitle.Equals($normalizedShort, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Metadata policy: el titulo y la descripcion corta no pueden ser identicos.'
+    }
+    if ($normalizedTitle.Equals($normalizedFull, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Metadata policy: el titulo y la descripcion completa no pueden ser identicos.'
+    }
+}
+
 function Get-DefaultSignedAabPath {
     param([string]$DefaultPackageName)
 
-    if (-not [string]::IsNullOrWhiteSpace($DefaultPackageName)) {
-        $expected = Join-Path $ProjectRoot "bin\Release\net10.0-android\$DefaultPackageName-Signed.aab"
-        if (Test-Path -LiteralPath $expected) {
-            return $expected
+    $releaseRoot = Join-Path $ProjectRoot 'bin\Release'
+    if (Test-Path -LiteralPath $releaseRoot) {
+        $latestFromPublish = Get-ChildItem -LiteralPath $releaseRoot -Filter '*-Signed.aab' -Recurse -ErrorAction SilentlyContinue |
+            Where-Object { $_.DirectoryName -like '*\publish' } |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+
+        if ($latestFromPublish) {
+            return $latestFromPublish.FullName
         }
     }
 
-    $latest = Get-ChildItem -LiteralPath (Join-Path $ProjectRoot 'bin\Release') -Filter '*-Signed.aab' -Recurse -ErrorAction SilentlyContinue |
-        Sort-Object LastWriteTime -Descending |
-        Select-Object -First 1
+    if (-not [string]::IsNullOrWhiteSpace($DefaultPackageName)) {
+        $expectedPaths = @(
+            (Join-Path $ProjectRoot "bin\Release\$DefaultTargetFramework\publish\$DefaultPackageName-Signed.aab"),
+            (Join-Path $ProjectRoot "bin\Release\$DefaultTargetFramework\$DefaultPackageName-Signed.aab")
+        )
 
-    if ($latest) {
-        return $latest.FullName
+        foreach ($expected in $expectedPaths) {
+            if (Test-Path -LiteralPath $expected) {
+                return $expected
+            }
+        }
+    }
+
+    if (Test-Path -LiteralPath $releaseRoot) {
+        $latest = Get-ChildItem -LiteralPath $releaseRoot -Filter '*-Signed.aab' -Recurse -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+
+        if ($latest) {
+            return $latest.FullName
+        }
     }
 
     if (-not [string]::IsNullOrWhiteSpace($DefaultPackageName)) {
-        return Join-Path $ProjectRoot "bin\Release\net10.0-android\$DefaultPackageName-Signed.aab"
+        return Join-Path $ProjectRoot "bin\Release\$DefaultTargetFramework\publish\$DefaultPackageName-Signed.aab"
     }
 
-    return Join-Path $ProjectRoot 'bin\Release\net10.0-android\app-Signed.aab'
+    return Join-Path $ProjectRoot "bin\Release\$DefaultTargetFramework\publish\app-Signed.aab"
 }
 
 function Read-Status {
@@ -384,7 +458,7 @@ function Read-PercentAsFraction {
 }
 
 Write-Host '========================================'
-Write-Host ' TXT Reader - Publish AAB to Play Console'
+Write-Host ' SMS Forwarder - Publish AAB to Play Console'
 Write-Host '========================================'
 Write-Host
 Write-Host 'Necesitas una cuenta de servicio invitada en Play Console con permisos de release.'
@@ -396,16 +470,29 @@ if (Test-Path -LiteralPath $ProjectPath) {
 }
 
 $defaultPackageName = if ($projectXml) { Get-ProjectValue $projectXml 'ApplicationId' } else { $null }
+$DefaultTargetFramework = if ($projectXml) {
+    $targetFrameworks = Get-ProjectValue $projectXml 'TargetFrameworks'
+    if ([string]::IsNullOrWhiteSpace($targetFrameworks)) {
+        $targetFramework = Get-ProjectValue $projectXml 'TargetFramework'
+        if ([string]::IsNullOrWhiteSpace($targetFramework)) { $DefaultTargetFramework } else { $targetFramework }
+    }
+    else {
+        $targetFrameworks.Split(';')[0].Trim()
+    }
+}
+else {
+    $DefaultTargetFramework
+}
 $defaultVersionCode = if ($projectXml) { Get-ProjectValue $projectXml 'ApplicationVersion' } else { $null }
 $defaultDisplayVersion = if ($projectXml) { Get-ProjectValue $projectXml 'ApplicationDisplayVersion' } else { $null }
 $defaultReleaseName = if ($defaultDisplayVersion -and $defaultVersionCode) {
-    "TXT Reader $defaultDisplayVersion ($defaultVersionCode)"
+    "SMS Forwarder $defaultDisplayVersion ($defaultVersionCode)"
 }
 elseif ($defaultVersionCode) {
-    "TXT Reader ($defaultVersionCode)"
+    "SMS Forwarder ($defaultVersionCode)"
 }
 else {
-    "TXT Reader $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+    "SMS Forwarder $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
 }
 
 Write-Section 'Datos de la app'
@@ -414,6 +501,22 @@ if (-not $PackageName) {
 }
 if ([string]::IsNullOrWhiteSpace($PackageName)) {
     throw 'Package name requerido.'
+}
+
+if ($BuildFirst -and -not $SkipAabUpload) {
+    if ([string]::IsNullOrWhiteSpace($BuildScriptPath)) {
+        $BuildScriptPath = Join-Path $ProjectRoot 'build_and_sign.ps1'
+    }
+    $BuildScriptPath = Resolve-InputPath $BuildScriptPath
+    if (-not (Test-Path -LiteralPath $BuildScriptPath)) {
+        throw "No existe el script de build: $BuildScriptPath"
+    }
+
+    Write-Section 'Build previo'
+    & $BuildScriptPath -SkipApk -NoPause
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Fallo el build previo.'
+    }
 }
 
 if ($SkipAabUpload) {
@@ -458,41 +561,26 @@ if (-not $SkipStoreIcon) {
 
 $updateStoreListing = $false
 if (-not $SkipStoreListing) {
-    if (-not $ListingJsonPath -and (Test-Path -LiteralPath $DefaultListingJsonPath)) {
-        $ListingJsonPath = $DefaultListingJsonPath
+    $storeListingConfig = Get-StoreListingConfig $StoreListingPath
+    $updateStoreListing = $true
+
+    if (-not $PSBoundParameters.ContainsKey('StoreListingLanguage') -and -not [string]::IsNullOrWhiteSpace($storeListingConfig.Language)) {
+        $StoreListingLanguage = $storeListingConfig.Language
+    }
+    if (-not $PSBoundParameters.ContainsKey('StoreTitle')) {
+        $StoreTitle = $storeListingConfig.Title
+    }
+    if (-not $PSBoundParameters.ContainsKey('StoreShortDescription')) {
+        $StoreShortDescription = $storeListingConfig.ShortDescription
+    }
+    if (-not $PSBoundParameters.ContainsKey('StoreFullDescription')) {
+        $StoreFullDescription = $storeListingConfig.FullDescription
     }
 
-    if ($ListingJsonPath) {
-        $ListingJsonPath = Resolve-InputPath $ListingJsonPath
-        if (-not (Test-Path -LiteralPath $ListingJsonPath)) {
-            throw "No existe el JSON de ficha Play: $ListingJsonPath"
-        }
-
-        $listing = Get-StoreListingFromJson $ListingJsonPath
-        if (-not $StoreTitle) {
-            $StoreTitle = $listing.title
-        }
-        if (-not $StoreShortDescription) {
-            $StoreShortDescription = $listing.shortDescription
-        }
-        if (-not $StoreFullDescription) {
-            $StoreFullDescription = $listing.fullDescription
-        }
-    }
-
-    if ($StoreTitle -or $StoreShortDescription -or $StoreFullDescription) {
-        if ([string]::IsNullOrWhiteSpace($StoreTitle) -or
-            [string]::IsNullOrWhiteSpace($StoreShortDescription) -or
-            [string]::IsNullOrWhiteSpace($StoreFullDescription)) {
-            throw 'Para actualizar la ficha de Play hacen falta StoreTitle, StoreShortDescription y StoreFullDescription.'
-        }
-
-        Test-StoreListingText `
-            -Title $StoreTitle `
-            -ShortDescription $StoreShortDescription `
-            -FullDescription $StoreFullDescription
-        $updateStoreListing = $true
-    }
+    Test-StoreListingPolicy `
+        -Title $StoreTitle `
+        -ShortDescription $StoreShortDescription `
+        -FullDescription $StoreFullDescription
 }
 
 Write-Section 'Autenticacion'
@@ -606,12 +694,11 @@ if ($uploadStoreIcon) {
 }
 if ($updateStoreListing) {
     Write-Host "Ficha Play: $StoreListingLanguage"
-    if ($ListingJsonPath) {
-        Write-Host "JSON ficha: $ListingJsonPath"
+    Write-Host "Titulo ficha: $StoreTitle"
+    Write-Host "Descripcion corta: $StoreShortDescription"
+    if ($storeListingConfig.Path) {
+        Write-Host "Metadata ficha: $($storeListingConfig.Path)"
     }
-    Write-Host "Titulo: $StoreTitle"
-    Write-Host "Descripcion corta ($($StoreShortDescription.Length)/80): $StoreShortDescription"
-    Write-Host "Descripcion completa: $($StoreFullDescription.Length)/4000 caracteres"
 }
 if ($null -ne $userFraction) {
     Write-Host "Rollout: $([Math]::Round($userFraction * 100, 4))%"
@@ -667,6 +754,23 @@ try {
     }
     Write-Host "Edit creado: $editId"
 
+    if ($updateStoreListing) {
+        Write-Section 'Actualizando ficha Play Console'
+        $escapedStoreListingLanguage = Escape-PathSegment $StoreListingLanguage
+        $listingBody = [ordered]@{
+            language = $StoreListingLanguage
+            title = $StoreTitle
+            shortDescription = $StoreShortDescription
+            fullDescription = $StoreFullDescription
+        }
+        Invoke-GoogleJsonApi `
+            -Method PUT `
+            -Uri "$ApiRoot/applications/$escapedPackageName/edits/$editId/listings/$escapedStoreListingLanguage" `
+            -Headers $headers `
+            -Body $listingBody | Out-Null
+        Write-Host 'Ficha actualizada.'
+    }
+
     if ($SkipAabUpload) {
         $versionCode = [string]$ExistingVersionCode
         Write-Section 'Reutilizando version existente'
@@ -676,7 +780,7 @@ try {
         Write-Section 'Subiendo AAB'
         try {
             $bundle = Invoke-GoogleMediaUpload `
-                -Uri "$UploadRoot/applications/$escapedPackageName/edits/$editId/bundles" `
+                -Uri (Add-QueryString "$UploadRoot/applications/$escapedPackageName/edits/$editId/bundles" @{ uploadType = 'media' }) `
                 -Headers $headers `
                 -FilePath $AabPath
             $versionCode = [string]$bundle.versionCode
@@ -709,7 +813,7 @@ try {
         Write-Section 'Subiendo icono Play Console'
         $escapedStoreListingLanguage = Escape-PathSegment $StoreListingLanguage
         $iconResult = Invoke-GoogleMediaUpload `
-            -Uri "$UploadRoot/applications/$escapedPackageName/edits/$editId/listings/$escapedStoreListingLanguage/icon" `
+            -Uri (Add-QueryString "$UploadRoot/applications/$escapedPackageName/edits/$editId/listings/$escapedStoreListingLanguage/icon" @{ uploadType = 'media' }) `
             -Headers $headers `
             -FilePath $StoreIconPath `
             -ContentType 'image/png'
@@ -720,22 +824,6 @@ try {
         else {
             Write-Host 'Icono subido.'
         }
-    }
-
-    if ($updateStoreListing) {
-        Write-Section 'Actualizando ficha Play Console'
-        $escapedStoreListingLanguage = Escape-PathSegment $StoreListingLanguage
-        $listingBody = [ordered]@{
-            title = $StoreTitle
-            shortDescription = $StoreShortDescription
-            fullDescription = $StoreFullDescription
-        }
-        Invoke-GoogleJsonApi `
-            -Method PUT `
-            -Uri "$ApiRoot/applications/$escapedPackageName/edits/$editId/listings/$escapedStoreListingLanguage" `
-            -Headers $headers `
-            -Body $listingBody | Out-Null
-        Write-Host "Ficha actualizada: $StoreListingLanguage"
     }
 
     Write-Section 'Actualizando track'
