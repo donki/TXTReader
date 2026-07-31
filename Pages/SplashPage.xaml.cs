@@ -16,12 +16,8 @@ namespace TXTReader.Pages
 
         private void UpdateTexts()
         {
-            // Force English for testing
-            var culture = new System.Globalization.CultureInfo("en");
-            var resourceManager = new System.Resources.ResourceManager(typeof(TXTReader.Resources.Strings.AppResources));
-            SubtitleLabel.Text = resourceManager.GetString("SplashSubtitle", culture) ?? "Text file reader";
-            
-            System.Diagnostics.Debug.WriteLine($"SplashPage: Setting subtitle to: {SubtitleLabel.Text}");
+            // Respeta el idioma configurado (antes se forzaba inglés "para pruebas"). §8 i18n.
+            SubtitleLabel.Text = _localizationService.GetString("SplashSubtitle");
         }
 
         private async void NavigateToMainPage()

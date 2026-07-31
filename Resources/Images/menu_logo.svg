@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Splash: documento de texto con insignia TXT, centrado sobre fondo indigo (#3525CD). -->
+<!-- Logo de cabecera del menú: documento de texto con insignia TXT (sobre cabecera indigo). -->
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <path d="M150 128
-           a26 26 0 0 1 26 -26 h112 l58 58 v188
-           a26 26 0 0 1 -26 26 H176 a26 26 0 0 1 -26 -26 Z" fill="#FFFFFF"/>
+  <path d="M150 128 a26 26 0 0 1 26 -26 h112 l58 58 v188 a26 26 0 0 1 -26 26 H176 a26 26 0 0 1 -26 -26 Z" fill="#FFFFFF"/>
   <path d="M288 102 l58 58 h-44 a14 14 0 0 1 -14 -14 Z" fill="#C3C0FF"/>
   <rect x="182" y="158" width="96"  height="14" rx="7" fill="#C3C0FF"/>
   <rect x="182" y="190" width="132" height="14" rx="7" fill="#C3C0FF"/>
   <rect x="182" y="222" width="116" height="14" rx="7" fill="#C3C0FF"/>
   <rect x="182" y="266" width="132" height="64" rx="16" fill="#3525CD"/>
-  <text x="248" y="311" font-family="Arial, Helvetica, sans-serif" font-size="40"
-        font-weight="800" text-anchor="middle" fill="#FFFFFF">TXT</text>
+  <text x="248" y="311" font-family="Arial, Helvetica, sans-serif" font-size="40" font-weight="800" text-anchor="middle" fill="#FFFFFF">TXT</text>
 </svg>

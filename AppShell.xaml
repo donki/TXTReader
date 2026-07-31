@@ -37,7 +37,7 @@
     <Shell.FlyoutHeader>
         <Grid BackgroundColor="{StaticResource Primary}" HeightRequest="140" Padding="20,44,20,16">
             <VerticalStackLayout VerticalOptions="End" Spacing="4">
-                <Image Source="app_logo.png" WidthRequest="52" HeightRequest="52" HorizontalOptions="Start" />
+                <Image Source="menu_logo.png" WidthRequest="52" HeightRequest="52" HorizontalOptions="Start" />
                 <Label Text="TXT Reader" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource White}" />
             </VerticalStackLayout>
         </Grid>
@@ -52,5 +52,16 @@
     <FlyoutItem x:Name="AboutFlyoutItem" Title="About" FlyoutIcon="ic_info.png">
         <ShellContent ContentTemplate="{DataTemplate pages:AboutPage}" Route="AboutPage" />
     </FlyoutItem>
+
+    <!-- Pie del menú con la versión -->
+    <Shell.FlyoutFooter>
+        <Grid Padding="20,12">
+            <Label Text="v2026.07.28.0"
+                   FontSize="12"
+                   TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center" />
+        </Grid>
+    </Shell.FlyoutFooter>
 
 </Shell>
