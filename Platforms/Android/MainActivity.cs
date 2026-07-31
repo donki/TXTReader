@@ -3,7 +3,9 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Provider;
+using AndroidX.Core.View;
 using TXTReader.Services;
+using AndroidView = Android.Views.View;
 
 namespace TXTReader
 {
@@ -18,7 +20,35 @@ namespace TXTReader
         protected override void OnCreate(Bundle? savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            ApplySystemBarInsets();
             HandleIntent(Intent);
+        }
+
+        // Android 15 dibuja de borde a borde: separa el contenido del reloj y de la barra inferior.
+        private void ApplySystemBarInsets()
+        {
+            var content = FindViewById(global::Android.Resource.Id.Content);
+            if (content is null) return;
+            content.SetBackgroundColor(global::Android.Graphics.Color.ParseColor("#2A1CB8")); // indigo de marca
+            ViewCompat.SetOnApplyWindowInsetsListener(content, new SystemBarInsetsListener());
+            var controller = Window is not null ? WindowCompat.GetInsetsController(Window, Window.DecorView) : null;
+            if (controller is not null)
+            {
+                controller.AppearanceLightStatusBars = false;
+                controller.AppearanceLightNavigationBars = false;
+            }
+        }
+
+        private class SystemBarInsetsListener : Java.Lang.Object, IOnApplyWindowInsetsListener
+        {
+            public WindowInsetsCompat OnApplyWindowInsets(AndroidView? view, WindowInsetsCompat? insets)
+            {
+                var consumed = WindowInsetsCompat.Consumed!;
+                if (view is null || insets is null) return consumed;
+                var bars = insets.GetInsets(WindowInsetsCompat.Type.SystemBars() | WindowInsetsCompat.Type.DisplayCutout());
+                if (bars is not null) view.SetPadding(bars.Left, bars.Top, bars.Right, bars.Bottom);
+                return consumed;
+            }
         }
 
         protected override void OnNewIntent(Intent? intent)
@@ -73,7 +103,7 @@ namespace TXTReader
                             await Task.Delay(500);
                             if (Microsoft.Maui.Controls.Application.Current?.MainPage != null)
                             {
-                                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync(
+                                await SocShared.ModernDialog.AlertAsync(Microsoft.Maui.Controls.Application.Current.MainPage,
                                     "Archivo no disponible",
                                     "No se pudo acceder al archivo seleccionado.\n\nEsto puede ocurrir con archivos de almacenamiento en la nube que no están disponibles sin conexión.\n\nIntenta descargar el archivo localmente primero.",
                                     "OK");
@@ -151,7 +181,7 @@ namespace TXTReader
                                     message = "No se pudo acceder al archivo desde el almacenamiento en la nube.\n\nIntenta descargar el archivo localmente primero.";
                                 }
 
-                                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync(title, message, "OK");
+                                await SocShared.ModernDialog.AlertAsync(Microsoft.Maui.Controls.Application.Current.MainPage, title, message, "OK");
                             }
                         });
                     }

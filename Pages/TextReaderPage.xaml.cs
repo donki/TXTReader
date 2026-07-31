@@ -61,7 +61,7 @@ namespace TXTReader.Pages
             }
             catch (Exception ex)
             {
-                await DisplayAlertAsync(_localizationService.GetString("Error"), $"{_localizationService.GetString("FileLoadError")}: {ex.Message}", _localizationService.GetString("OK"));
+                await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("Error"), $"{_localizationService.GetString("FileLoadError")}: {ex.Message}", _localizationService.GetString("OK"));
                 await Navigation.PopAsync();
             }
         }

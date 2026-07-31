@@ -57,14 +57,18 @@ namespace TXTReader.Services
                 if (_resourceManager == null || _currentCulture == null)
                 {
                     System.Diagnostics.Debug.WriteLine($"LocalizationService: ResourceManager or Culture is null for key: {key}");
-                    return key;
+                    return string.Empty;   // §8: nunca mostrar la clave interna al usuario
                 }
-                return _resourceManager.GetString(key, _currentCulture) ?? key;
+                var value = _resourceManager.GetString(key, _currentCulture);
+                if (!string.IsNullOrEmpty(value))
+                    return value;
+                // Fallback al idioma por defecto (inglés) antes que dejar vacío; nunca la clave (§8).
+                return _resourceManager.GetString(key, new System.Globalization.CultureInfo("en")) ?? string.Empty;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"LocalizationService: Error getting string for key '{key}': {ex.Message}");
-                return key;
+                return string.Empty;   // §8: nunca la clave
             }
         }
 

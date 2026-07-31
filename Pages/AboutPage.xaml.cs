@@ -124,7 +124,7 @@ namespace TXTReader.Pages
                 }
 
                 // Si nada funciona, mostrar error
-                await DisplayAlertAsync("Error", _localizationService.GetString("EmailNotAvailable"), "OK");
+                await SocShared.ModernDialog.AlertAsync(this,"Error", _localizationService.GetString("EmailNotAvailable"), "OK");
             }
             catch (FeatureNotSupportedException)
             {
@@ -132,11 +132,11 @@ namespace TXTReader.Pages
                 try
                 {
                     await Clipboard.SetTextAsync(ContactEmail);
-                    await DisplayAlertAsync("Email copiado", $"Email copiado al portapapeles: {ContactEmail}", "OK");
+                    await SocShared.ModernDialog.AlertAsync(this,"Email copiado", $"Email copiado al portapapeles: {ContactEmail}", "OK");
                 }
                 catch
                 {
-                    await DisplayAlertAsync("Error", _localizationService.GetString("EmailNotAvailable"), "OK");
+                    await SocShared.ModernDialog.AlertAsync(this,"Error", _localizationService.GetString("EmailNotAvailable"), "OK");
                 }
             }
             catch (Exception ex)
@@ -145,11 +145,11 @@ namespace TXTReader.Pages
                 try
                 {
                     await Clipboard.SetTextAsync(ContactEmail);
-                    await DisplayAlertAsync("Email copiado", $"No se pudo abrir el cliente de correo. Email copiado al portapapeles: {ContactEmail}", "OK");
+                    await SocShared.ModernDialog.AlertAsync(this,"Email copiado", $"No se pudo abrir el cliente de correo. Email copiado al portapapeles: {ContactEmail}", "OK");
                 }
                 catch
                 {
-                    await DisplayAlertAsync("Error", $"{_localizationService.GetString("EmailError")}: {ex.Message}", "OK");
+                    await SocShared.ModernDialog.AlertAsync(this,"Error", $"{_localizationService.GetString("EmailError")}: {ex.Message}", "OK");
                 }
             }
         }
@@ -175,13 +175,13 @@ namespace TXTReader.Pages
                 try
                 {
                     await Clipboard.SetTextAsync(KofiUrl);
-                    await DisplayAlertAsync(_localizationService.GetString("BrowserNotAvailableTitle"), 
+                    await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("BrowserNotAvailableTitle"), 
                         $"{_localizationService.GetString("BrowserNotAvailableMessage")}:\n{KofiUrl}", 
                         "OK");
                 }
                 catch
                 {
-                    await DisplayAlertAsync("Error", 
+                    await SocShared.ModernDialog.AlertAsync(this,"Error", 
                         $"{_localizationService.GetString("BrowserError")}: {KofiUrl}", 
                         "OK");
                 }
@@ -192,13 +192,13 @@ namespace TXTReader.Pages
                 try
                 {
                     await Clipboard.SetTextAsync(KofiUrl);
-                    await DisplayAlertAsync(_localizationService.GetString("LinkErrorTitle"), 
+                    await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("LinkErrorTitle"), 
                         $"{_localizationService.GetString("LinkErrorMessage")} ({ex.Message}), {_localizationService.GetString("ClipboardMessage")}.", 
                         "OK");
                 }
                 catch
                 {
-                    await DisplayAlertAsync("Error", 
+                    await SocShared.ModernDialog.AlertAsync(this,"Error", 
                         $"{_localizationService.GetString("FinalErrorMessage")}: {KofiUrl}", 
                         "OK");
                 }

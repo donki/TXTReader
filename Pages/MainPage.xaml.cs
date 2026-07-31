@@ -124,7 +124,7 @@ namespace TXTReader.Pages
             }
             catch (Exception ex)
             {
-                await DisplayAlertAsync(_localizationService.GetString("Error"), $"{_localizationService.GetString("FileSelectError")}: {ex.Message}", _localizationService.GetString("OK"));
+                await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("Error"), $"{_localizationService.GetString("FileSelectError")}: {ex.Message}", _localizationService.GetString("OK"));
             }
         }
 
@@ -165,7 +165,7 @@ namespace TXTReader.Pages
                     // Eliminar el archivo del historial y recargar la lista
                     await _recentFilesService.RemoveRecentFileAsync(recentFile.FilePath);
                     await LoadRecentFiles();
-                    await DisplayAlertAsync(_localizationService.GetString("FileDeletedTitle"), _localizationService.GetString("FileDeletedMessage"), _localizationService.GetString("OK"));
+                    await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("FileDeletedTitle"), _localizationService.GetString("FileDeletedMessage"), _localizationService.GetString("OK"));
                 }
             }
         }
@@ -180,7 +180,7 @@ namespace TXTReader.Pages
                 if (!IsContentUri(filePath) && !File.Exists(filePath))
                 {
                     _ = MobileLogService.LogAsync($"OpenFile: Local file does not exist: {filePath}");
-                    await DisplayAlertAsync(_localizationService.GetString("Error"), _localizationService.GetString("FileNotExist"), _localizationService.GetString("OK"));
+                    await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("Error"), _localizationService.GetString("FileNotExist"), _localizationService.GetString("OK"));
                     return;
                 }
                 
@@ -213,7 +213,7 @@ namespace TXTReader.Pages
                 System.Diagnostics.Debug.WriteLine($"Error in OpenFile: {ex.Message}");
                 _ = MobileLogService.LogAsync($"OpenFile: ERROR - {ex.Message}");
                 _ = MobileLogService.LogAsync($"OpenFile: Stack trace - {ex.StackTrace}");
-                await DisplayAlertAsync(_localizationService.GetString("Error"), $"{_localizationService.GetString("FileOpenError")}: {ex.Message}", _localizationService.GetString("OK"));
+                await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("Error"), $"{_localizationService.GetString("FileOpenError")}: {ex.Message}", _localizationService.GetString("OK"));
             }
         }
 

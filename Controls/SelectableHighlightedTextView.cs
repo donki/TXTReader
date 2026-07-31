@@ -155,7 +155,20 @@ public class SelectableHighlightedTextView : ContentView
                 options |= RegexOptions.IgnoreCase;
 
             string pattern = Regex.Escape(term);
-            encoded = Regex.Replace(encoded, pattern, m => $"<mark>{m.Value}</mark>", options, TimeSpan.FromMilliseconds(200));
+            try
+            {
+                // Timeout amplio para permitir resaltar en documentos grandes.
+                encoded = Regex.Replace(encoded, pattern, m => $"<mark>{m.Value}</mark>", options, TimeSpan.FromSeconds(1));
+            }
+            catch (RegexMatchTimeoutException)
+            {
+                // Documento muy grande o término muy frecuente: mostramos el texto SIN resaltar
+                // en lugar de tumbar la app (crash observado en Galaxy S10+/Android 12 al teclear).
+            }
+            catch (Exception)
+            {
+                // Cualquier otro fallo del motor de regex: degradar sin resaltar, nunca crashear.
+            }
         }
 
         // 3) Construir HTML con estilos

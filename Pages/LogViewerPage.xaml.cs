@@ -34,11 +34,11 @@ namespace TXTReader.Pages
             {
                 await MobileLogService.ClearLogsAsync();
                 await LoadLogs();
-                await DisplayAlert("Logs", "Logs limpiados correctamente", "OK");
+                await SocShared.ModernDialog.AlertAsync(this,"Logs", "Logs limpiados correctamente", "OK");
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Error limpiando logs: {ex.Message}", "OK");
+                await SocShared.ModernDialog.AlertAsync(this,"Error", $"Error limpiando logs: {ex.Message}", "OK");
             }
         }
     }

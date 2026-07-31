@@ -17,8 +17,8 @@
 		<ApplicationId>com.socratic.txtreader</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>2026.07.23.0</ApplicationDisplayVersion>
-		<ApplicationVersion>202607230</ApplicationVersion>
+		<ApplicationDisplayVersion>2026.07.28.0</ApplicationDisplayVersion>
+		<ApplicationVersion>202607281</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -27,6 +27,15 @@
 		<AssemblyVersion>2026.07.17.0</AssemblyVersion>
 		<FileVersion>2026.07.17.0</FileVersion>
 		<AndroidSigningKeyStore>socratic.keystore</AndroidSigningKeyStore>
+	</PropertyGroup>
+
+	<!--
+		Embeber los ensamblados en el APK tambien en Debug. Sin esto, un APK Debug usa Fast
+		Deployment: los ensamblados no viajan dentro del APK y la app aborta al arrancar
+		("No assemblies found") cuando se instala suelta con adb (sin desplegar desde el IDE).
+	-->
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
 	</PropertyGroup>
 
 	<!-- Android Release Configuration -->
@@ -43,7 +52,8 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#3525CD" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#3525CD" BaseSize="200,200" />
 
 		<!-- Images (SVG rasterized to PNG at build time) -->
 		<MauiImage Include="Resources\Images\*" />
@@ -72,4 +82,11 @@
 		</Compile>
 	</ItemGroup>
 
+  <!-- Notas de autor compartidas (una sola fuente para todas las apps) -->
+  <ItemGroup>
+    <Compile Include="..\Shared\AuthorNotes.cs" Link="AuthorNotes.cs" />
+    <Compile Include="..\Shared\ModernDialog.cs" Link="ModernDialog.cs" />
+  </ItemGroup>
+
+  <Import Project="..\Shared\signing.props" />
 </Project>
