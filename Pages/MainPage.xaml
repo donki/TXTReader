@@ -3,45 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TXTReader.Pages.MainPage">
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid>
 
-        <!-- Cabecera en color de marca -->
-        <Border Grid.Row="0"
-                BackgroundColor="{StaticResource Primary}"
-                StrokeThickness="0"
-                Padding="0">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="0" />
-            </Border.StrokeShape>
-            <VerticalStackLayout Padding="30,40,30,30" Spacing="10">
-                <Label x:Name="MainTitleLabel"
-                       FontSize="32"
-                       FontAttributes="Bold"
-                       TextColor="{StaticResource White}"
-                       HorizontalOptions="Center" />
-                <Label x:Name="MainSubtitleLabel"
-                       FontSize="16"
-                       TextColor="{StaticResource TextOnPrimaryMuted}"
-                       HorizontalOptions="Center" />
-            </VerticalStackLayout>
-        </Border>
-
-        <!-- Contenido -->
-        <ScrollView Grid.Row="1" Padding="20">
+        <!-- Contenido. La cabecera de marca ("TXT Reader" / "Lector de archivos de texto") se
+             quito: repetia el titulo de la barra de navegacion y el de la tarjeta de abrir
+             fichero, tres veces lo mismo (nota de autor del 2026-08-01). -->
+        <ScrollView Padding="20">
             <VerticalStackLayout Spacing="20">
 
                 <!-- Abrir fichero -->
-                <Border Style="{StaticResource Card}">
-                    <VerticalStackLayout Padding="25" Spacing="15">
-                        <Label x:Name="OpenFileLabel" Style="{StaticResource CardTitle}" />
-
-                        <Button x:Name="SelectFileBtn"
-                                Style="{StaticResource PrimaryButton}"
-                                HeightRequest="55"
-                                Clicked="OnSelectFileClicked"
-                                HorizontalOptions="Fill" />
-                    </VerticalStackLayout>
-                </Border>
+                <Button x:Name="SelectFileBtn"
+                        Style="{StaticResource PrimaryButton}"
+                        HeightRequest="55"
+                        Clicked="OnSelectFileClicked"
+                        HorizontalOptions="Fill" />
 
                 <!-- Recientes -->
                 <Border Style="{StaticResource Card}">

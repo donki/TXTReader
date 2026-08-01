@@ -13,6 +13,10 @@ namespace TXTReader
     [IntentFilter(new[] { Intent.ActionView }, Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable }, DataMimeType = "text/*")]
     [IntentFilter(new[] { Intent.ActionView }, Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable }, DataMimeType = "application/json")]
     [IntentFilter(new[] { Intent.ActionView }, Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable }, DataMimeType = "application/xml")]
+    // Los .gpx son XML: se aceptan por su MIME propio cuando la app que comparte lo declara.
+    // Android no lo hace por si solo (no conoce la extension), asi que la via habitual es el
+    // selector de ficheros, que ya los admite.
+    [IntentFilter(new[] { Intent.ActionView }, Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable }, DataMimeType = "application/gpx+xml")]
     public class MainActivity : MauiAppCompatActivity
     {
         private string? _pendingFilePath;
@@ -133,7 +137,7 @@ namespace TXTReader
                         var extension = GetExtension(fileName, filePath);
                         var supportedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                         {
-                            ".txt", ".log", ".json", ".xml", ".csv", ".md", ".ini", ".cfg", ".conf"
+                            ".txt", ".log", ".json", ".xml", ".gpx", ".csv", ".md", ".ini", ".cfg", ".conf"
                         };
 
                         if (supportedExtensions.Contains(extension) || string.IsNullOrEmpty(extension))
