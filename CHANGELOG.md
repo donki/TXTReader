@@ -5,6 +5,23 @@ Todos los cambios relevantes de TXT Reader se documentan en este archivo.
 El formato sigue las pautas de la constitucion del proyecto (versionado
 sincronizado entre `ApplicationDisplayVersion` y `ApplicationVersion`).
 
+## [2026.08.01.0] (versionCode 202608010)
+
+### Añadido
+- **Se pueden abrir ficheros `.xml` y `.gpx`** (nota de autor del 2026-08-01). Los `.gpx` obligaban
+  a añadir `application/octet-stream` al filtro del selector: Android no conoce esa extensión y los
+  expone con ese tipo, así que salían en gris. El filtro sigue dejando fuera PDF, imágenes y vídeo,
+  que sí tienen MIME propio. También se acepta el intent `application/gpx+xml`.
+
+### Cambiado
+- **Pantalla principal sin texto repetido** (nota de autor del 2026-08-01): se quita la cabecera
+  «TXT Reader / Lector de archivos de texto» y el rótulo «Abrir archivo». El título de la barra de
+  navegación ya identifica la app; eran tres veces lo mismo en la misma pantalla.
+
+### Corregido
+- `Resources\AppIcon\play_store_icon.png` regenerado desde los SVG actuales: seguía siendo el
+  icono anterior al rediseño índigo del 28-jul.
+
 ## [2026.06.26.0] (versionCode 202606260)
 
 ### Correcciones

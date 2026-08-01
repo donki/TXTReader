@@ -20,6 +20,7 @@ namespace TXTReader
         {
             HomeFlyoutItem.Title = _localizationService.GetString("MenuHome");
             AboutFlyoutItem.Title = _localizationService.GetString("AboutTitle");
+            VersionLabel.Text = $"v{AppInfo.Current.VersionString}";
         }
     }
 }

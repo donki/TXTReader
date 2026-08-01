@@ -66,10 +66,10 @@ namespace TXTReader.Pages
 
         private void UpdateTexts()
         {
+            // El titulo de la barra de navegacion ya identifica la app: la cabecera con
+            // "TXT Reader" / "Lector de archivos de texto" y el rotulo "Abrir archivo" se
+            // quitaron por repetir lo mismo tres veces (nota de autor del 2026-08-01).
             Title = _localizationService.GetString("AppName");
-            MainTitleLabel.Text = _localizationService.GetString("MainTitle");
-            MainSubtitleLabel.Text = _localizationService.GetString("MainSubtitle");
-            OpenFileLabel.Text = _localizationService.GetString("OpenFile");
             SelectFileBtn.Text = _localizationService.GetString("SelectFile");
             RecentFilesLabel.Text = _localizationService.GetString("RecentFiles");
             // NoRecentFilesLabel está en un template, se manejará con binding
@@ -100,13 +100,17 @@ namespace TXTReader.Pages
                 // Solo ficheros de texto: se quita el comodin "*/*", que hacia que el selector
                 // mostrara todo (PDF, imagenes, video...). "text/*" cubre txt, csv, html, markdown,
                 // xml y demas subtipos de texto; se anaden json y xml, que Android reporta con su
-                // propio MIME. Un .log o .ini que el sistema marque como octet-stream puede no
-                // aparecer: es el precio de filtrar de verdad en el Storage Access Framework.
+                // propio MIME.
+                // "application/octet-stream" se incluye por los .gpx: Android no conoce esa
+                // extension (no esta en su tabla de MIME) y los expone como octet-stream, asi que
+                // sin este tipo el selector los muestra en gris. Tambien recupera los .log, .ini y
+                // .cfg que el sistema no sabe clasificar. Sigue sin colar PDF, imagenes ni video,
+                // que si tienen MIME propio.
                 var customFileType = new FilePickerFileType(
                     new Dictionary<DevicePlatform, IEnumerable<string>>
                     {
-                        { DevicePlatform.Android, new[] { "text/*", "application/json", "application/xml" } },
-                        { DevicePlatform.WinUI, new[] { ".txt", ".log", ".json", ".xml", ".csv", ".md", ".ini", ".cfg", ".conf" } }
+                        { DevicePlatform.Android, new[] { "text/*", "application/json", "application/xml", "application/gpx+xml", "application/octet-stream" } },
+                        { DevicePlatform.WinUI, new[] { ".txt", ".log", ".json", ".xml", ".gpx", ".csv", ".md", ".ini", ".cfg", ".conf" } }
                     });
 
                 var options = new PickOptions
