@@ -26,7 +26,6 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 		<AssemblyVersion>2026.07.17.0</AssemblyVersion>
 		<FileVersion>2026.07.17.0</FileVersion>
-		<AndroidSigningKeyStore>socratic.keystore</AndroidSigningKeyStore>
 	</PropertyGroup>
 
 	<!--
