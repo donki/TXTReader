@@ -53,24 +53,6 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Donacion (Ko-fi) — oculta a petición del autor en todas las apps. -->
-            <Border Style="{StaticResource Card}" IsVisible="False">
-                <VerticalStackLayout Padding="25,20" Spacing="15">
-                    <Label x:Name="DonationTitleLabel"
-                           Style="{StaticResource CardTitle}"
-                           TextColor="{StaticResource Accent}" />
-
-                    <Button x:Name="DonationButton"
-                            Style="{StaticResource AccentButton}"
-                            Clicked="OnKofiClicked"
-                            HorizontalOptions="Fill" />
-
-                    <Label x:Name="DonationDescriptionLabel"
-                           Style="{StaticResource HintText}"
-                           HorizontalOptions="Center" />
-                </VerticalStackLayout>
-            </Border>
-
             <!-- Idioma -->
             <Border Style="{StaticResource Card}">
                 <VerticalStackLayout Padding="25,20" Spacing="15">

@@ -6,7 +6,6 @@ namespace TXTReader.Pages
     public partial class AboutPage : ContentPage
     {
         private const string ContactEmail = "jsoladelarosa@gmail.com";
-        private const string KofiUrl = "https://ko-fi.com/josepsola";
 
         private readonly LocalizationService _localizationService;
 
@@ -39,9 +38,6 @@ namespace TXTReader.Pages
             DescriptionLabel.Text = _localizationService.GetString("AppDescription");
             ContactTitleLabel.Text = _localizationService.GetString("ContactTitle");
             ContactInstructionLabel.Text = _localizationService.GetString("ContactInstruction");
-            DonationTitleLabel.Text = _localizationService.GetString("DonationTitle");
-            DonationButton.Text = _localizationService.GetString("DonationButton");
-            DonationDescriptionLabel.Text = _localizationService.GetString("DonationDescription");
             LanguageTitleLabel.Text = _localizationService.GetString("LanguageTitle");
             LanguageDescriptionLabel.Text = _localizationService.GetString("LanguageDescription");
             PrivacyTitleLabel.Text = _localizationService.GetString("PrivacyTitle");
@@ -154,55 +150,5 @@ namespace TXTReader.Pages
             }
         }
 
-        private async void OnKofiClicked(object? sender, EventArgs e)
-        {
-            try
-            {
-                var uri = new Uri(KofiUrl);
-                var browserLaunchOptions = new BrowserLaunchOptions
-                {
-                    LaunchMode = BrowserLaunchMode.SystemPreferred,
-                    TitleMode = BrowserTitleMode.Show,
-                    PreferredToolbarColor = Color.FromArgb("#E67E22"),
-                    PreferredControlColor = Color.FromArgb("#FFFFFF")
-                };
-
-                await Browser.OpenAsync(uri, browserLaunchOptions);
-            }
-            catch (FeatureNotSupportedException)
-            {
-                // Fallback: copy URL to clipboard if browser is not available
-                try
-                {
-                    await Clipboard.SetTextAsync(KofiUrl);
-                    await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("BrowserNotAvailableTitle"), 
-                        $"{_localizationService.GetString("BrowserNotAvailableMessage")}:\n{KofiUrl}", 
-                        "OK");
-                }
-                catch
-                {
-                    await SocShared.ModernDialog.AlertAsync(this,"Error", 
-                        $"{_localizationService.GetString("BrowserError")}: {KofiUrl}", 
-                        "OK");
-                }
-            }
-            catch (Exception ex)
-            {
-                // Fallback: copy URL to clipboard on any other error
-                try
-                {
-                    await Clipboard.SetTextAsync(KofiUrl);
-                    await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("LinkErrorTitle"), 
-                        $"{_localizationService.GetString("LinkErrorMessage")} ({ex.Message}), {_localizationService.GetString("ClipboardMessage")}.", 
-                        "OK");
-                }
-                catch
-                {
-                    await SocShared.ModernDialog.AlertAsync(this,"Error", 
-                        $"{_localizationService.GetString("FinalErrorMessage")}: {KofiUrl}", 
-                        "OK");
-                }
-            }
-        }
     }
 }
