@@ -9,6 +9,11 @@
 
 Una aplicación Android desarrollada con .NET MAUI que permite leer archivos de texto con funcionalidades avanzadas, compatible con servicios de almacenamiento en la nube y archivos locales.
 
+## Dónde conseguirla
+
+- **Google Play:** https://play.google.com/store/apps/details?id=com.socratic.txtreader
+- **Releases de GitHub** (APK / EXE / MSIX de cada versión): https://github.com/donki/TXTReader/releases
+
 ## 📸 Capturas de Pantalla
 
 | Pantalla Principal | Lector de Texto | Búsqueda en Tiempo Real |
