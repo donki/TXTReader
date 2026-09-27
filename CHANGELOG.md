@@ -5,6 +5,20 @@ Todos los cambios relevantes de TXT Reader se documentan en este archivo.
 El formato sigue las pautas de la constitucion del proyecto (versionado
 sincronizado entre `ApplicationDisplayVersion` y `ApplicationVersion`).
 
+## [2026.09.14.0] (versionCode 2026091400)
+
+Versión que se subió a Play tras la 2026.09.12.0 (pista alpha), sin cambios de funciones.
+
+### Cambiado
+- **«Acerca de» sin la tarjeta de Ko-fi**: la constitución prohíbe las secciones de donación en las
+  aplicaciones (se quitaron la tarjeta, su manejador y sus textos).
+
+### Interno
+- La firma sale solo de `..\Shared\signing.props`: el csproj ya no apunta a un keystore propio que
+  podía pisarla.
+- El README dice dónde conseguirla (Google Play y releases de GitHub), y ya no promete 10 archivos
+  recientes ni un límite de 50 MB: la aplicación guarda 5 y no tiene límite de tamaño.
+
 ## [2026.08.01.0] (versionCode 202608010)
 
 ### Añadido

@@ -37,9 +37,8 @@ Una aplicación Android desarrollada con .NET MAUI que permite leer archivos de 
 - 🔗 **URIs de Content** - Lectura nativa usando ContentResolver de Android
 
 ### 🚀 **Funcionalidades Avanzadas**
-- 🕒 **Historial inteligente** - Últimos 10 archivos con limpieza automática
+- 🕒 **Historial** - Los últimos 5 archivos abiertos (si uno ya no existe, se quita de la lista al tocarlo)
 - 📱 **Intents de Android** - Abre archivos .log desde otras aplicaciones
-- 🛡️ **Límite de seguridad** - Protección contra archivos > 50MB
 - 🐛 **Sistema de logging** - Diagnóstico integrado para desarrollo
 - 🎨 **Interfaz moderna** - Colores azules unificados y navegación nativa
 
@@ -109,7 +108,7 @@ dotnet publish -f net10.0-android -c Release
    - Google Drive: Comparte → TXT Reader  
    - Dropbox: Exportar → TXT Reader
 3. **Desde otras aplicaciones**: Abre archivos .log, .txt desde cualquier app
-4. **Archivos recientes**: Lista inteligente con los últimos 10 archivos
+4. **Archivos recientes**: Lista con los últimos 5 archivos abiertos
 
 ### 🔍 Funciones del Lector
 
@@ -159,7 +158,6 @@ TXTReader/
 
 - **Sin archivos temporales** - Lectura directa desde URIs de content
 - **Detección inteligente de codificación** - Análisis de BOM y patrones de bytes
-- **Límite de seguridad** - Protección automática contra archivos > 50MB
 - **Logging integrado** - Sistema de diagnóstico para desarrollo y soporte
 - **Gestión de memoria eficiente** - Optimizado para archivos grandes
 - **Navegación nativa** - Integración completa con el sistema Android
