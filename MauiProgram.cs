@@ -7,6 +7,10 @@ namespace TXTReader
     {
         public static MauiApp CreateMauiApp()
         {
+            // Gestor global de excepciones (constitucion General 6.12): lo primero, antes de crear
+            // nada. Registra en AppDataDirectory/crash.log y avisa en el idioma de la app sin cerrarla.
+            SocShared.CrashGuard.Install("TXT Reader");
+
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>();

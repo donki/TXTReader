@@ -9,6 +9,8 @@
 		android:largeScreens="false"
 		android:xlargeScreens="false"
 		android:anyDensity="true" />
-	<application android:allowBackup="false" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true">
+	<!-- enableOnBackInvokedCallback="false": con targetSdk 36, Android 16 activa el "atras
+	     predictivo" y el boton de atras no llega al Shell ni a las paginas (Mobile 7). -->
+	<application android:enableOnBackInvokedCallback="false" android:allowBackup="false" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true">
 	</application>
 </manifest>

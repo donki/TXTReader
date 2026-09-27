@@ -5,6 +5,19 @@ Todos los cambios relevantes de TXT Reader se documentan en este archivo.
 El formato sigue las pautas de la constitucion del proyecto (versionado
 sincronizado entre `ApplicationDisplayVersion` y `ApplicationVersion`).
 
+## [2026.09.27.0] (versionCode 2026092700)
+
+### Añadido
+- **Un error inesperado ya no cierra la aplicación** (constitución General §6.12): se registra con
+  su traza en `crash.log` (carpeta de datos de la app, con tamaño acotado), se avisa en el idioma
+  de la aplicación y se sigue. Usa la pieza común `Shared/CrashGuard.cs`.
+
+### Corregido
+- **Botón de atrás** (Mobile §7): en Android 16 el «atrás predictivo» hacía que no llegase a la
+  aplicación (`enableOnBackInvokedCallback="false"`). Ahora, desde el lector vuelve a la pantalla
+  principal; desde «Acerca de» abierta en el menú, a Inicio; con el menú lateral abierto, lo
+  cierra; y en la pantalla principal la aplicación se oculta sin cerrarse.
+
 ## [2026.09.14.0] (versionCode 2026091400)
 
 Versión que se subió a Play tras la 2026.09.12.0 (pista alpha), sin cambios de funciones.
