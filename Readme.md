@@ -33,7 +33,7 @@ Una aplicación Android desarrollada con .NET MAUI que permite leer archivos de 
 ### ☁️ **Compatibilidad Total con la Nube**
 - 🌐 **OneDrive** - Funciona como Microsoft Edge, sin archivos temporales
 - 📱 **Google Drive** - Acceso directo a archivos en la nube
-- 📦 **Dropbox** - Soporte completo para archivos compartidos
+- 📦 **Otros servicios de almacenamiento** - Soporte para archivos compartidos desde sus apps
 - 🔗 **URIs de Content** - Lectura nativa usando ContentResolver de Android
 
 ### 🚀 **Funcionalidades Avanzadas**
@@ -106,7 +106,7 @@ dotnet publish -f net10.0-android -c Release
 2. **Desde servicios en la nube**: 
    - OneDrive: Toca "Abrir con" → TXT Reader
    - Google Drive: Comparte → TXT Reader  
-   - Dropbox: Exportar → TXT Reader
+   - Otros servicios de almacenamiento: Exportar o Abrir con → TXT Reader
 3. **Desde otras aplicaciones**: Abre archivos .log, .txt desde cualquier app
 4. **Archivos recientes**: Lista con los últimos 5 archivos abiertos
 
@@ -190,7 +190,7 @@ Este software se proporciona 'tal como está', sin garantías de ningún tipo, e
 ### 📊 **Para Profesionales**
 - Abrir documentos de texto desde OneDrive corporativo
 - Revisar reportes CSV desde Google Drive
-- Leer archivos de configuración desde Dropbox
+- Leer archivos de configuración desde cualquier servicio de almacenamiento
 
 ### 🎓 **Para Estudiantes**
 - Acceder a apuntes en formato .txt desde la nube

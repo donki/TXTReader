@@ -228,4 +228,45 @@
   <data name="SelectFileTitle" xml:space="preserve">
     <value>Select a text file</value>
   </data>
+  <data name="CloudOneDriveTitle" xml:space="preserve">
+    <value>OneDrive - Restricted access</value>
+  </data>
+  <data name="CloudOneDriveMessage" xml:space="preserve">
+    <value>OneDrive does not allow direct access. Download the file first:
+
+1. Open the file in OneDrive
+2. Tap the 3 dots (...)
+3. Choose 'Download'
+4. Open it from Downloads</value>
+  </data>
+  <data name="CloudGoogleDriveTitle" xml:space="preserve">
+    <value>Google Drive - Access error</value>
+  </data>
+  <data name="CloudGoogleDriveMessage" xml:space="preserve">
+    <value>The Google Drive file could not be accessed.
+
+Try:
+1. Make sure you are connected to the internet
+2. Check that you have permission for the file
+3. Download the file locally if the problem persists</value>
+  </data>
+  <data name="CloudStorageTitle" xml:space="preserve">
+    <value>The file cannot be opened</value>
+  </data>
+  <data name="CloudStorageMessage" xml:space="preserve">
+    <value>The storage service did not grant access to the file.
+
+Try:
+1. Check your internet connection
+2. Make sure the file is synced
+3. Open it in that service's app and use 'Export' or 'Open with'</value>
+  </data>
+  <data name="CloudGenericTitle" xml:space="preserve">
+    <value>File not accessible</value>
+  </data>
+  <data name="CloudGenericMessage" xml:space="preserve">
+    <value>The file could not be accessed from cloud storage.
+
+Try downloading the file locally first.</value>
+  </data>
 </root>

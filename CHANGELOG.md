@@ -5,6 +5,20 @@ Todos los cambios relevantes de TXT Reader se documentan en este archivo.
 El formato sigue las pautas de la constitucion del proyecto (versionado
 sincronizado entre `ApplicationDisplayVersion` y `ApplicationVersion`).
 
+## [2026.09.29.0] (versionCode 2026092900)
+
+### Cambiado
+- **El aviso de «no se puede abrir el fichero» ya no nombra servicios ajenos** (constitución Web §4,
+  aplicada también dentro de las apps): el diálogo «Dropbox - Error de acceso» pasa a ser «No se
+  puede abrir el fichero» / «El servicio de almacenamiento no ha dado acceso al fichero…».
+- **Esos avisos salen en el idioma de la aplicación**: estaban escritos a mano en castellano y ahora
+  vienen de los recursos es/en (también los de OneDrive y Google Drive).
+- El README tampoco nombra ese servicio.
+
+*English:* the "cannot open the file" dialog no longer names third-party storage services ("The
+file cannot be opened" / "The storage service did not grant access to the file…"), and all the
+cloud-access dialogs now follow the app language (es/en) instead of being hard-coded in Spanish.
+
 ## [2026.09.27.0] (versionCode 2026092700)
 
 ### Añadido

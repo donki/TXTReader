@@ -164,28 +164,23 @@ namespace TXTReader
                                 string message;
                                 string title;
 
+                                // Solo el texto que ve el usuario va sin nombres de productos ajenos
+                                // (constitución Web §4); aquí se mira la URI para elegir el consejo.
+                                string key;
                                 if (uriString.Contains("onedrive"))
-                                {
-                                    title = "OneDrive - Acceso restringido";
-                                    message = "OneDrive no permite acceso directo. Descarga el archivo primero:\n\n1. Abre el archivo en OneDrive\n2. Toca los 3 puntos (...)\n3. Selecciona 'Descargar'\n4. Abre desde Descargas";
-                                }
+                                    key = "CloudOneDrive";
                                 else if (uriString.Contains("drive.google"))
-                                {
-                                    title = "Google Drive - Error de acceso";
-                                    message = "No se pudo acceder al archivo de Google Drive.\n\nIntenta:\n1. Asegúrate de tener conexión a internet\n2. Verifica que tienes permisos para el archivo\n3. Descarga el archivo localmente si persiste el problema";
-                                }
+                                    key = "CloudGoogleDrive";
                                 else if (uriString.Contains("dropbox"))
-                                {
-                                    title = "Dropbox - Error de acceso";
-                                    message = "No se pudo acceder al archivo de Dropbox.\n\nIntenta:\n1. Verifica tu conexión a internet\n2. Asegúrate de que el archivo esté sincronizado\n3. Abre el archivo en Dropbox y selecciona 'Exportar'";
-                                }
+                                    key = "CloudStorage";
                                 else
-                                {
-                                    title = "Archivo no accesible";
-                                    message = "No se pudo acceder al archivo desde el almacenamiento en la nube.\n\nIntenta descargar el archivo localmente primero.";
-                                }
+                                    key = "CloudGeneric";
 
-                                await SocShared.ModernDialog.AlertAsync(Microsoft.Maui.Controls.Application.Current.MainPage, title, message, "OK");
+                                var loc = LocalizationService.Instance;
+                                title = loc.GetString(key + "Title");
+                                message = loc.GetString(key + "Message");
+
+                                await SocShared.ModernDialog.AlertAsync(Microsoft.Maui.Controls.Application.Current.MainPage, title, message, LocalizationService.Instance.GetString("OK"));
                             }
                         });
                     }

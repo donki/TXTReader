@@ -228,4 +228,45 @@
   <data name="SelectFileTitle" xml:space="preserve">
     <value>Selecciona un archivo de texto</value>
   </data>
+  <data name="CloudOneDriveTitle" xml:space="preserve">
+    <value>OneDrive - Acceso restringido</value>
+  </data>
+  <data name="CloudOneDriveMessage" xml:space="preserve">
+    <value>OneDrive no permite acceso directo. Descarga el archivo primero:
+
+1. Abre el archivo en OneDrive
+2. Toca los 3 puntos (...)
+3. Selecciona 'Descargar'
+4. Abre desde Descargas</value>
+  </data>
+  <data name="CloudGoogleDriveTitle" xml:space="preserve">
+    <value>Google Drive - Error de acceso</value>
+  </data>
+  <data name="CloudGoogleDriveMessage" xml:space="preserve">
+    <value>No se pudo acceder al archivo de Google Drive.
+
+Intenta:
+1. Asegúrate de tener conexión a internet
+2. Verifica que tienes permisos para el archivo
+3. Descarga el archivo localmente si persiste el problema</value>
+  </data>
+  <data name="CloudStorageTitle" xml:space="preserve">
+    <value>No se puede abrir el fichero</value>
+  </data>
+  <data name="CloudStorageMessage" xml:space="preserve">
+    <value>El servicio de almacenamiento no ha dado acceso al fichero.
+
+Intenta:
+1. Verifica tu conexión a internet
+2. Asegúrate de que el fichero esté sincronizado
+3. Ábrelo en la app de ese servicio y usa 'Exportar' o 'Abrir con'</value>
+  </data>
+  <data name="CloudGenericTitle" xml:space="preserve">
+    <value>Archivo no accesible</value>
+  </data>
+  <data name="CloudGenericMessage" xml:space="preserve">
+    <value>No se pudo acceder al archivo desde el almacenamiento en la nube.
+
+Intenta descargar el archivo localmente primero.</value>
+  </data>
 </root>
