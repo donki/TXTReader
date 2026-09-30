@@ -5,6 +5,31 @@ Todos los cambios relevantes de TXT Reader se documentan en este archivo.
 El formato sigue las pautas de la constitucion del proyecto (versionado
 sincronizado entre `ApplicationDisplayVersion` y `ApplicationVersion`).
 
+## [2026.09.30.0] (versionCode 2026093000)
+
+### Corregido
+- **Ficheros ANSI de Windows (Windows-1252 / Latin-1)**: un «canción» guardado sin UTF-8 se veía
+  como «canci�n», y si el fichero tenía el símbolo € (u otros bytes 0x80-0x9F) pedir esa
+  codificación fallaba —.NET no la trae sin registrar su proveedor— y el fichero no se abría desde
+  otras apps. Ahora todo lo que no es UTF-8 válido se lee como Windows-1252.
+- **Ficheros UTF-32 con marca (BOM)** se leían como UTF-16 y salían ilegibles: la marca de UTF-32 LE
+  empieza igual que la de UTF-16 LE y se miraba después.
+- **Buscar «&», «<» o comillas** no resaltaba nada, y buscar «amp» o «lt» rompía el texto (se veía
+  «&amp;» en vez de «&»): se buscaba en el texto ya convertido a HTML. Ahora se busca en el texto
+  original (`Services/TextHighlighter.cs`).
+- **Acerca de**: en un móvil en castellano sin idioma elegido, el botón marcado era «English» aunque
+  la app se veía en castellano. Y «idioma del sistema» ya no se queda en el último idioma elegido.
+
+### Añadido
+- **Pruebas automatizadas** (General §8.6): proyecto `TXTReader.Tests` (xUnit) con la detección de
+  codificación, los recientes, el resaltado de la búsqueda y los idiomas. Se ejecutan con
+  `dotnet test TXTReader.Tests`.
+
+*English:* ANSI (Windows-1252/Latin-1) files now open with their accents and € sign; UTF-32 files
+with a BOM are read correctly; searching for "&", "<" or quotes highlights them and no longer breaks
+the text; the About page marks the language actually on screen. Automated tests added
+(`dotnet test TXTReader.Tests`).
+
 ## [2026.09.29.0] (versionCode 2026092900)
 
 ### Cambiado

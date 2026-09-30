@@ -2,4 +2,5 @@
   <Project Path="TXTReader.csproj">
     <Deploy Solution="Debug|*" />
   </Project>
+  <Project Path="TXTReader.Tests/TXTReader.Tests.csproj" />
 </Solution>

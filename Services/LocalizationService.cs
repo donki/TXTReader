@@ -7,6 +7,11 @@ namespace TXTReader.Services
     public class LocalizationService
     {
         private static LocalizationService? _instance;
+
+        // Idioma del dispositivo, tomado antes de que la app cambie la cultura del hilo. Leer
+        // CultureInfo.CurrentUICulture despues ya no da el del sistema sino el ultimo elegido: tras
+        // pasar a ingles, «idioma del sistema» se quedaba en ingles en un movil en castellano.
+        private static CultureInfo _deviceUICulture = CultureInfo.CurrentUICulture;
         private readonly ResourceManager _resourceManager;
         private CultureInfo _currentCulture;
 
@@ -88,6 +93,12 @@ namespace TXTReader.Services
             LanguageChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Idioma en que se ve la app ahora: "es" o "en", tambien cuando sigue al del sistema (en
+        /// ese caso <see cref="GetCurrentLanguageCode"/> devuelve "system").
+        /// </summary>
+        public string CurrentLanguageCode => _currentCulture.TwoLetterISOLanguageName == "es" ? "es" : "en";
+
         public string GetCurrentLanguageCode()
         {
             var saved = Preferences.Get("app_language", "");
@@ -112,7 +123,7 @@ namespace TXTReader.Services
 
         private CultureInfo GetSystemLanguage()
         {
-            var systemLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+            var systemLanguage = _deviceUICulture.TwoLetterISOLanguageName;
             
             // Support Spanish and English, fallback to English
             return systemLanguage switch

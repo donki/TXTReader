@@ -124,6 +124,27 @@ dotnet publish -f net10.0-android -c Release
 - **Limpiar logs**: Botón "Limpiar" para reiniciar el registro
 - **Diagnóstico**: Información detallada para resolución de problemas
 
+## 🧪 Pruebas
+
+68 pruebas automatizadas (xUnit) de la lógica de la app, sin interfaz ni dispositivo: detección de
+codificación sobre ficheros temporales (UTF-8 con y sin marca, UTF-16/32 LE y BE, Windows-1252 y
+Latin-1, vacíos, cortados, grandes, errores), recientes (orden, duplicados, límite de 5, ficheros
+borrados, almacén dañado o que falla), resaltado de la búsqueda (mayúsculas, caracteres HTML,
+término literal, tiempo máximo) e idiomas (mismas claves y marcadores en `AppResources.resx` y
+`AppResources.es.resx`, arranque, cambio, idioma del sistema).
+
+| Fecha | Pruebas | Cobertura de lo instrumentado | Cobertura sobre toda la app | Tiempo del banco |
+|---|---|---|---|---|
+| 2026-09-30 | 68 (todas pasan) | 90,4 % (171 / 189 líneas) | 10,1 % (171 / 1697 líneas) | ~0,3 s de pruebas, ~3 s con el arranque de `dotnet test` |
+
+```bash
+dotnet test TXTReader.Tests                        # solo las pruebas
+pwsh TXTReader.Tests/cobertura.ps1                 # pruebas + las dos coberturas + tiempo
+```
+
+Queda sin probar la interfaz (páginas y los controles de texto con WebView/Label), la lectura de
+URIs `content://` (solo existe en Android) y el registro de depuración en disco.
+
 ## 🏗️ Arquitectura Técnica
 
 ### 📁 Estructura del Proyecto

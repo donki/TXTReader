@@ -110,10 +110,14 @@ namespace TXTReader.Services
 
         private static Encoding DetectEncoding(byte[] bytes)
         {
-            if (bytes.Length < 2)
-                return Encoding.UTF8;
+            // Detectar BOM. El de UTF-32 LE (FF FE 00 00) empieza como el de UTF-16 LE (FF FE):
+            // hay que mirarlo antes, o un fichero UTF-32 se leia como UTF-16 y salia ilegible.
+            if (bytes.Length >= 4 && bytes[0] == 0xFF && bytes[1] == 0xFE && bytes[2] == 0x00 && bytes[3] == 0x00)
+                return Encoding.UTF32; // UTF-32 LE
 
-            // Detectar BOM
+            if (bytes.Length >= 4 && bytes[0] == 0x00 && bytes[1] == 0x00 && bytes[2] == 0xFE && bytes[3] == 0xFF)
+                return new UTF32Encoding(true, true); // UTF-32 BE
+
             if (bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF)
                 return Encoding.UTF8;
 
@@ -123,22 +127,23 @@ namespace TXTReader.Services
             if (bytes.Length >= 2 && bytes[0] == 0xFE && bytes[1] == 0xFF)
                 return Encoding.BigEndianUnicode; // UTF-16 BE
 
-            if (bytes.Length >= 4 && bytes[0] == 0xFF && bytes[1] == 0xFE && bytes[2] == 0x00 && bytes[3] == 0x00)
-                return Encoding.UTF32; // UTF-32 LE
-
-            if (bytes.Length >= 4 && bytes[0] == 0x00 && bytes[1] == 0x00 && bytes[2] == 0xFE && bytes[3] == 0xFF)
-                return new UTF32Encoding(true, true); // UTF-32 BE
-
             // Heurística para detectar codificación sin BOM
             if (IsValidUTF8(bytes))
                 return Encoding.UTF8;
 
-            // Detectar Windows-1252 (ANSI)
-            if (ContainsExtendedASCII(bytes))
-                return Encoding.GetEncoding("windows-1252");
+            // No es UTF-8: texto ANSI de Windows (Windows-1252, que incluye Latin-1). Antes solo se
+            // aceptaba si habia bytes 0x80-0x9F, y un «canción» en Latin-1 salia como «canci�n»;
+            // y .NET no trae Windows-1252 sin registrar su proveedor, asi que pedirla lanzaba
+            // una excepcion y el fichero no se abria.
+            return Windows1252;
+        }
 
-            // Por defecto, usar UTF-8
-            return Encoding.UTF8;
+        private static readonly Encoding Windows1252 = CreateWindows1252();
+
+        private static Encoding CreateWindows1252()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            return Encoding.GetEncoding(1252);
         }
 
         private static bool IsValidUTF8(byte[] bytes)
@@ -156,16 +161,6 @@ namespace TXTReader.Services
             {
                 return false;
             }
-        }
-
-        private static bool ContainsExtendedASCII(byte[] bytes)
-        {
-            foreach (byte b in bytes)
-            {
-                if (b > 127 && b < 160) // Rango típico de Windows-1252
-                    return true;
-            }
-            return false;
         }
     }
 }

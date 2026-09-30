@@ -23,7 +23,9 @@ namespace TXTReader.Pages
         // el idioma activo usa el estilo primario, el otro el de contorno.
         private void UpdateLanguageButtons()
         {
-            var isSpanish = _localizationService.GetCurrentLanguageCode() == "es";
+            // El idioma en que se ve la app, no el guardado: sin preferencia es "system" y en un
+            // movil en castellano se marcaba «English» aunque todo estuviera en castellano.
+            var isSpanish = _localizationService.CurrentLanguageCode == "es";
             SpanishButton.Style = LookupStyle(isSpanish ? "PrimaryButton" : "OutlineButton");
             EnglishButton.Style = LookupStyle(isSpanish ? "OutlineButton" : "PrimaryButton");
         }

@@ -143,33 +143,8 @@ public class SelectableHighlightedTextView : ContentView
 
     private void UpdateHtml()
     {
-        // 1) Escapar a HTML seguro
-        string encoded = System.Net.WebUtility.HtmlEncode(Text ?? string.Empty);
-
-        // 2) Resaltar coincidencias insertando <mark>
-        string term = SearchTerm ?? string.Empty;
-        if (!string.IsNullOrEmpty(term))
-        {
-            var options = RegexOptions.Multiline | RegexOptions.CultureInvariant;
-            if (!CaseSensitive) 
-                options |= RegexOptions.IgnoreCase;
-
-            string pattern = Regex.Escape(term);
-            try
-            {
-                // Timeout amplio para permitir resaltar en documentos grandes.
-                encoded = Regex.Replace(encoded, pattern, m => $"<mark>{m.Value}</mark>", options, TimeSpan.FromSeconds(1));
-            }
-            catch (RegexMatchTimeoutException)
-            {
-                // Documento muy grande o término muy frecuente: mostramos el texto SIN resaltar
-                // en lugar de tumbar la app (crash observado en Galaxy S10+/Android 12 al teclear).
-            }
-            catch (Exception)
-            {
-                // Cualquier otro fallo del motor de regex: degradar sin resaltar, nunca crashear.
-            }
-        }
+        // 1-2) Texto escapado a HTML con las coincidencias marcadas con <mark>.
+        string encoded = TXTReader.Services.TextHighlighter.ToHighlightedHtml(Text, SearchTerm, CaseSensitive);
 
         // 3) Construir HTML con estilos
         string fontFamilyCss = string.IsNullOrWhiteSpace(FontFamily) 
