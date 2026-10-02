@@ -5,6 +5,16 @@ Todos los cambios relevantes de TXT Reader se documentan en este archivo.
 El formato sigue las pautas de la constitucion del proyecto (versionado
 sincronizado entre `ApplicationDisplayVersion` y `ApplicationVersion`).
 
+## [2026.10.02.0] (versionCode 2026100200)
+
+### Cambiado
+- **Android 7.0 (API 24) como mínimo** (antes 5.0): Google Play ya no acepta paquetes con un
+  mínimo inferior a 24 (protección automática de Play). Es la misma 2026.10.01.0 con ese único
+  cambio; la 2026.10.01.0 solo llegó a las releases de GitHub.
+
+*English:* Minimum Android version raised to 7.0 (API 24), required by Google Play's automatic
+protection. Otherwise identical to 2026.10.01.0.
+
 ## [2026.10.01.0] (versionCode 2026100100)
 
 ### Corregido

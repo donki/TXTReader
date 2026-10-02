@@ -3,7 +3,7 @@
 Respuestas para el cuestionario de Play Console › **Panel › Solicitar acceso a producción**, en
 catalán (el idioma de la consola). Cada texto cabe en los 300 caracteres del formulario; el número
 entre paréntesis es su longitud. Constitución Mobile §11. **Última actualización: 2026-10-01**
-(versión 2026.09.30.0). Estado en Play: prueba cerrada (alpha 2026.09.30.0 publicada; en la pista desde el 2026-09-12).
+(versión 2026.10.02.0). Estado en Play: prueba cerrada (alpha 2026.10.02.0 subida el 2026-10-02; en la pista desde el 2026-09-12).
 
 > Lo marcado con ⚠ no lo puedo saber yo: compruébalo en la consola antes de enviarlo y cámbialo si
 > no es así.

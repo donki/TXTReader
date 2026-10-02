@@ -1,7 +1,7 @@
 # TXT Reader
 
 ![.NET MAUI](https://img.shields.io/badge/.NET%20MAUI-10.0-blue)
-![Android](https://img.shields.io/badge/Android-5.0%2B-green)
+![Android](https://img.shields.io/badge/Android-7.0%2B-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen)
 
@@ -44,7 +44,7 @@ Una aplicación Android desarrollada con .NET MAUI que permite leer archivos de 
 
 ## 📱 Plataformas Soportadas
 
-- **Android** (API 21+ / Android 5.0+)
+- **Android** (API 24+ / Android 7.0+)
 - Optimizado para Android 10+ con soporte completo para Scoped Storage
 
 ## 📂 Formatos de Archivo Soportados
@@ -132,7 +132,7 @@ desde otras apps (`Services/IntentFileHandler.cs`) y el visor HTML. Lo que pedir
 
 | Fecha | Pruebas | Cobertura de lo instrumentado | Cobertura sobre toda la app | Tiempo del banco |
 |---|---|---|---|---|
-| 2026-10-01 | 166 (todas pasan) | 97,9 % (889 / 908 líneas) | **92,6 %** (889 / 960 líneas) | ~1 s de pruebas, ~5 s con el arranque de `dotnet test` |
+| 2026-10-02 | 166 (todas pasan) | 97,9 % (889 / 908 líneas) | **92,6 %** (889 / 960 líneas) | ~1 s de pruebas, ~5 s con el arranque de `dotnet test` |
 | 2026-09-30 | 68 (todas pasan) | 90,4 % (171 / 189 líneas) | 10,1 % (171 / 1697 líneas, recuento anterior) | ~0,3 s de pruebas |
 
 ```bash
