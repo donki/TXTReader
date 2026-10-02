@@ -134,12 +134,12 @@ public sealed class EncodingDetectionTests : IDisposable
     [Fact]
     public async Task MissingFile_Throws_AndIsLogged()
     {
+        TestLog.Reset();
         var missing = _tmp.Combine("missing.txt");
 
         await Assert.ThrowsAsync<FileNotFoundException>(() => EncodingDetectionService.ReadFileWithEncodingDetectionAsync(missing));
 
-        lock (MobileLogService.Messages)
-            Assert.Contains(MobileLogService.Messages, m => m.StartsWith("Fallback also failed"));
+        Assert.Contains("Fallback also failed", await TestLog.WaitForAsync("Fallback also failed"));
     }
 
     [Fact]

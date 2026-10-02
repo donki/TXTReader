@@ -69,36 +69,17 @@ namespace TXTReader.Services
         {
             try
             {
-#if ANDROID
-                await MobileLogService.LogAsync($"ReadContentUriAsync: Parsing URI: {contentUri}");
-                var uri = Android.Net.Uri.Parse(contentUri);
-                
-                await MobileLogService.LogAsync($"ReadContentUriAsync: Getting context and content resolver");
-                var context = Platform.CurrentActivity ?? Android.App.Application.Context;
-                var contentResolver = context.ContentResolver;
-                
-                if (contentResolver == null)
-                {
-                    throw new InvalidOperationException("ContentResolver is null");
-                }
-                
-                await MobileLogService.LogAsync($"ReadContentUriAsync: Opening input stream for URI: {uri}");
-                using var inputStream = contentResolver.OpenInputStream(uri);
-                if (inputStream == null)
-                {
-                    throw new InvalidOperationException("Could not open content URI stream - inputStream is null");
-                }
-                
-                await MobileLogService.LogAsync($"ReadContentUriAsync: Successfully opened input stream, copying to memory");
+                await MobileLogService.LogAsync($"ReadContentUriAsync: Opening input stream for URI: {contentUri}");
+                // El ContentResolver es de Android: lo da MainActivity (AppPlatform.OpenContentUri).
+                using var inputStream = AppPlatform.OpenContentUri(contentUri)
+                    ?? throw new InvalidOperationException("Could not open content URI stream - inputStream is null");
+
                 using var memoryStream = new MemoryStream();
                 await inputStream.CopyToAsync(memoryStream);
-                
+
                 var bytes = memoryStream.ToArray();
                 await MobileLogService.LogAsync($"ReadContentUriAsync: Successfully read {bytes.Length} bytes from content URI");
                 return bytes;
-#else
-                throw new PlatformNotSupportedException("Content URIs are only supported on Android");
-#endif
             }
             catch (Exception ex)
             {

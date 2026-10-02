@@ -1,5 +1,3 @@
-using System.Text;
-using System.Text.RegularExpressions;
 using Microsoft.Maui.Controls;
 
 namespace TXTReader.Controls;
@@ -124,17 +122,6 @@ public class SelectableHighlightedTextView : ContentView
         set => SetValue(ZoomProperty, value); 
     }
 
-    public async Task LoadFromFileAsync(string filePath, Encoding? encoding = null)
-    {
-        if (string.IsNullOrWhiteSpace(filePath)) 
-            throw new ArgumentException("filePath");
-
-        encoding ??= Encoding.UTF8;
-        using var fs = File.OpenRead(filePath);
-        using var sr = new StreamReader(fs, encoding, detectEncodingFromByteOrderMarks: true);
-        Text = await sr.ReadToEndAsync();
-    }
-
     private static void OnAnyChanged(BindableObject bindable, object oldValue, object newValue)
     {
         if (bindable is SelectableHighlightedTextView v)
@@ -151,7 +138,11 @@ public class SelectableHighlightedTextView : ContentView
             ? "Consolas, Monaco, 'Courier New', monospace" 
             : FontFamily!;
         
-        double basePx = Math.Clamp(FontSize * Math.Max(Zoom, 0.5), 8, 64);
+        // Numeros CSS siempre con punto: con la app en castellano salian «15,5px» y «1,4», que el
+        // navegador descarta (el zoom no cambiaba la letra y se perdia el interlineado).
+        var inv = System.Globalization.CultureInfo.InvariantCulture;
+        string basePx = Math.Clamp(FontSize * Math.Max(Zoom, 0.5), 8, 64).ToString(inv);
+        string lineHeight = LineHeight.ToString(inv);
 
         string html = $$"""
 <!DOCTYPE html>
@@ -165,7 +156,7 @@ public class SelectableHighlightedTextView : ContentView
             color: {{Foreground}};
             font-family: {{fontFamilyCss}};
             font-size: {{basePx}}px;
-            line-height: {{LineHeight}};
+            line-height: {{lineHeight}};
             white-space: pre-wrap;      /* conserva saltos de línea */
             word-wrap: break-word;      /* evita desbordes */
             padding: 12px;

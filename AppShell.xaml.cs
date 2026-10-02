@@ -36,12 +36,8 @@ namespace TXTReader
                 return true;
             }
 
-#if ANDROID
-            Platform.CurrentActivity?.MoveTaskToBack(true);
+            AppPlatform.MoveTaskToBack();
             return true;
-#else
-            return base.OnBackButtonPressed();
-#endif
         }
 
         private void OnLanguageChanged(object? sender, EventArgs e) => UpdateMenuTexts();
@@ -50,7 +46,7 @@ namespace TXTReader
         {
             HomeFlyoutItem.Title = _localizationService.GetString("MenuHome");
             AboutFlyoutItem.Title = _localizationService.GetString("AboutTitle");
-            VersionLabel.Text = $"v{AppInfo.Current.VersionString}";
+            VersionLabel.Text = $"v{AppPlatform.AppInfo.VersionString}";
         }
     }
 }

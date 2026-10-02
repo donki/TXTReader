@@ -5,6 +5,40 @@ Todos los cambios relevantes de TXT Reader se documentan en este archivo.
 El formato sigue las pautas de la constitucion del proyecto (versionado
 sincronizado entre `ApplicationDisplayVersion` y `ApplicationVersion`).
 
+## [2026.10.01.0] (versionCode 2026100100)
+
+### Corregido
+- **Zoom y espaciado del texto con la app en castellano**: el visor escribía los tamaños para el
+  navegador con coma decimal («15,5px», «1,4») y el navegador los descartaba: mover la barra de
+  zoom no cambiaba la letra y se perdía el interlineado. Ahora van siempre con punto.
+- **Avisos al abrir desde otra app que no se veían nunca**: el de fichero no disponible y el
+  consejo de la nube se ponían sobre el menú (Shell) de la ventana, donde el diálogo no se puede
+  mostrar. Ahora salen sobre la pantalla que está a la vista.
+- **Avisos que salían en castellano con la app en inglés**: el de fichero no disponible al abrirlo
+  desde otra app, el de versión nueva disponible y los de Acerca de (correo copiado, error). Ya
+  salen en el idioma de la app.
+
+### Cambiado
+- Código muerto fuera: el control `HighlightedTextView` (no se usaba; el lector usa
+  `SelectableHighlightedTextView`), las pantallas `SplashPage` y `LogViewerPage`, a las que no se
+  llegaba desde ningún sitio, y la lectura y el borrado del registro de depuración que solo usaban
+  ellas.
+- La lógica de abrir ficheros desde otras apps sale de `MainActivity` a `Services/IntentFileHandler.cs`
+  y lo que depende del dispositivo (selector, correo, navegador, portapapeles, diálogos, lectura de
+  `content://`) pasa por `Services/AppPlatform.cs`, para poder probarlo. La app hace lo mismo.
+
+### Pruebas
+- El banco (General §8.6) pasa de 68 a 165 pruebas y ahora recorre también las pantallas con su
+  XAML real (principal, lector, Acerca de, menú y botón de atrás), la apertura desde otras apps, la
+  comprobación de versión y el visor. Cobertura sobre toda la app: **92,6 %** (antes 10,1 % con el
+  recuento anterior, 17,8 % con el nuevo, que ya no cuenta llaves ni `using` como líneas de la app).
+
+*English:* Zoom and line spacing now work with the app in Spanish (the viewer wrote CSS numbers with
+a decimal comma); the notices when opening a file from another app are shown again (they were put
+on the window's Shell, where the dialog cannot appear), and they, the "update available" notice and
+the About notices now follow the app language instead of always being in Spanish. Dead code removed (unused viewer control, splash
+and log viewer pages). Tests: 165, 92.6 % line coverage of the whole app.
+
 ## [2026.09.30.0] (versionCode 2026093000)
 
 ### Corregido

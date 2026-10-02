@@ -21,8 +21,7 @@
                 <Entry x:Name="SearchEntry"
                        FontSize="14"
                        BackgroundColor="Transparent"
-                       Margin="15,0"
-                       TextChanged="OnSearchTextChanged" />
+                       Margin="15,0" />
             </Border>
         </Border>
 

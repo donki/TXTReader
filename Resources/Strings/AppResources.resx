@@ -269,4 +269,26 @@ Try:
 
 Try downloading the file locally first.</value>
   </data>
+  <data name="EmailCopiedTitle" xml:space="preserve">
+    <value>Email copied</value>
+  </data>
+  <data name="EmailCopiedMessage" xml:space="preserve">
+    <value>Email copied to the clipboard: {0}</value>
+  </data>
+  <data name="EmailCopiedFallbackMessage" xml:space="preserve">
+    <value>The email app could not be opened. The address has been copied to the clipboard: {0}</value>
+  </data>
+  <data name="UpdateAvailableTitle" xml:space="preserve">
+    <value>Update available</value>
+  </data>
+  <data name="UpdateAvailableMessage" xml:space="preserve">
+    <value>A newer version ({0}) is available. You have {1}.
+Do you want to update?</value>
+  </data>
+  <data name="UpdateButton" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="NotNowButton" xml:space="preserve">
+    <value>Not now</value>
+  </data>
 </root>

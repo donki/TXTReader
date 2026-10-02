@@ -269,4 +269,26 @@ Intenta:
 
 Intenta descargar el archivo localmente primero.</value>
   </data>
+  <data name="EmailCopiedTitle" xml:space="preserve">
+    <value>Correo copiado</value>
+  </data>
+  <data name="EmailCopiedMessage" xml:space="preserve">
+    <value>Correo copiado al portapapeles: {0}</value>
+  </data>
+  <data name="EmailCopiedFallbackMessage" xml:space="preserve">
+    <value>No se pudo abrir el cliente de correo. La dirección se ha copiado al portapapeles: {0}</value>
+  </data>
+  <data name="UpdateAvailableTitle" xml:space="preserve">
+    <value>Actualización disponible</value>
+  </data>
+  <data name="UpdateAvailableMessage" xml:space="preserve">
+    <value>Hay una versión más reciente ({0}). Tienes la {1}.
+¿Quieres actualizar?</value>
+  </data>
+  <data name="UpdateButton" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="NotNowButton" xml:space="preserve">
+    <value>Ahora no</value>
+  </data>
 </root>

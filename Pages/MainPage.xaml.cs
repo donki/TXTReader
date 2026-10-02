@@ -9,57 +9,54 @@ namespace TXTReader.Pages
         private readonly RecentFilesService _recentFilesService = new();
         private readonly LocalizationService _localizationService = LocalizationService.Instance;
         public ObservableCollection<RecentFile> RecentFiles { get; set; } = new();
-        
+
         public string NoRecentFilesText => _localizationService.GetString("NoRecentFiles");
+
+        /// <summary>Comprobacion de version (en la app la da el contenedor de servicios de MAUI).</summary>
+        internal Func<UpdateService?> UpdateServiceProvider { get; set; }
 
         public MainPage()
         {
+            InitializeComponent();
+            UpdateServiceProvider = () => (Handler?.MauiContext?.Services ?? IPlatformApplication.Current?.Services)?.GetService<UpdateService>();
+
+            _localizationService.LanguageChanged += OnLanguageChanged;
+            BindingContext = this;
+            UpdateTexts();
+            _ = LoadRecentFiles();
+
+            // Archivos abiertos desde otra app (intent): MainActivity -> IntentFileHandler -> aqui.
+            FileIntentService.FileOpened += OnFileOpenedFromIntent;
+        }
+
+        internal async void OnFileOpenedFromIntent(string filePath)
+        {
             try
             {
-                InitializeComponent();
+                _ = MobileLogService.LogAsync($"MainPage: FileOpened event received with path: {filePath}");
 
-                _localizationService.LanguageChanged += OnLanguageChanged;
-                BindingContext = this;
-                UpdateTexts();
-                _ = LoadRecentFiles();
-
-                // Suscribirse a archivos abiertos por intent
-                FileIntentService.FileOpened += async (filePath) =>
-                {
-                    try
-                    {
-                        _ = MobileLogService.LogAsync($"MainPage: FileOpened event received with path: {filePath}");
-                        
-                        // Asegurar que la navegación se ejecute en el hilo principal
-                        await MainThread.InvokeOnMainThreadAsync(async () =>
-                        {
-                            _ = MobileLogService.LogAsync($"MainPage: About to call OpenFile with: {filePath}");
-                            await OpenFile(filePath, Path.GetFileName(filePath), true);
-                            _ = MobileLogService.LogAsync($"MainPage: OpenFile completed for: {filePath}");
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Error opening file from intent: {ex.Message}");
-                        _ = MobileLogService.LogAsync($"MainPage: ERROR in FileOpened event: {ex.Message}");
-                    }
-                };
+                // Asegurar que la navegación se ejecute en el hilo principal
+                await AppPlatform.RunOnMainThreadAsync(() => OpenFile(filePath, Path.GetFileName(filePath), true));
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error initializing MainPage: {ex.Message}");
+                _ = MobileLogService.LogAsync($"MainPage: ERROR in FileOpened event: {ex.Message}");
             }
         }
 
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
+            _ = OnAppearingAsync();
+        }
+
+        internal async Task OnAppearingAsync()
+        {
             await LoadRecentFiles();
 
             // Comprobacion de version al arrancar (constitucion, seccion 15): no bloqueante y
             // silenciosa si ya se esta al dia o no hay red.
-            var updateService = (Handler?.MauiContext?.Services ?? IPlatformApplication.Current?.Services)
-                ?.GetService<UpdateService>();
+            var updateService = UpdateServiceProvider();
             if (updateService != null)
                 _ = updateService.CheckAndPromptAsync(this);
         }
@@ -82,7 +79,7 @@ namespace TXTReader.Pages
             OnPropertyChanged(nameof(NoRecentFilesText));
         }
 
-        private async Task LoadRecentFiles()
+        internal async Task LoadRecentFiles()
         {
             // Usar el método que automáticamente filtra archivos que no existen
             var validRecentFiles = await _recentFilesService.GetValidRecentFilesAsync();
@@ -93,149 +90,94 @@ namespace TXTReader.Pages
             }
         }
 
-        private async void OnSelectFileClicked(object? sender, EventArgs e)
+        private async void OnSelectFileClicked(object? sender, EventArgs e) => await SelectFileAsync();
+
+        internal async Task SelectFileAsync()
         {
             try
             {
-                // Solo ficheros de texto: se quita el comodin "*/*", que hacia que el selector
-                // mostrara todo (PDF, imagenes, video...). "text/*" cubre txt, csv, html, markdown,
-                // xml y demas subtipos de texto; se anaden json y xml, que Android reporta con su
-                // propio MIME.
-                // "application/octet-stream" se incluye por los .gpx: Android no conoce esa
-                // extension (no esta en su tabla de MIME) y los expone como octet-stream, asi que
-                // sin este tipo el selector los muestra en gris. Tambien recupera los .log, .ini y
-                // .cfg que el sistema no sabe clasificar. Sigue sin colar PDF, imagenes ni video,
-                // que si tienen MIME propio.
-                var customFileType = new FilePickerFileType(
-                    new Dictionary<DevicePlatform, IEnumerable<string>>
-                    {
-                        { DevicePlatform.Android, new[] { "text/*", "application/json", "application/xml", "application/gpx+xml", "application/octet-stream" } },
-                        { DevicePlatform.WinUI, new[] { ".txt", ".log", ".json", ".xml", ".gpx", ".csv", ".md", ".ini", ".cfg", ".conf" } }
-                    });
-
                 var options = new PickOptions
                 {
                     PickerTitle = _localizationService.GetString("SelectFileTitle"),
-                    FileTypes = customFileType
+                    FileTypes = PickedFiles.FileTypes()
                 };
 
-                var result = await FilePicker.Default.PickAsync(options);
+                var result = await AppPlatform.FilePicker.PickAsync(options);
                 if (result != null)
                 {
-                    var filePath = await GetReadablePickedFilePathAsync(result);
+                    var filePath = await PickedFiles.GetReadablePathAsync(result.FullPath, result.FileName, result.OpenReadAsync, AppPlatform.CacheDirectory());
                     await OpenFile(filePath, result.FileName);
                 }
             }
             catch (Exception ex)
             {
-                await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("Error"), $"{_localizationService.GetString("FileSelectError")}: {ex.Message}", _localizationService.GetString("OK"));
+                await AlertAsync(_localizationService.GetString("Error"), $"{_localizationService.GetString("FileSelectError")}: {ex.Message}");
             }
         }
 
-        private static async Task<string> GetReadablePickedFilePathAsync(FileResult result)
+        private async void OnRecentFileSelected(object? sender, TappedEventArgs e) => await OpenRecentAsync((sender as BindableObject)?.BindingContext as RecentFile);
+
+        internal async Task OpenRecentAsync(RecentFile? recentFile)
         {
-            if (!string.IsNullOrWhiteSpace(result.FullPath))
+            if (recentFile is null)
+                return;
+
+            if (File.Exists(recentFile.FilePath))
             {
-                return result.FullPath;
+                await OpenFile(recentFile.FilePath, recentFile.FileName);
             }
-
-            var cacheDirectory = Path.Combine(FileSystem.CacheDirectory, "picked_files");
-            Directory.CreateDirectory(cacheDirectory);
-
-            var safeFileName = string.Join("_", result.FileName.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
-            if (string.IsNullOrWhiteSpace(safeFileName))
+            else
             {
-                safeFileName = $"selected_file_{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.txt";
-            }
-
-            var cachedPath = Path.Combine(cacheDirectory, $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}_{safeFileName}");
-            await using var inputStream = await result.OpenReadAsync();
-            await using var outputStream = File.Create(cachedPath);
-            await inputStream.CopyToAsync(outputStream);
-
-            return cachedPath;
-        }
-
-        private async void OnRecentFileSelected(object? sender, TappedEventArgs e)
-        {
-            if (sender is Grid grid && grid.BindingContext is RecentFile recentFile)
-            {
-                if (File.Exists(recentFile.FilePath))
-                {
-                    await OpenFile(recentFile.FilePath, recentFile.FileName);
-                }
-                else
-                {
-                    // Eliminar el archivo del historial y recargar la lista
-                    await _recentFilesService.RemoveRecentFileAsync(recentFile.FilePath);
-                    await LoadRecentFiles();
-                    await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("FileDeletedTitle"), _localizationService.GetString("FileDeletedMessage"), _localizationService.GetString("OK"));
-                }
+                // Eliminar el archivo del historial y recargar la lista
+                await _recentFilesService.RemoveRecentFileAsync(recentFile.FilePath);
+                await LoadRecentFiles();
+                await AlertAsync(_localizationService.GetString("FileDeletedTitle"), _localizationService.GetString("FileDeletedMessage"));
             }
         }
 
-        private async Task OpenFile(string filePath, string fileName, bool isIntent = false)
+        internal async Task OpenFile(string filePath, string fileName, bool isIntent = false)
         {
             try
             {
                 _ = MobileLogService.LogAsync($"OpenFile: Called with filePath='{filePath}', fileName='{fileName}', isIntent={isIntent}");
-                
-                // Verificar que el archivo existe (solo para archivos locales)
-                if (!IsContentUri(filePath) && !File.Exists(filePath))
+
+                // Verificar que el archivo existe (solo para archivos locales; las URIs content://
+                // se leen con el ContentResolver)
+                if (!IntentFileHandler.IsContentUri(filePath) && !File.Exists(filePath))
                 {
                     _ = MobileLogService.LogAsync($"OpenFile: Local file does not exist: {filePath}");
-                    await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("Error"), _localizationService.GetString("FileNotExist"), _localizationService.GetString("OK"));
+                    await AlertAsync(_localizationService.GetString("Error"), _localizationService.GetString("FileNotExist"));
                     return;
                 }
-                
-                // Para URIs de content, no verificamos existencia local
-                if (IsContentUri(filePath))
-                {
-                    System.Diagnostics.Debug.WriteLine($"Content URI detected: {filePath}");
-                    _ = MobileLogService.LogAsync($"OpenFile: Content URI detected: {filePath}");
-                }
 
-                _ = MobileLogService.LogAsync($"OpenFile: Adding to recent files");
                 // Agregar a archivos recientes (siempre, incluso para intents)
                 await _recentFilesService.AddRecentFileAsync(filePath, fileName);
-                
+
                 // Recargar lista de archivos recientes si no es un intent
                 if (!isIntent)
-                {
-                    _ = MobileLogService.LogAsync($"OpenFile: Reloading recent files");
                     await LoadRecentFiles();
-                }
 
                 // Abrir el archivo en la página del lector
-                System.Diagnostics.Debug.WriteLine($"Opening file: {filePath} (Intent: {isIntent})");
-                _ = MobileLogService.LogAsync($"OpenFile: About to navigate to TextReaderPage");
                 await Navigation.PushAsync(new TextReaderPage(filePath, fileName));
                 _ = MobileLogService.LogAsync($"OpenFile: Navigation to TextReaderPage completed");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error in OpenFile: {ex.Message}");
-                _ = MobileLogService.LogAsync($"OpenFile: ERROR - {ex.Message}");
-                _ = MobileLogService.LogAsync($"OpenFile: Stack trace - {ex.StackTrace}");
-                await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("Error"), $"{_localizationService.GetString("FileOpenError")}: {ex.Message}", _localizationService.GetString("OK"));
+                _ = MobileLogService.LogAsync($"OpenFile: ERROR - {ex.Message}\n{ex.StackTrace}");
+                await AlertAsync(_localizationService.GetString("Error"), $"{_localizationService.GetString("FileOpenError")}: {ex.Message}");
             }
         }
 
-        private async void OnAboutClicked(object? sender, EventArgs e)
-        {
-            await Navigation.PushAsync(new AboutPage());
-        }
+        private async void OnAboutClicked(object? sender, EventArgs e) => await Navigation.PushAsync(new AboutPage());
+
+        private Task<bool> AlertAsync(string title, string message) =>
+            AppPlatform.Alert(this, title, message, _localizationService.GetString("OK"), null);
 
         public new event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual new void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private static bool IsContentUri(string value)
-        {
-            return value.StartsWith("content://", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

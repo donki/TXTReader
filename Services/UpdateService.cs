@@ -14,7 +14,13 @@ public class UpdateService
     private const string AppcastUrl = "https://raw.githubusercontent.com/donki/TXTReader/main/appcast.json";
 
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(8) };
+    private readonly Func<string, Task<string>> _download;
     private bool _checkedThisSession;
+
+    public UpdateService() : this(Http.GetStringAsync) { }
+
+    /// <summary>Con otra forma de descargar el manifiesto (las pruebas no salen a la red).</summary>
+    public UpdateService(Func<string, Task<string>> download) => _download = download;
 
     public async Task CheckAndPromptAsync(Page page)
     {
@@ -24,22 +30,24 @@ public class UpdateService
 
         try
         {
-            var json = await Http.GetStringAsync(AppcastUrl);
+            var json = await _download(AppcastUrl);
             var manifest = JsonSerializer.Deserialize<Appcast>(json);
             if (manifest?.Version is null)
                 return;
 
-            var current = AppInfo.Current.VersionString;
+            var current = AppPlatform.AppInfo.VersionString;
             if (CompareVersions(manifest.Version, current) <= 0)
                 return; // ya se esta en la ultima version (o mas nueva)
 
-            var wantsUpdate = await SocShared.ModernDialog.AlertAsync(page,
-                "Actualización disponible",
-                $"Hay una versión más reciente ({manifest.Version}). Tienes la {current}.\n¿Quieres actualizar?",
-                "Actualizar", "Ahora no");
+            // Antes este aviso salia siempre en castellano, aunque la app estuviera en ingles.
+            var loc = LocalizationService.Instance;
+            var wantsUpdate = await AppPlatform.Alert(page,
+                loc.GetString("UpdateAvailableTitle"),
+                string.Format(loc.GetString("UpdateAvailableMessage"), manifest.Version, current),
+                loc.GetString("UpdateButton"), loc.GetString("NotNowButton"));
 
             if (wantsUpdate && !string.IsNullOrWhiteSpace(manifest.Url))
-                await Browser.Default.OpenAsync(new Uri(manifest.Url), BrowserLaunchMode.SystemPreferred);
+                await AppPlatform.Browser.OpenAsync(new Uri(manifest.Url), BrowserLaunchMode.SystemPreferred);
         }
         catch
         {
@@ -48,7 +56,7 @@ public class UpdateService
     }
 
     /// <summary>Compara versiones numericas por partes ("2026.07.19.0"). &gt;0 si a es mas nueva que b.</summary>
-    private static int CompareVersions(string a, string b)
+    internal static int CompareVersions(string a, string b)
     {
         var pa = Parts(a);
         var pb = Parts(b);

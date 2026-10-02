@@ -19,11 +19,17 @@ namespace TXTReader
     [IntentFilter(new[] { Intent.ActionView }, Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable }, DataMimeType = "application/gpx+xml")]
     public class MainActivity : MauiAppCompatActivity
     {
-        private string? _pendingFilePath;
+        // La logica de la apertura desde otra app (que se lee, que extensiones, avisos) vive en
+        // IntentFileHandler, que tiene pruebas; aqui solo queda lo que es de Android.
+        private readonly IntentFileHandler _intentFiles = new();
 
         protected override void OnCreate(Bundle? savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            AppPlatform.MoveTaskToBack = () => MoveTaskToBack(true);
+            AppPlatform.OpenContentUri = uri =>
+                (ContentResolver ?? throw new InvalidOperationException("ContentResolver is null"))
+                    .OpenInputStream(Android.Net.Uri.Parse(uri)!);
             ApplySystemBarInsets();
             HandleIntent(Intent);
         }
@@ -58,212 +64,45 @@ namespace TXTReader
         protected override void OnNewIntent(Intent? intent)
         {
             base.OnNewIntent(intent);
-            if (intent != null)
-            {
-                HandleIntent(intent);
-            }
+            HandleIntent(intent);
         }
 
         protected override void OnResume()
         {
             base.OnResume();
-
-            // Si hay un archivo pendiente, procesarlo después de que la aplicación esté completamente cargada
-            if (!string.IsNullOrEmpty(_pendingFilePath))
-            {
-                var filePath = _pendingFilePath;
-                _pendingFilePath = null;
-
-                // Retrasar la notificación para asegurar que la aplicación esté lista
-                Task.Delay(1500).ContinueWith(_ =>
-                {
-                    System.Diagnostics.Debug.WriteLine($"Processing pending file: {filePath}");
-                    _ = MobileLogService.LogAsync($"OnResume: Processing pending file: {filePath}");
-
-                    if (IsContentUri(filePath) || File.Exists(filePath))
-                    {
-                        if (!IsContentUri(filePath))
-                        {
-                            System.Diagnostics.Debug.WriteLine($"File exists, size: {new FileInfo(filePath).Length} bytes");
-                            _ = MobileLogService.LogAsync($"OnResume: Local file exists, size: {new FileInfo(filePath).Length} bytes");
-                        }
-                        else
-                        {
-                            _ = MobileLogService.LogAsync("OnResume: Content URI detected, proceeding without file check");
-                        }
-
-                        MainThread.BeginInvokeOnMainThread(() =>
-                        {
-                            _ = MobileLogService.LogAsync($"OnResume: Notifying FileIntentService with: {filePath}");
-                            FileIntentService.NotifyFileOpened(filePath);
-                        });
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"File does not exist: {filePath}");
-                        _ = MobileLogService.LogAsync($"OnResume: File does not exist: {filePath}");
-                        MainThread.BeginInvokeOnMainThread(async () =>
-                        {
-                            await Task.Delay(500);
-                            if (Microsoft.Maui.Controls.Application.Current?.MainPage != null)
-                            {
-                                await SocShared.ModernDialog.AlertAsync(Microsoft.Maui.Controls.Application.Current.MainPage,
-                                    "Archivo no disponible",
-                                    "No se pudo acceder al archivo seleccionado.\n\nEsto puede ocurrir con archivos de almacenamiento en la nube que no están disponibles sin conexión.\n\nIntenta descargar el archivo localmente primero.",
-                                    "OK");
-                            }
-                        });
-                    }
-                });
-            }
+            _ = _intentFiles.ProcessPendingAsync();
         }
 
         private void HandleIntent(Intent? intent)
         {
-            try
-            {
-                if (intent?.Action == Intent.ActionView && intent.Data != null)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Handling intent with URI: {intent.Data}");
-                    _ = MobileLogService.LogAsync($"HandleIntent: Received URI: {intent.Data}");
-
-                    var filePath = GetReadableFileReference(intent.Data);
-                    var fileName = GetFileNameFromUri(intent.Data);
-                    System.Diagnostics.Debug.WriteLine($"GetReadableFileReference returned: '{filePath}'");
-                    _ = MobileLogService.LogAsync($"HandleIntent: GetReadableFileReference returned: '{filePath}'");
-
-                    if (!string.IsNullOrEmpty(filePath))
-                    {
-                        var extension = GetExtension(fileName, filePath);
-                        var supportedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-                        {
-                            ".txt", ".log", ".json", ".xml", ".gpx", ".csv", ".md", ".ini", ".cfg", ".conf"
-                        };
-
-                        if (supportedExtensions.Contains(extension) || string.IsNullOrEmpty(extension))
-                        {
-                            System.Diagnostics.Debug.WriteLine($"Intent received for file: {filePath} (extension: {extension})");
-                            _ = MobileLogService.LogAsync($"HandleIntent: Setting _pendingFilePath to: '{filePath}' (extension: {extension})");
-                            _pendingFilePath = filePath;
-                        }
-                        else
-                        {
-                            System.Diagnostics.Debug.WriteLine($"Unsupported file type: {extension}");
-                            _ = MobileLogService.LogAsync($"HandleIntent: Unsupported file type: {extension}");
-                        }
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine("Failed to get file path from URI");
-                        MainThread.BeginInvokeOnMainThread(async () =>
-                        {
-                            await Task.Delay(2000);
-                            if (Microsoft.Maui.Controls.Application.Current?.MainPage != null)
-                            {
-                                var uriString = intent.Data?.ToString()?.ToLowerInvariant() ?? "";
-                                string message;
-                                string title;
-
-                                // Solo el texto que ve el usuario va sin nombres de productos ajenos
-                                // (constitución Web §4); aquí se mira la URI para elegir el consejo.
-                                string key;
-                                if (uriString.Contains("onedrive"))
-                                    key = "CloudOneDrive";
-                                else if (uriString.Contains("drive.google"))
-                                    key = "CloudGoogleDrive";
-                                else if (uriString.Contains("dropbox"))
-                                    key = "CloudStorage";
-                                else
-                                    key = "CloudGeneric";
-
-                                var loc = LocalizationService.Instance;
-                                title = loc.GetString(key + "Title");
-                                message = loc.GetString(key + "Message");
-
-                                await SocShared.ModernDialog.AlertAsync(Microsoft.Maui.Controls.Application.Current.MainPage, title, message, LocalizationService.Instance.GetString("OK"));
-                            }
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error handling intent: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-            }
+            if (intent?.Action != Intent.ActionView || intent.Data is not { } uri)
+                return;
+            _ = _intentFiles.HandleViewIntentAsync(uri.ToString() ?? string.Empty, uri.Scheme, uri.Path, GetDisplayName(uri));
         }
 
-        private string? GetReadableFileReference(Android.Net.Uri uri)
-        {
-            try
-            {
-                System.Diagnostics.Debug.WriteLine($"Processing URI: {uri}");
-                System.Diagnostics.Debug.WriteLine($"URI Scheme: {uri.Scheme}");
-                System.Diagnostics.Debug.WriteLine($"URI Path: {uri.Path}");
-
-                if (uri.Scheme?.Equals("file", StringComparison.OrdinalIgnoreCase) == true)
-                {
-                    var path = uri.Path;
-                    System.Diagnostics.Debug.WriteLine($"File URI path: {path}");
-                    return path;
-                }
-
-                if (uri.Scheme?.Equals("content", StringComparison.OrdinalIgnoreCase) == true)
-                {
-                    _ = MobileLogService.LogAsync($"GetReadableFileReference: Returning content URI directly: {uri}");
-                    return uri.ToString();
-                }
-
-                return uri.Path;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error in GetReadableFileReference: {ex.Message}");
-                return null;
-            }
-        }
-
-        private string? GetFileNameFromUri(Android.Net.Uri uri)
+        // Nombre visible del fichero (el de la columna DISPLAY_NAME del proveedor o, si no, el
+        // ultimo segmento de la URI): de el sale la extension.
+        private string? GetDisplayName(Android.Net.Uri uri)
         {
             try
             {
                 var cursor = ContentResolver?.Query(uri, new[] { IOpenableColumns.DisplayName }, null, null, null);
-                if (cursor != null)
+                try
                 {
-                    try
-                    {
-                        if (cursor.MoveToFirst())
-                        {
-                            var displayNameIndex = cursor.GetColumnIndex(IOpenableColumns.DisplayName);
-                            if (displayNameIndex >= 0)
-                            {
-                                return cursor.GetString(displayNameIndex);
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        cursor.Close();
-                    }
+                    var index = cursor?.GetColumnIndex(IOpenableColumns.DisplayName) ?? -1;
+                    if (cursor != null && index >= 0 && cursor.MoveToFirst())
+                        return cursor.GetString(index);
                 }
-
+                finally
+                {
+                    cursor?.Close();
+                }
                 return uri.LastPathSegment;
             }
             catch
             {
                 return null;
             }
-        }
-
-        private static string GetExtension(string? fileName, string filePath)
-        {
-            var candidate = !string.IsNullOrWhiteSpace(fileName) ? fileName : filePath;
-            return Path.GetExtension(candidate)?.ToLowerInvariant() ?? string.Empty;
-        }
-
-        private static bool IsContentUri(string value)
-        {
-            return value.StartsWith("content://", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

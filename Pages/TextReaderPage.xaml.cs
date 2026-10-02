@@ -5,10 +5,7 @@ namespace TXTReader.Pages
 {
     public partial class TextReaderPage : ContentPage
     {
-        private string _originalContent = string.Empty;
         private double _currentFontSize = 14;
-        private const double MinFontSize = 8;
-        private const double MaxFontSize = 32;
         private readonly LocalizationService _localizationService;
 
         public TextReaderPage(string filePath, string fileName)
@@ -24,8 +21,11 @@ namespace TXTReader.Pages
 
             Title = fileName;
             UpdateTexts();
-            LoadFileContent(filePath);
+            Loading = LoadFileContentAsync(filePath);
         }
+
+        /// <summary>Carga del fichero en curso (las pruebas la esperan).</summary>
+        internal Task Loading { get; }
 
         private void UpdateTexts()
         {
@@ -47,31 +47,21 @@ namespace TXTReader.Pages
             return "#000000";
         }
 
-        private async void LoadFileContent(string filePath)
+        private async Task LoadFileContentAsync(string filePath)
         {
             try
             {
-                var (content, encoding) = await EncodingDetectionService.ReadFileWithEncodingDetectionAsync(filePath);
-                _originalContent = content;
-                
-                ContentViewer.Text = _originalContent;
+                var (content, _) = await EncodingDetectionService.ReadFileWithEncodingDetectionAsync(filePath);
+                ContentViewer.Text = content;
                 
                 // Sincronizar el slider con el tamaño de fuente inicial
                 ZoomSlider.Value = _currentFontSize;
             }
             catch (Exception ex)
             {
-                await SocShared.ModernDialog.AlertAsync(this,_localizationService.GetString("Error"), $"{_localizationService.GetString("FileLoadError")}: {ex.Message}", _localizationService.GetString("OK"));
+                await AppPlatform.Alert(this, _localizationService.GetString("Error"), $"{_localizationService.GetString("FileLoadError")}: {ex.Message}", _localizationService.GetString("OK"), null);
                 await Navigation.PopAsync();
             }
-        }
-
-
-
-        private void OnSearchTextChanged(object? sender, TextChangedEventArgs e)
-        {
-            // El resaltado se maneja automáticamente por el binding en XAML
-            // No necesitamos código adicional aquí
         }
 
         private void OnZoomSliderValueChanged(object? sender, ValueChangedEventArgs e)
@@ -83,11 +73,5 @@ namespace TXTReader.Pages
                 ContentViewer.Zoom = _currentFontSize / 14.0;
             }
         }
-
-
-
-
-
-
     }
 }

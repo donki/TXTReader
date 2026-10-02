@@ -118,32 +118,34 @@ dotnet publish -f net10.0-android -c Release
 - **Navegación nativa**: Botón "atrás" de Android para regresar
 - **Información técnica**: Codificación detectada en el título
 
-### 🐛 Debug y Logs
-
-- **Acceso a logs**: Botón "Debug Logs" en la pantalla principal
-- **Limpiar logs**: Botón "Limpiar" para reiniciar el registro
-- **Diagnóstico**: Información detallada para resolución de problemas
-
 ## 🧪 Pruebas
 
-68 pruebas automatizadas (xUnit) de la lógica de la app, sin interfaz ni dispositivo: detección de
-codificación sobre ficheros temporales (UTF-8 con y sin marca, UTF-16/32 LE y BE, Windows-1252 y
-Latin-1, vacíos, cortados, grandes, errores), recientes (orden, duplicados, límite de 5, ficheros
-borrados, almacén dañado o que falla), resaltado de la búsqueda (mayúsculas, caracteres HTML,
-término literal, tiempo máximo) e idiomas (mismas claves y marcadores en `AppResources.resx` y
-`AppResources.es.resx`, arranque, cambio, idioma del sistema).
+166 pruebas automatizadas (xUnit), sin dispositivo ni red. Además de la lógica (detección de
+codificación sobre ficheros temporales, recientes, resaltado de la búsqueda, idiomas con las mismas
+claves en `AppResources.resx` y `AppResources.es.resx`, comprobación de versión), recorren las
+pantallas con su XAML real compilado para `net10.0` con Microsoft.Maui.Controls: la principal
+(selector, recientes, apertura, errores), el lector (carga, búsqueda, zoom, colores), Acerca de
+(idioma, correo y sus alternativas, volver), el menú con el botón de atrás (Mobile §7), la apertura
+desde otras apps (`Services/IntentFileHandler.cs`) y el visor HTML. Lo que pediría el dispositivo
+(selector, correo, navegador, portapapeles, diálogos, `content://`) pasa por
+`Services/AppPlatform.cs` y en las pruebas lo responden dobles.
 
 | Fecha | Pruebas | Cobertura de lo instrumentado | Cobertura sobre toda la app | Tiempo del banco |
 |---|---|---|---|---|
-| 2026-09-30 | 68 (todas pasan) | 90,4 % (171 / 189 líneas) | 10,1 % (171 / 1697 líneas) | ~0,3 s de pruebas, ~3 s con el arranque de `dotnet test` |
+| 2026-10-01 | 166 (todas pasan) | 97,9 % (889 / 908 líneas) | **92,6 %** (889 / 960 líneas) | ~1 s de pruebas, ~5 s con el arranque de `dotnet test` |
+| 2026-09-30 | 68 (todas pasan) | 90,4 % (171 / 189 líneas) | 10,1 % (171 / 1697 líneas, recuento anterior) | ~0,3 s de pruebas |
 
 ```bash
 dotnet test TXTReader.Tests                        # solo las pruebas
 pwsh TXTReader.Tests/cobertura.ps1                 # pruebas + las dos coberturas + tiempo
 ```
 
-Queda sin probar la interfaz (páginas y los controles de texto con WebView/Label), la lectura de
-URIs `content://` (solo existe en Android) y el registro de depuración en disco.
+Cómo se cuenta «toda la app» (desde el 2026-10-01): de cada fichero C# que el banco compila, sus
+líneas ejecutables según coverlet; de los que no (`Platforms/Android`), todas sus líneas de código
+como no cubiertas. Ya no se cuentan llaves, `using` ni firmas, que nunca se ejecutan (con el recuento
+nuevo, el 2026-09-30 era el 17,8 %). Queda sin cubrir `MainActivity` y `MainApplication` (48 + 4
+líneas: márgenes de las barras del sistema, intents y `ContentResolver`, que solo existen en
+Android) y algunos `catch` de `LocalizationService` y `EncodingDetectionService`.
 
 ## 🏗️ Arquitectura Técnica
 
@@ -154,16 +156,16 @@ TXTReader/
 ├── Services/
 │   ├── EncodingDetectionService.cs    # Detección automática de codificación
 │   ├── RecentFilesService.cs          # Gestión inteligente de archivos recientes
-│   ├── FileIntentService.cs           # Manejo de intents de Android
-│   └── MobileLogService.cs            # Sistema de logging integrado
+│   ├── FileIntentService.cs           # Aviso de fichero recibido a la pantalla principal
+│   ├── IntentFileHandler.cs           # Apertura de ficheros que llegan de otras apps
+│   ├── AppPlatform.cs                 # Puertas a lo que depende del dispositivo
+│   └── MobileLogService.cs            # Registro de depuración
 ├── Pages/
 │   ├── MainPage.xaml                  # Pantalla principal con historial
 │   ├── TextReaderPage.xaml            # Lector con WebView y búsqueda
-│   ├── AboutPage.xaml                 # Información de la aplicación
-│   ├── LogViewerPage.xaml             # Visor de logs de diagnóstico
-│   └── SplashPage.xaml                # Pantalla de carga elegante
+│   └── AboutPage.xaml                 # Información de la aplicación
 ├── Platforms/Android/
-│   └── MainActivity.cs                # Manejo de URIs de content y intents
+│   └── MainActivity.cs                # Intents, ContentResolver y barras del sistema
 └── Resources/                         # Iconos, colores y recursos
 ```
 

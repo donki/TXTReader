@@ -1,4 +1,3 @@
-using Microsoft.Maui.Essentials;
 using TXTReader.Services;
 
 namespace TXTReader.Pages
@@ -36,7 +35,7 @@ namespace TXTReader.Pages
         private void UpdateTexts()
         {
             Title = _localizationService.GetString("AboutTitle");
-            VersionLabel.Text = string.Format(_localizationService.GetString("AppVersion"), AppInfo.Current.VersionString);
+            VersionLabel.Text = string.Format(_localizationService.GetString("AppVersion"), AppPlatform.AppInfo.VersionString);
             DescriptionLabel.Text = _localizationService.GetString("AppDescription");
             ContactTitleLabel.Text = _localizationService.GetString("ContactTitle");
             ContactInstructionLabel.Text = _localizationService.GetString("ContactInstruction");
@@ -73,7 +72,9 @@ namespace TXTReader.Pages
             _localizationService.SetLanguage(code);
         }
 
-        private async void OnBackClicked(object? sender, EventArgs e)
+        private async void OnBackClicked(object? sender, EventArgs e) => await GoBackAsync();
+
+        internal async Task GoBackAsync()
         {
             // Si se llego pulsando "Acerca de" en MainPage, hay pila que desapilar. Si se llego
             // por el menu hamburguesa (AboutPage es raiz de su seccion), la pila esta vacia:
@@ -84,14 +85,21 @@ namespace TXTReader.Pages
                 await Shell.Current.GoToAsync("//MainPage");
         }
 
-        private async void OnContactEmailClicked(object? sender, EventArgs e)
+        private async void OnContactEmailClicked(object? sender, EventArgs e) => await ContactByEmailAsync();
+
+        /// <summary>
+        /// Correo de contacto: el gestor de correo de MAUI; si falla, en Android un mailto: directo;
+        /// y si tampoco, la direccion se copia al portapapeles (o se avisa de que no hay correo).
+        /// </summary>
+        internal async Task ContactByEmailAsync()
         {
+            string? fallbackKey = null;
             try
             {
                 var appName = "TXT Reader";
-                var appVersion = AppInfo.Current.VersionString;
-                var deviceInfo = $"{DeviceInfo.Platform} {DeviceInfo.VersionString}";
-                
+                var appVersion = AppPlatform.AppInfo.VersionString;
+                var deviceInfo = $"{AppPlatform.DeviceInfo.Platform} {AppPlatform.DeviceInfo.VersionString}";
+
                 var emailBody = $"\n\n---\n{appName} {appVersion}\n{deviceInfo}\n{DateTime.Now:yyyy-MM-dd HH:mm}";
                 var subject = $"Contacto desde {appName}";
 
@@ -105,7 +113,7 @@ namespace TXTReader.Pages
                         Body = emailBody
                     };
 
-                    await Email.ComposeAsync(message);
+                    await AppPlatform.Email.ComposeAsync(message);
                     return; // Si funciona, salir
                 }
                 catch (Exception emailEx)
@@ -114,43 +122,40 @@ namespace TXTReader.Pages
                 }
 
                 // Fallback: usar intent directo de Android
-                if (DeviceInfo.Platform == DevicePlatform.Android)
+                if (AppPlatform.DeviceInfo.Platform == DevicePlatform.Android)
                 {
                     var emailUri = $"mailto:{ContactEmail}?subject={Uri.EscapeDataString(subject)}&body={Uri.EscapeDataString(emailBody)}";
-                    await Launcher.OpenAsync(emailUri);
+                    await AppPlatform.Launcher.OpenAsync(emailUri);
                     return;
                 }
 
                 // Si nada funciona, mostrar error
-                await SocShared.ModernDialog.AlertAsync(this,"Error", _localizationService.GetString("EmailNotAvailable"), "OK");
+                await AlertAsync(_localizationService.GetString("Error"), _localizationService.GetString("EmailNotAvailable"));
+                return;
             }
             catch (FeatureNotSupportedException)
             {
-                // Fallback final: copiar email al portapapeles
-                try
-                {
-                    await Clipboard.SetTextAsync(ContactEmail);
-                    await SocShared.ModernDialog.AlertAsync(this,"Email copiado", $"Email copiado al portapapeles: {ContactEmail}", "OK");
-                }
-                catch
-                {
-                    await SocShared.ModernDialog.AlertAsync(this,"Error", _localizationService.GetString("EmailNotAvailable"), "OK");
-                }
+                fallbackKey = "EmailCopiedMessage";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Fallback final: copiar email al portapapeles
-                try
-                {
-                    await Clipboard.SetTextAsync(ContactEmail);
-                    await SocShared.ModernDialog.AlertAsync(this,"Email copiado", $"No se pudo abrir el cliente de correo. Email copiado al portapapeles: {ContactEmail}", "OK");
-                }
-                catch
-                {
-                    await SocShared.ModernDialog.AlertAsync(this,"Error", $"{_localizationService.GetString("EmailError")}: {ex.Message}", "OK");
-                }
+                fallbackKey = "EmailCopiedFallbackMessage";
+            }
+
+            // Fallback final: copiar email al portapapeles
+            try
+            {
+                await AppPlatform.Clipboard.SetTextAsync(ContactEmail);
+                await AlertAsync(_localizationService.GetString("EmailCopiedTitle"), string.Format(_localizationService.GetString(fallbackKey), ContactEmail));
+            }
+            catch
+            {
+                await AlertAsync(_localizationService.GetString("Error"), _localizationService.GetString("EmailNotAvailable"));
             }
         }
 
+        // Antes los avisos de esta pagina salian en castellano aunque la app estuviera en ingles.
+        private Task<bool> AlertAsync(string title, string message) =>
+            AppPlatform.Alert(this, title, message, _localizationService.GetString("OK"), null);
     }
 }
