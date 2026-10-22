@@ -5,6 +5,16 @@
              x:Class="TXTReader.Pages.TextReaderPage"
              x:Name="TextReaderPageRoot">
 
+    <ContentPage.ToolbarItems>
+        <!-- Alterna la vista renderizada de Markdown y el texto tal cual. El icono es el de lo que
+             hace al tocarlo; el texto (idioma de la app) es la descripcion para accesibilidad. -->
+        <ToolbarItem x:Name="MarkdownToggle"
+                     AutomationId="MarkdownToggle"
+                     Order="Primary"
+                     Priority="0"
+                     Clicked="OnMarkdownToggleClicked" />
+    </ContentPage.ToolbarItems>
+
     <Grid RowDefinitions="Auto,*">
 
         <!-- Barra de busqueda -->
@@ -19,6 +29,7 @@
                     <RoundRectangle CornerRadius="22" />
                 </Border.StrokeShape>
                 <Entry x:Name="SearchEntry"
+                       AutomationId="SearchEntry"
                        FontSize="14"
                        BackgroundColor="Transparent"
                        Margin="15,0" />
@@ -69,16 +80,15 @@
             <!-- Texto -->
             <Border Grid.Column="1"
                     Style="{StaticResource Card}">
-                <!-- HighlightBackgroundColor / HighlightTextColor son propiedades string (se
-                     inyectan como color CSS en el WebView), asi que sus valores se asignan
-                     desde el code-behind a partir de los tokens de Colors.xaml (seccion 24),
-                     en lugar de escribir el color literal aqui. -->
+                <!-- Los colores del visor (texto, resaltado, fondo, codigo, enlaces) son CSS del
+                     WebView: se asignan desde el code-behind a partir de los tokens de Colors.xaml
+                     (seccion 24) para el tema que se ve, en lugar de escribir el color aqui. -->
                 <controls:SelectableHighlightedTextView
                     x:Name="ContentViewer"
+                    AutomationId="ContentViewer"
                     Margin="14"
                     FontSize="14"
                     FontFamily="Monospace"
-                    Foreground="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
                     SearchTerm="{Binding Text, Source={x:Reference SearchEntry}}" />
             </Border>
         </Grid>

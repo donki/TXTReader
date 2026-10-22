@@ -374,7 +374,7 @@ public sealed class SelectableHighlightedTextViewTests
         var view = new SelectableHighlightedTextView();
 
         var html = Html(view);
-        Assert.Contains("<body></body>", html);
+        Assert.Contains("<body>\n<script nonce=", html.ReplaceLineEndings("\n"));
         Assert.Contains("font-family: Consolas, Monaco, 'Courier New', monospace;", html);
         Assert.Contains("font-size: 14px;", html);
         Assert.Contains("color: #222;", html);
@@ -404,7 +404,7 @@ public sealed class SelectableHighlightedTextViewTests
         };
 
         var html = Html(view);
-        Assert.Contains("<body>Hola &lt;b&gt; <mark>hola</mark></body>", html);
+        Assert.Contains("<body>Hola &lt;b&gt; <mark>hola</mark>\n<script nonce=", html.ReplaceLineEndings("\n"));
         Assert.Contains("font-family: Monospace;", html);
         Assert.Contains("color: #111111;", html);
         Assert.Contains("color: #000001;", html);

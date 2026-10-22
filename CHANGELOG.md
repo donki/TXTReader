@@ -5,6 +5,51 @@ Todos los cambios relevantes de TXT Reader se documentan en este archivo.
 El formato sigue las pautas de la constitucion del proyecto (versionado
 sincronizado entre `ApplicationDisplayVersion` y `ApplicationVersion`).
 
+## [2026.10.22.0] (versionCode 2026102200)
+
+### Añadido
+- **Vista de Markdown**: los `.md` y `.markdown` se abren renderizados —títulos, negrita,
+  cursiva y tachado, listas numeradas, anidadas y de tareas, citas, código en línea y en bloque,
+  tablas (con su alineación), reglas, notas al pie y listas de definiciones—, con los colores del
+  tema claro u oscuro de la app (y cambian al momento si cambia el del sistema). Un botón con icono
+  en la barra superior alterna con el texto tal cual (`</>`) y vuelve a la vista renderizada (ojo);
+  sirve también para ver como Markdown cualquier otro fichero.
+- **Enlaces**: los de internet, correo o teléfono se abren con la app que toque del dispositivo;
+  los del propio documento (índice, notas al pie) saltan dentro de él. El visor nunca navega fuera.
+- **Imágenes**: las de la carpeta del documento se ven (se incrustan, hasta 5 MB cada una); las de
+  internet **no se descargan** —todo se pinta en el dispositivo, sin red— y quedan como un enlace
+  con su texto. Con un fichero abierto desde la nube (`content://`) no hay carpeta y las relativas
+  se quedan en su texto alternativo.
+- La búsqueda (resaltado y salto a la primera coincidencia) y el zoom funcionan también en la vista
+  renderizada. Al buscar, el visor baja ahora hasta la primera coincidencia también en el texto.
+- Markdown con **Markdig 1.4.0** (BSD-2-Clause, sin dependencias; apuntado en
+  `THIRD-PARTY-NOTICES.md` y en Acerca de). Una política de contenido (CSP) impide que el
+  documento pida nada a la red o ejecute scripts propios.
+
+### Cambiado
+- El fondo y el color del texto del visor salen ahora de los tokens del tema que se ve (claro u
+  oscuro), también en el texto tal cual, y se vuelven a aplicar al cambiar el tema del sistema.
+  Colores nuevos en `Colors.xaml`: `CodeBackground*` y `Link*`.
+- `.markdown` se acepta también al abrir desde otras apps.
+
+### Pruebas
+- Banco (§8.6): de 166 a **227 pruebas**; cobertura sobre toda la app del 92,6 % al **94,1 %**
+  (98,1 % de lo instrumentado).
+- Nuevo `TXTReader.UITests` (§8.7, Appium en MuMu): 4 pruebas E2E de la vista de Markdown (abrir
+  un `.md` desde otra app, alternar con el texto, buscar, abrir un enlace fuera y el tema oscuro).
+  La tanda mínima del resto de la app queda pendiente.
+- Lo que no se ha podido ver en el emulador: la letra grande del Xiaomi (queda en el pendiente de
+  Josep).
+
+*English:* New Markdown view: `.md`/`.markdown` files open rendered (headings, emphasis and
+strikethrough, numbered, nested and task lists, quotes, inline and block code, tables, rules,
+footnotes, definition lists) in the app's light or dark colours; a toolbar icon switches to the
+plain text and back, for any file. Links open in the right app (in-document anchors jump inside the
+page); local images next to the document are shown, remote ones are never downloaded (everything is
+rendered on the device) and become a link. Search and zoom work in both views. Uses Markdig 1.4.0
+(BSD-2-Clause). The viewer background and text colour come from the current theme. Tests: 227 (94.1 % of the whole app),
+plus 4 Appium E2E tests of the Markdown view.
+
 ## [2026.10.02.0] (versionCode 2026100200)
 
 ### Cambiado

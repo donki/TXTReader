@@ -3,4 +3,5 @@
     <Deploy Solution="Debug|*" />
   </Project>
   <Project Path="TXTReader.Tests/TXTReader.Tests.csproj" />
+  <Project Path="TXTReader.UITests/TXTReader.UITests.csproj" />
 </Solution>

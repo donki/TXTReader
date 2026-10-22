@@ -48,6 +48,21 @@ public class SelectableHighlightedTextView : ContentView
         nameof(Zoom), typeof(double), typeof(SelectableHighlightedTextView), 1.0,
         propertyChanged: OnAnyChanged);
 
+    /// <summary>Vista renderizada de Markdown (true) o el texto tal cual (false).</summary>
+    public static readonly BindableProperty RenderMarkdownProperty = BindableProperty.Create(
+        nameof(RenderMarkdown), typeof(bool), typeof(SelectableHighlightedTextView), false,
+        propertyChanged: OnAnyChanged);
+
+    /// <summary>Carpeta del documento, para las imagenes con ruta relativa del Markdown.</summary>
+    public static readonly BindableProperty BaseDirectoryProperty = BindableProperty.Create(
+        nameof(BaseDirectory), typeof(string), typeof(SelectableHighlightedTextView), default(string),
+        propertyChanged: OnAnyChanged);
+
+    /// <summary>Colores del tema para el resto de la pagina (fondo, codigo, bordes, enlaces).</summary>
+    public static readonly BindableProperty PaletteProperty = BindableProperty.Create(
+        nameof(Palette), typeof(TXTReader.Services.ReaderPalette), typeof(SelectableHighlightedTextView), TXTReader.Services.ReaderPalette.Default,
+        propertyChanged: OnAnyChanged);
+
     private readonly WebView _web;
 
     public SelectableHighlightedTextView()
@@ -55,9 +70,12 @@ public class SelectableHighlightedTextView : ContentView
         _web = new WebView
         {
             HorizontalOptions = LayoutOptions.Fill,
-            VerticalOptions = LayoutOptions.Fill
+            VerticalOptions = LayoutOptions.Fill,
+            // Sin el blanco de serie mientras carga: debajo esta la tarjeta, del mismo color que la pagina.
+            BackgroundColor = Colors.Transparent
         };
 
+        _web.Navigating += OnNavigating;
         Content = _web;
         UpdateHtml();
     }
@@ -122,6 +140,45 @@ public class SelectableHighlightedTextView : ContentView
         set => SetValue(ZoomProperty, value); 
     }
 
+    public bool RenderMarkdown
+    {
+        get => (bool)GetValue(RenderMarkdownProperty);
+        set => SetValue(RenderMarkdownProperty, value);
+    }
+
+    public string? BaseDirectory
+    {
+        get => (string?)GetValue(BaseDirectoryProperty);
+        set => SetValue(BaseDirectoryProperty, value);
+    }
+
+    public TXTReader.Services.ReaderPalette Palette
+    {
+        get => (TXTReader.Services.ReaderPalette)GetValue(PaletteProperty);
+        set => SetValue(PaletteProperty, value);
+    }
+
+    /// <summary>La pagina que se esta enseñando (para las pruebas).</summary>
+    public string Html { get; private set; } = string.Empty;
+
+    /// <summary>Se ha tocado un enlace que se abre fuera (web, correo, telefono).</summary>
+    public event EventHandler<Uri>? ExternalLinkRequested;
+
+    private void OnNavigating(object? sender, WebNavigatingEventArgs e) => e.Cancel = HandleNavigation(e.Url);
+
+    /// <summary>
+    /// La pagina no navega nunca fuera de si misma: true (cancelar) para todo lo que no sea su carga;
+    /// si es un enlace externo, se avisa para abrirlo con la app que toque.
+    /// </summary>
+    internal bool HandleNavigation(string? url)
+    {
+        if (TXTReader.Services.ReaderLinks.IsViewerPage(url))
+            return false;
+        if (TXTReader.Services.ReaderLinks.ExternalUri(url) is { } uri)
+            ExternalLinkRequested?.Invoke(this, uri);
+        return true;
+    }
+
     private static void OnAnyChanged(BindableObject bindable, object oldValue, object newValue)
     {
         if (bindable is SelectableHighlightedTextView v)
@@ -130,48 +187,30 @@ public class SelectableHighlightedTextView : ContentView
 
     private void UpdateHtml()
     {
-        // 1-2) Texto escapado a HTML con las coincidencias marcadas con <mark>.
-        string encoded = TXTReader.Services.TextHighlighter.ToHighlightedHtml(Text, SearchTerm, CaseSensitive);
+        // Los colores de texto y resaltado vienen de sus propiedades (las pone la pagina desde los
+        // tokens de Colors.xaml); el resto, de la paleta del tema.
+        var palette = Palette with
+        {
+            Foreground = Foreground,
+            HighlightBackground = HighlightBackgroundColor,
+            HighlightText = HighlightTextColor
+        };
 
-        // 3) Construir HTML con estilos
-        string fontFamilyCss = string.IsNullOrWhiteSpace(FontFamily) 
-            ? "Consolas, Monaco, 'Courier New', monospace" 
-            : FontFamily!;
-        
-        // Numeros CSS siempre con punto: con la app en castellano salian «15,5px» y «1,4», que el
-        // navegador descarta (el zoom no cambiaba la letra y se perdia el interlineado).
-        var inv = System.Globalization.CultureInfo.InvariantCulture;
-        string basePx = Math.Clamp(FontSize * Math.Max(Zoom, 0.5), 8, 64).ToString(inv);
-        string lineHeight = LineHeight.ToString(inv);
+        var html = TXTReader.Services.ReaderHtml.Build(new TXTReader.Services.ReaderHtmlOptions
+        {
+            Text = Text,
+            SearchTerm = SearchTerm,
+            CaseSensitive = CaseSensitive,
+            FontSize = FontSize,
+            Zoom = Zoom,
+            LineHeight = LineHeight,
+            FontFamily = FontFamily,
+            Palette = palette,
+            Markdown = RenderMarkdown,
+            BaseDirectory = BaseDirectory
+        });
 
-        string html = $$"""
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-    <style>
-        html, body { margin:0; padding:0; }
-        body {
-            color: {{Foreground}};
-            font-family: {{fontFamilyCss}};
-            font-size: {{basePx}}px;
-            line-height: {{lineHeight}};
-            white-space: pre-wrap;      /* conserva saltos de línea */
-            word-wrap: break-word;      /* evita desbordes */
-            padding: 12px;
-        }
-        mark {
-            background: {{HighlightBackgroundColor}};
-            color: {{HighlightTextColor}};
-            font-weight: 700;
-        }
-    </style>
-</head>
-<body>{{encoded}}</body>
-</html>
-""";
-
+        Html = html;
         _web.Source = new HtmlWebViewSource { Html = html };
     }
 }

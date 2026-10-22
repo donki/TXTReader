@@ -69,7 +69,7 @@ function Get-ExecutableLines([string]$file) {
 
 $covered = 0; $total = 0; $rows = @()
 Get-ChildItem $repo -Recurse -Filter *.cs | Where-Object {
-    $_.FullName -notmatch '\\(obj|bin|constitution|[^\\]+\.Tests)\\' -and
+    $_.FullName -notmatch '\\(obj|bin|constitution|[^\\]+\.(UI)?Tests)\\' -and
     $_.Name -notmatch '\.(g|g\.i|Designer)\.cs$'
 } | ForEach-Object {
     $key = $_.FullName.ToLowerInvariant()

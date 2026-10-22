@@ -112,7 +112,7 @@
     <value>Licencia</value>
   </data>
   <data name="LicenseText" xml:space="preserve">
-    <value>Esta aplicación es software libre distribuido bajo licencia MIT.</value>
+    <value>Esta aplicación es software libre distribuido bajo licencia MIT. El Markdown se muestra con Markdig (© 2016-2026 Alexandre Mutel, licencia BSD-2-Clause; texto completo en THIRD-PARTY-NOTICES.md del repositorio).</value>
   </data>
   <data name="WarningText" xml:space="preserve">
     <value>⚠️ Uso bajo su propio riesgo</value>
@@ -290,5 +290,11 @@ Intenta descargar el archivo localmente primero.</value>
   </data>
   <data name="NotNowButton" xml:space="preserve">
     <value>Ahora no</value>
+  </data>
+  <data name="ShowRenderedMarkdown" xml:space="preserve">
+    <value>Ver Markdown renderizado</value>
+  </data>
+  <data name="ShowSourceText" xml:space="preserve">
+    <value>Ver texto tal cual</value>
   </data>
 </root>

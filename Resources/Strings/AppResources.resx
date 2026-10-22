@@ -112,7 +112,7 @@
     <value>License</value>
   </data>
   <data name="LicenseText" xml:space="preserve">
-    <value>This app is free software distributed under the MIT license.</value>
+    <value>This app is free software distributed under the MIT license. Markdown is shown with Markdig (© 2016-2026 Alexandre Mutel, BSD-2-Clause license; full text in THIRD-PARTY-NOTICES.md of the repository).</value>
   </data>
   <data name="WarningText" xml:space="preserve">
     <value>⚠️ Use at your own risk</value>
@@ -290,5 +290,11 @@ Do you want to update?</value>
   </data>
   <data name="NotNowButton" xml:space="preserve">
     <value>Not now</value>
+  </data>
+  <data name="ShowRenderedMarkdown" xml:space="preserve">
+    <value>View rendered Markdown</value>
+  </data>
+  <data name="ShowSourceText" xml:space="preserve">
+    <value>View plain text</value>
   </data>
 </root>

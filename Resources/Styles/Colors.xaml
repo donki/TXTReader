@@ -32,6 +32,13 @@
     <Color x:Key="TextOnPrimaryMuted">#C3C0FF</Color>
     <Color x:Key="TextOnPrimaryFaint">#D9D7FF</Color>
 
+    <!-- Vista de Markdown del lector: fondo del codigo y de las cabeceras de tabla, y enlaces
+         (en oscuro, el morado de marca no se leeria sobre la tarjeta: va el atenuado). -->
+    <Color x:Key="CodeBackgroundLight">#F1F0F7</Color>
+    <Color x:Key="CodeBackgroundDark">#2D2B36</Color>
+    <Color x:Key="LinkLight">#3525CD</Color>
+    <Color x:Key="LinkDark">#C3C0FF</Color>
+
     <!-- Fondo del resaltado de busqueda del lector (color literal centralizado, seccion 24). -->
     <Color x:Key="HighlightBackground">#FFE08A</Color>
 

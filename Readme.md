@@ -29,6 +29,7 @@ Una aplicación Android desarrollada con .NET MAUI que permite leer archivos de 
 - 🔍 **Búsqueda en tiempo real** - Resaltado amarillo profesional mientras escribes
 - 📝 **Selección de texto real** - Copia y pega como en cualquier navegador web
 - 🔍 **Zoom intuitivo** - Barra deslizante vertical de 8px a 32px
+- 📝 **Vista de Markdown** - Los `.md` se abren renderizados (títulos, listas y tareas, tablas, código, citas, enlaces, imágenes locales) con el tema claro u oscuro; el botón de la barra alterna con el texto tal cual en cualquier fichero
 
 ### ☁️ **Compatibilidad Total con la Nube**
 - 🌐 **OneDrive** - Funciona como Microsoft Edge, sin archivos temporales
@@ -115,23 +116,32 @@ dotnet publish -f net10.0-android -c Release
 - **Búsqueda en tiempo real**: Escribe en el campo superior, resaltado automático
 - **Zoom con barra**: Desliza la barra vertical para ajustar de 8px a 32px
 - **Selección de texto**: Mantén presionado para seleccionar y copiar
+- **Vista de Markdown**: los `.md` y `.markdown` se abren renderizados. El botón de la barra
+  superior alterna: `</>` enseña el texto tal cual y el ojo vuelve a la vista renderizada (también
+  sirve para ver como Markdown cualquier otro fichero). Los enlaces se abren en el navegador o la
+  app que toque; los de dentro del documento (índice, notas al pie) saltan dentro de él. Las
+  imágenes de la carpeta del documento se ven; las de internet no se descargan (todo es local) y
+  quedan como un enlace con su texto. La búsqueda y el zoom funcionan igual en las dos vistas.
 - **Navegación nativa**: Botón "atrás" de Android para regresar
 - **Información técnica**: Codificación detectada en el título
 
 ## 🧪 Pruebas
 
-166 pruebas automatizadas (xUnit), sin dispositivo ni red. Además de la lógica (detección de
+227 pruebas automatizadas (xUnit), sin dispositivo ni red. Además de la lógica (detección de
 codificación sobre ficheros temporales, recientes, resaltado de la búsqueda, idiomas con las mismas
 claves en `AppResources.resx` y `AppResources.es.resx`, comprobación de versión), recorren las
 pantallas con su XAML real compilado para `net10.0` con Microsoft.Maui.Controls: la principal
 (selector, recientes, apertura, errores), el lector (carga, búsqueda, zoom, colores), Acerca de
 (idioma, correo y sus alternativas, volver), el menú con el botón de atrás (Mobile §7), la apertura
-desde otras apps (`Services/IntentFileHandler.cs`) y el visor HTML. Lo que pediría el dispositivo
+desde otras apps (`Services/IntentFileHandler.cs`), el visor HTML y la vista de Markdown
+(`Services/MarkdownRenderer.cs`, `ReaderHtml.cs` y `ReaderLinks.cs`: cada elemento, imágenes
+locales y remotas, política sin red, colores de los dos temas, enlaces y el botón que alterna). Lo que pediría el dispositivo
 (selector, correo, navegador, portapapeles, diálogos, `content://`) pasa por
 `Services/AppPlatform.cs` y en las pruebas lo responden dobles.
 
 | Fecha | Pruebas | Cobertura de lo instrumentado | Cobertura sobre toda la app | Tiempo del banco |
 |---|---|---|---|---|
+| 2026-10-22 | 227 (todas pasan) | 98,1 % (1203 / 1226 líneas) | **94,1 %** (1203 / 1278 líneas) | ~1 s de pruebas, ~5 s con el arranque de `dotnet test` |
 | 2026-10-02 | 166 (todas pasan) | 97,9 % (889 / 908 líneas) | **92,6 %** (889 / 960 líneas) | ~1 s de pruebas, ~5 s con el arranque de `dotnet test` |
 | 2026-09-30 | 68 (todas pasan) | 90,4 % (171 / 189 líneas) | 10,1 % (171 / 1697 líneas, recuento anterior) | ~0,3 s de pruebas |
 
@@ -147,6 +157,14 @@ nuevo, el 2026-09-30 era el 17,8 %). Queda sin cubrir `MainActivity` y `MainAppl
 líneas: márgenes de las barras del sistema, intents y `ContentResolver`, que solo existen en
 Android) y algunos `catch` de `LocalizationService` y `EncodingDetectionService`.
 
+### Pruebas de interfaz (§8.7)
+
+`TXTReader.UITests` (Appium + UiAutomator2, en el emulador MuMu): **4 pruebas E2E de la vista de
+Markdown**, ~20 s de tanda (más ~45 s de arranque de Appium). Abren un `.md` de muestra desde otra
+app, comprueban que sale renderizado, alternan con el texto tal cual, buscan, siguen un enlace (se
+abre fuera) y pasan al tema oscuro. Cómo se lanzan, en [`TXTReader.UITests/README.md`](TXTReader.UITests/README.md).
+La tanda mínima del resto de la app (menú, idioma, atrás, letra al 145 %) aún no está.
+
 ## 🏗️ Arquitectura Técnica
 
 ### 📁 Estructura del Proyecto
@@ -159,6 +177,9 @@ TXTReader/
 │   ├── FileIntentService.cs           # Aviso de fichero recibido a la pantalla principal
 │   ├── IntentFileHandler.cs           # Apertura de ficheros que llegan de otras apps
 │   ├── AppPlatform.cs                 # Puertas a lo que depende del dispositivo
+│   ├── MarkdownRenderer.cs            # Markdown a HTML (Markdig), imágenes locales incrustadas
+│   ├── ReaderHtml.cs                  # Página del visor: texto o Markdown, tema, búsqueda, sin red
+│   ├── ReaderLinks.cs                 # Qué enlaces se abren fuera de la app
 │   └── MobileLogService.cs            # Registro de depuración
 ├── Pages/
 │   ├── MainPage.xaml                  # Pantalla principal con historial
@@ -173,6 +194,7 @@ TXTReader/
 
 - **.NET MAUI** - Framework multiplataforma moderno
 - **WebView con HTML** - Renderizado de texto con selección real
+- **Markdig** (BSD-2-Clause) - Markdown a HTML en el dispositivo, sin red
 - **ContentResolver** - Acceso nativo a URIs de content de Android
 - **Scoped Storage** - Compatibilidad total con Android 10+
 - **Material Design** - Interfaz moderna y consistente

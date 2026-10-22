@@ -29,3 +29,6 @@ socratic.keystore
 releases/
 
 TestResults/
+
+# Capturas de las pruebas de interfaz (TXTReader.UITests)
+artifacts/

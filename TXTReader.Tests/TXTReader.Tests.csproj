@@ -34,6 +34,7 @@
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.2" />
+    <PackageReference Include="Markdig" Version="1.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -47,8 +48,8 @@
 
   <!-- Codigo de la app que se prueba (enlazado, no copiado): todo menos Platforms/. -->
   <ItemGroup>
-    <Compile Include="..\**\*.cs" Exclude="..\obj\**;..\bin\**;..\Platforms\**;..\TXTReader.Tests\**;..\constitution\**" Link="App\%(RecursiveDir)%(Filename)%(Extension)" />
-    <MauiXaml Include="..\**\*.xaml" Exclude="..\obj\**;..\bin\**;..\Platforms\**;..\TXTReader.Tests\**;..\constitution\**" Link="App\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\**\*.cs" Exclude="..\obj\**;..\bin\**;..\Platforms\**;..\TXTReader.Tests\**;..\TXTReader.UITests\**;..\constitution\**" Link="App\%(RecursiveDir)%(Filename)%(Extension)" />
+    <MauiXaml Include="..\**\*.xaml" Exclude="..\obj\**;..\bin\**;..\Platforms\**;..\TXTReader.Tests\**;..\TXTReader.UITests\**;..\constitution\**" Link="App\%(RecursiveDir)%(Filename)%(Extension)" />
     <EmbeddedResource Include="..\Resources\Strings\AppResources.resx" Link="Resources\Strings\AppResources.resx" />
     <EmbeddedResource Include="..\Resources\Strings\AppResources.es.resx" Link="Resources\Strings\AppResources.es.resx" />
     <!-- Piezas comunes (repo sOCShared) que usa la app; no cuentan en la cobertura (coverlet.runsettings). -->

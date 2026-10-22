@@ -11,7 +11,7 @@ public class IntentFileHandler
     /// <summary>Extensiones que se abren; sin extension tambien (muchas URIs content:// no la llevan).</summary>
     public static readonly IReadOnlySet<string> SupportedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
-        ".txt", ".log", ".json", ".xml", ".gpx", ".csv", ".md", ".ini", ".cfg", ".conf"
+        ".txt", ".log", ".json", ".xml", ".gpx", ".csv", ".md", ".markdown", ".ini", ".cfg", ".conf"
     };
 
     /// <summary>Espera antes de abrir lo pendiente, para que la app este cargada del todo.</summary>
