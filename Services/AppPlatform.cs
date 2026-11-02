@@ -69,4 +69,10 @@ public static class AppPlatform
     /// en Android; fuera de Android no hace nada.
     /// </summary>
     public static Action MoveTaskToBack { get; set; } = () => { };
+
+    /// <summary>
+    /// Si el fichero llego desde otra app ("Abrir con"), cierra la actividad para que atras vuelva
+    /// a esa app y devuelve true; si no, false. La pone MainActivity en Android.
+    /// </summary>
+    public static Func<bool> ReturnToCaller { get; set; } = () => false;
 }

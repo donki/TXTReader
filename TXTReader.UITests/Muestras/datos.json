@@ -1,0 +1,7 @@
+{
+  "ciudad": "Barcelona",
+  "poblacion": 1620000,
+  "capital": false,
+  "barrios": ["Gracia", "Eixample"],
+  "web": null
+}

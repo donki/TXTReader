@@ -506,6 +506,20 @@ public sealed class AppShellTests : IDisposable
     }
 
     [Fact]
+    public async Task Back_ReturnsToTheCallingApp_WhenTheFileCameFromIt()
+    {
+        var shell = AppShellTests.ShowShell(_h.App);
+        await shell.Navigation.PushAsync(new ContentPage());
+        _h.ReturnToCallerResult = true;
+
+        Assert.True(shell.SendBackButtonPressed());
+
+        Assert.Equal(1, _h.ReturnedToCaller);
+        Assert.Equal(0, _h.MovedToBack);   // no manda al fondo la tarea de la otra app
+        Assert.Equal(2, shell.Navigation.NavigationStack.Count);
+    }
+
+    [Fact]
     public async Task Back_WithAPageOnTop_PopsIt()
     {
         var shell = AppShellTests.ShowShell(_h.App);
@@ -550,6 +564,7 @@ public sealed class AppStartupTests : IDisposable
     {
         await AppPlatformDefaults.Delay(TimeSpan.Zero);
         AppPlatformDefaults.MoveTaskToBack();   // fuera de Android no hace nada
+        Assert.False(AppPlatformDefaults.ReturnToCaller());
 
         Application.Current = null;
         Assert.Null(AppPlatformDefaults.CurrentPage());

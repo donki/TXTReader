@@ -139,6 +139,8 @@ public sealed class AppHarness : IDisposable
     public bool AlertAnswer { get; set; }
 
     public int MovedToBack { get; private set; }
+    public bool ReturnToCallerResult { get; set; }
+    public int ReturnedToCaller { get; private set; }
 
     public Page? CurrentPage { get; set; }
 
@@ -170,6 +172,7 @@ public sealed class AppHarness : IDisposable
         AppPlatform.Delay = time => { Delays.Add(time); return Task.CompletedTask; };
         AppPlatform.CurrentPage = () => CurrentPage;
         AppPlatform.MoveTaskToBack = () => MovedToBack++;
+        AppPlatform.ReturnToCaller = () => { ReturnedToCaller++; return ReturnToCallerResult; };
         AppPlatform.OpenContentUri = _ => throw new PlatformNotSupportedException("Content URIs are only supported on Android");
 
         App = new App();
@@ -248,6 +251,7 @@ public static class AppPlatformDefaults
     public static Func<TimeSpan, Task> Delay { get; private set; } = null!;
     public static Func<Page?> CurrentPage { get; private set; } = null!;
     public static Action MoveTaskToBack { get; private set; } = null!;
+    public static Func<bool> ReturnToCaller { get; private set; } = null!;
     public static Func<string> CacheDirectory { get; private set; } = null!;
     public static Func<Func<Task>, Task> RunOnMainThreadAsync { get; private set; } = null!;
 
@@ -259,6 +263,7 @@ public static class AppPlatformDefaults
         Delay = AppPlatform.Delay;
         CurrentPage = AppPlatform.CurrentPage;
         MoveTaskToBack = AppPlatform.MoveTaskToBack;
+        ReturnToCaller = AppPlatform.ReturnToCaller;
         CacheDirectory = AppPlatform.CacheDirectory;
         RunOnMainThreadAsync = AppPlatform.RunOnMainThreadAsync;
     }
@@ -270,6 +275,7 @@ public static class AppPlatformDefaults
         AppPlatform.Delay = Delay;
         AppPlatform.CurrentPage = CurrentPage;
         AppPlatform.MoveTaskToBack = MoveTaskToBack;
+        AppPlatform.ReturnToCaller = ReturnToCaller;
         AppPlatform.CacheDirectory = CacheDirectory;
         AppPlatform.RunOnMainThreadAsync = RunOnMainThreadAsync;
     }

@@ -5,6 +5,32 @@ Todos los cambios relevantes de TXT Reader se documentan en este archivo.
 El formato sigue las pautas de la constitucion del proyecto (versionado
 sincronizado entre `ApplicationDisplayVersion` y `ApplicationVersion`).
 
+## [2026.10.31.0] (versionCode 2026103100)
+
+### Cambiado
+- **Atrás vuelve a la app que mandó el fichero**: si el texto se abrió desde otra app («Abrir con»,
+  el gestor de archivos, el correo…), el botón de atrás cierra el lector y vuelve a esa app en lugar
+  de mandar toda su tarea al fondo y dejar ver el escritorio.
+
+*English:* Back now returns to the app that sent the file (Open with, file manager, mail…) instead
+of sending its whole task to the background.
+
+## [2026.10.23.0] (versionCode 2026102300)
+
+### Añadido
+- **Vista de datos para CSV, JSON y XML**: se abren con formato, igual que el Markdown.
+  - **CSV**: como **tabla**, con la primera fila de cabecera y una columna que numera las filas.
+    Reconoce el separador solo (coma, punto y coma, tabulador o barra) y respeta las comillas (comas,
+    comillas dobladas y saltos de línea dentro de un campo).
+  - **JSON**: **indentado** y **coloreado** (claves, cadenas, números, `true`/`false`/`null` y signos),
+    dos espacios por nivel.
+  - **XML** (y `.gpx`): **indentado** y **coloreado** (etiquetas, atributos, valores, comentarios y
+    texto), conservando la declaración `<?xml …?>`.
+  - Los colores siguen el tema claro u oscuro de la app. Si el contenido está mal formado, se enseña
+    tal cual (escapado) en lugar de dar error. El botón de la barra superior alterna con el texto tal
+    cual, como en el Markdown, y la búsqueda y el zoom también valen en la vista con formato. Todo en
+    el dispositivo, sin red.
+
 ## [2026.10.22.0] (versionCode 2026102200)
 
 ### Añadido

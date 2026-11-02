@@ -17,7 +17,8 @@ namespace TXTReader
         /// <summary>
         /// Atras (Mobile 7): con el menu lateral abierto, lo cierra; con el lector (u otra pagina)
         /// apilado, lo desapila el Shell y vuelve a la principal; en Acerca de abierta desde el menu
-        /// vuelve a Inicio; en la principal, la aplicacion se oculta sin cerrarse.
+        /// vuelve a Inicio; en la principal, la aplicacion se oculta sin cerrarse. Si el fichero lo
+        /// mando otra app, vuelve a ella.
         /// </summary>
         protected override bool OnBackButtonPressed()
         {
@@ -26,6 +27,9 @@ namespace TXTReader
                 FlyoutIsPresented = false;
                 return true;
             }
+
+            if (AppPlatform.ReturnToCaller())
+                return true;
 
             if (Navigation.ModalStack.Count > 0 || Navigation.NavigationStack.Count > 1)
                 return base.OnBackButtonPressed();

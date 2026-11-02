@@ -297,4 +297,13 @@ Intenta descargar el archivo localmente primero.</value>
   <data name="ShowSourceText" xml:space="preserve">
     <value>Ver texto tal cual</value>
   </data>
+  <data name="ShowTable" xml:space="preserve">
+    <value>Ver como tabla</value>
+  </data>
+  <data name="ShowJson" xml:space="preserve">
+    <value>Ver JSON con formato</value>
+  </data>
+  <data name="ShowXml" xml:space="preserve">
+    <value>Ver XML con formato</value>
+  </data>
 </root>

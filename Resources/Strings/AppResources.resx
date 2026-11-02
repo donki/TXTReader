@@ -297,4 +297,13 @@ Do you want to update?</value>
   <data name="ShowSourceText" xml:space="preserve">
     <value>View plain text</value>
   </data>
+  <data name="ShowTable" xml:space="preserve">
+    <value>View as table</value>
+  </data>
+  <data name="ShowJson" xml:space="preserve">
+    <value>View formatted JSON</value>
+  </data>
+  <data name="ShowXml" xml:space="preserve">
+    <value>View formatted XML</value>
+  </data>
 </root>

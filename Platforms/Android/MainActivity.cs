@@ -23,10 +23,16 @@ namespace TXTReader
         // IntentFileHandler, que tiene pruebas; aqui solo queda lo que es de Android.
         private readonly IntentFileHandler _intentFiles = new();
 
+        // True mientras se ve un fichero que mando otra app: atras tiene que volver a ella. Con
+        // MoveTaskToBack, si la actividad vive en la tarea de esa app, se iria al fondo la tarea
+        // entera y se veria el escritorio.
+        private bool _openedByAnotherApp;
+
         protected override void OnCreate(Bundle? savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             AppPlatform.MoveTaskToBack = () => MoveTaskToBack(true);
+            AppPlatform.ReturnToCaller = ReturnToCaller;
             AppPlatform.OpenContentUri = uri =>
                 (ContentResolver ?? throw new InvalidOperationException("ContentResolver is null"))
                     .OpenInputStream(Android.Net.Uri.Parse(uri)!);
@@ -73,8 +79,19 @@ namespace TXTReader
             _ = _intentFiles.ProcessPendingAsync();
         }
 
+        private bool ReturnToCaller()
+        {
+            if (!_openedByAnotherApp)
+                return false;
+            _openedByAnotherApp = false;
+            Finish();
+            return true;
+        }
+
         private void HandleIntent(Intent? intent)
         {
+            _openedByAnotherApp = intent?.Action == Intent.ActionView && intent.Data is not null
+                && (intent.Flags & ActivityFlags.LaunchedFromHistory) == 0;
             if (intent?.Action != Intent.ActionView || intent.Data is not { } uri)
                 return;
             _ = _intentFiles.HandleViewIntentAsync(uri.ToString() ?? string.Empty, uri.Scheme, uri.Path, GetDisplayName(uri));

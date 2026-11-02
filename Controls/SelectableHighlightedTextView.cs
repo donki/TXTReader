@@ -48,10 +48,15 @@ public class SelectableHighlightedTextView : ContentView
         nameof(Zoom), typeof(double), typeof(SelectableHighlightedTextView), 1.0,
         propertyChanged: OnAnyChanged);
 
-    /// <summary>Vista renderizada de Markdown (true) o el texto tal cual (false).</summary>
-    public static readonly BindableProperty RenderMarkdownProperty = BindableProperty.Create(
-        nameof(RenderMarkdown), typeof(bool), typeof(SelectableHighlightedTextView), false,
+    /// <summary>Vista con formato (true) o el texto tal cual (false).</summary>
+    public static readonly BindableProperty RenderedProperty = BindableProperty.Create(
+        nameof(Rendered), typeof(bool), typeof(SelectableHighlightedTextView), false,
         propertyChanged: OnAnyChanged);
+
+    /// <summary>Formato del documento, para saber como pintarlo en la vista con formato.</summary>
+    public static readonly BindableProperty FormatProperty = BindableProperty.Create(
+        nameof(Format), typeof(TXTReader.Services.ReaderFormat), typeof(SelectableHighlightedTextView),
+        TXTReader.Services.ReaderFormat.PlainText, propertyChanged: OnAnyChanged);
 
     /// <summary>Carpeta del documento, para las imagenes con ruta relativa del Markdown.</summary>
     public static readonly BindableProperty BaseDirectoryProperty = BindableProperty.Create(
@@ -140,10 +145,16 @@ public class SelectableHighlightedTextView : ContentView
         set => SetValue(ZoomProperty, value); 
     }
 
-    public bool RenderMarkdown
+    public bool Rendered
     {
-        get => (bool)GetValue(RenderMarkdownProperty);
-        set => SetValue(RenderMarkdownProperty, value);
+        get => (bool)GetValue(RenderedProperty);
+        set => SetValue(RenderedProperty, value);
+    }
+
+    public TXTReader.Services.ReaderFormat Format
+    {
+        get => (TXTReader.Services.ReaderFormat)GetValue(FormatProperty);
+        set => SetValue(FormatProperty, value);
     }
 
     public string? BaseDirectory
@@ -196,6 +207,12 @@ public class SelectableHighlightedTextView : ContentView
             HighlightText = HighlightTextColor
         };
 
+        // El formato efectivo: con formato (segun el del documento; un texto suelto se interpreta como
+        // Markdown) o el texto tal cual.
+        var renderFormat = Rendered
+            ? (Format == TXTReader.Services.ReaderFormat.PlainText ? TXTReader.Services.ReaderFormat.Markdown : Format)
+            : TXTReader.Services.ReaderFormat.PlainText;
+
         var html = TXTReader.Services.ReaderHtml.Build(new TXTReader.Services.ReaderHtmlOptions
         {
             Text = Text,
@@ -206,7 +223,7 @@ public class SelectableHighlightedTextView : ContentView
             LineHeight = LineHeight,
             FontFamily = FontFamily,
             Palette = palette,
-            Markdown = RenderMarkdown,
+            RenderFormat = renderFormat,
             BaseDirectory = BaseDirectory
         });
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ciudad nombre="Barcelona">
+  <!-- datos de ejemplo -->
+  <poblacion>1620000</poblacion>
+  <barrios><barrio>Gracia</barrio><barrio>Eixample</barrio></barrios>
+</ciudad>

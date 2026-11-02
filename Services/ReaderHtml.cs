@@ -31,8 +31,15 @@ public sealed record ReaderHtmlOptions
     public string? FontFamily { get; init; }
     public ReaderPalette Palette { get; init; } = ReaderPalette.Default;
 
-    /// <summary>Vista renderizada de Markdown en vez del texto tal cual.</summary>
-    public bool Markdown { get; init; }
+    /// <summary>Formato con el que se pinta (texto tal cual, Markdown, CSV, JSON o XML).</summary>
+    public ReaderFormat RenderFormat { get; init; } = ReaderFormat.PlainText;
+
+    /// <summary>Atajo historico: la vista renderizada de Markdown (equivale a RenderFormat = Markdown).</summary>
+    public bool Markdown
+    {
+        get => RenderFormat == ReaderFormat.Markdown;
+        init { if (value) RenderFormat = ReaderFormat.Markdown; }
+    }
 
     /// <summary>Carpeta del documento (imagenes relativas del Markdown).</summary>
     public string? BaseDirectory { get; init; }
@@ -49,6 +56,58 @@ public static class ReaderHtml
     /// <summary>Tamaño de letra en px que se pinta: el de la app por el zoom, entre 8 y 64.</summary>
     public static double BaseFontPx(double fontSize, double zoom) =>
         Math.Clamp(fontSize * Math.Max(zoom, 0.5), 8, 64);
+
+    /// <summary>
+    /// CSS de las vistas de datos (CSV, JSON, XML): la tabla del CSV y los colores de resaltado del
+    /// JSON y el XML. Las claves, etiquetas, bordes y demas salen de la paleta del tema; los tres
+    /// acentos (cadenas, numeros, palabras clave) se eligen claros u oscuros segun el fondo.
+    /// </summary>
+    internal static string DataCss(ReaderPalette p, string monospace)
+    {
+        var dark = IsDarkColor(p.Background);
+        var str = dark ? "#9BE59B" : "#0B7285";  // cadenas y valores de atributo
+        var num = dark ? "#FFB3BA" : "#C2255C";  // numeros y nombres de atributo
+        var kw = dark ? "#D0BFFF" : "#9C36B5";   // true / false / null
+        return $$"""
+        body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+        article.data { margin: 0; }
+        pre.code { font-family: {{monospace}}; font-size: .95em; background: {{p.CodeBackground}}; color: {{p.Foreground}};
+            padding: .8em 1em; border-radius: 6px; overflow-x: auto; line-height: 1.45; white-space: pre; margin: 0; }
+        table.csv { border-collapse: collapse; display: block; overflow-x: auto; max-width: 100%; }
+        table.csv th, table.csv td { border: 1px solid {{p.Border}}; padding: .35em .7em; text-align: left;
+            vertical-align: top; white-space: pre-wrap; }
+        table.csv th { background: {{p.CodeBackground}}; font-weight: 700; position: sticky; top: 0; }
+        table.csv tbody tr:nth-child(even) td { background: {{p.CodeBackground}}; }
+        table.csv .rownum { color: {{p.Secondary}}; text-align: right; font-variant-numeric: tabular-nums; user-select: none; }
+        .tok-key { color: {{p.Link}}; font-weight: 600; }
+        .tok-str { color: {{str}}; }
+        .tok-num { color: {{num}}; }
+        .tok-kw { color: {{kw}}; font-weight: 600; }
+        .tok-punct { color: {{p.Secondary}}; }
+        .tok-tag { color: {{p.Link}}; }
+        .tok-attr { color: {{num}}; }
+        .tok-comment { color: {{p.Secondary}}; font-style: italic; }
+        .tok-cdata { color: {{str}}; }
+        .tok-decl { color: {{p.Secondary}}; }
+""";
+    }
+
+    /// <summary>¿Es oscuro un color CSS «#RRGGBB» o «#AARRGGBB»? (luminancia perceptual).</summary>
+    internal static bool IsDarkColor(string hex)
+    {
+        var h = hex.TrimStart('#');
+        if (h.Length == 8) h = h[2..]; // AARRGGBB -> RRGGBB
+        if (h.Length != 6) return false;
+        try
+        {
+            int r = Convert.ToInt32(h[..2], 16), g = Convert.ToInt32(h.Substring(2, 2), 16), b = Convert.ToInt32(h.Substring(4, 2), 16);
+            return (0.2126 * r + 0.7152 * g + 0.0587 * b) < 128;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+    }
 
     public static string Build(ReaderHtmlOptions o)
     {
@@ -67,7 +126,7 @@ public static class ReaderHtml
         string body;
         string modeCss;
         string term = string.Empty;
-        if (o.Markdown)
+        if (o.RenderFormat == ReaderFormat.Markdown)
         {
             // Las casillas de las listas de tareas, dibujadas a mano: las de serie salen grises
             // (estan deshabilitadas) y casi no se distingue la marcada. La marca, del color del fondo.
@@ -107,6 +166,14 @@ public static class ReaderHtml
         dt { font-weight: 700; } dd { margin: 0 0 .5em 1.4em; }
         .footnotes { font-size: .9em; color: {{p.Secondary}}; }
 """;
+        }
+        else if (o.RenderFormat != ReaderFormat.PlainText)
+        {
+            // CSV, JSON o XML: una tabla o el texto indentado y coloreado. Las coincidencias las marca
+            // el script sobre el HTML ya pintado (igual que en Markdown), para no partir las etiquetas.
+            body = $"<article class=\"data\">{StructuredRenderer.ToHtml(o.RenderFormat, o.Text)}</article>";
+            term = o.SearchTerm ?? string.Empty;
+            modeCss = DataCss(p, monospace);
         }
         else
         {

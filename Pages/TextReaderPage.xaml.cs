@@ -21,9 +21,14 @@ namespace TXTReader.Pages
             ApplyTheme();
             ContentViewer.ExternalLinkRequested += OnExternalLinkRequested;
 
-            // Los .md se abren renderizados; cualquier otro, tal cual (el boton alterna en los dos).
+            // Markdown, CSV, JSON y XML se abren con formato; cualquier otro, tal cual (el boton alterna
+            // en los dos). El formato sale del nombre visible o, si no dice nada, de la ruta.
             ContentViewer.BaseDirectory = BaseDirectoryOf(filePath);
-            ContentViewer.RenderMarkdown = MarkdownRenderer.IsMarkdownFile(fileName) || MarkdownRenderer.IsMarkdownFile(filePath);
+            var format = StructuredRenderer.DetectFormat(fileName);
+            if (format == ReaderFormat.PlainText)
+                format = StructuredRenderer.DetectFormat(filePath);
+            ContentViewer.Format = format;
+            ContentViewer.Rendered = format != ReaderFormat.PlainText;
 
             Title = fileName;
             UpdateTexts();
@@ -33,8 +38,8 @@ namespace TXTReader.Pages
         /// <summary>Carga del fichero en curso (las pruebas la esperan).</summary>
         internal Task Loading { get; }
 
-        /// <summary>¿Se ve el Markdown renderizado?</summary>
-        internal bool IsRendered => ContentViewer.RenderMarkdown;
+        /// <summary>¿Se ve el documento con formato (tabla, Markdown, JSON o XML)?</summary>
+        internal bool IsRendered => ContentViewer.Rendered;
 
         private void UpdateTexts()
         {
@@ -49,14 +54,23 @@ namespace TXTReader.Pages
         /// </summary>
         private void UpdateToggle()
         {
-            var rendered = ContentViewer.RenderMarkdown;
+            var rendered = ContentViewer.Rendered;
             MarkdownToggle.IconImageSource = rendered ? "ic_view_source.png" : "ic_view_rendered.png";
-            MarkdownToggle.Text = _localizationService.GetString(rendered ? "ShowSourceText" : "ShowRenderedMarkdown");
+            MarkdownToggle.Text = _localizationService.GetString(rendered ? "ShowSourceText" : RenderedLabelKey(ContentViewer.Format));
         }
+
+        /// <summary>El texto del boton para ir a la vista con formato, segun el formato del documento.</summary>
+        private static string RenderedLabelKey(ReaderFormat format) => format switch
+        {
+            ReaderFormat.Csv => "ShowTable",
+            ReaderFormat.Json => "ShowJson",
+            ReaderFormat.Xml => "ShowXml",
+            _ => "ShowRenderedMarkdown",
+        };
 
         internal void ToggleMarkdown()
         {
-            ContentViewer.RenderMarkdown = !ContentViewer.RenderMarkdown;
+            ContentViewer.Rendered = !ContentViewer.Rendered;
             UpdateToggle();
         }
 
