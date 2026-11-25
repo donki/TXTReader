@@ -52,17 +52,20 @@ public sealed class IntentFileHandlerTests : IDisposable
     public async Task SupportedFile_IsLeftPending_AndOpenedOnResume()
     {
         var file = _h.Temp.File("notas.txt", "hola");
-        var received = new List<string>();
-        FileIntentService.FileOpened += received.Add;
+        var received = new List<(string Path, string Name)>();
+        Action<string, string> listener = (p, n) => received.Add((p, n));
+        FileIntentService.FileOpened += listener;
         var handler = new IntentFileHandler();
 
         await handler.HandleViewIntentAsync("file://" + file, "file", file, "notas.txt");
         Assert.Equal(file, handler.PendingFilePath);
 
         await handler.ProcessPendingAsync();
+        FileIntentService.FileOpened -= listener;
 
         Assert.Null(handler.PendingFilePath);
-        Assert.Equal(new[] { file }, received);
+        Assert.Null(handler.PendingFileName);
+        Assert.Equal(new[] { (file, "notas.txt") }, received);
         Assert.Equal(new[] { IntentFileHandler.PendingDelay }, _h.Delays);
         Assert.Empty(_h.Alerts);
     }
@@ -70,15 +73,33 @@ public sealed class IntentFileHandlerTests : IDisposable
     [Fact]
     public async Task ContentUri_IsOpenedWithoutCheckingTheDisk()
     {
-        var received = new List<string>();
-        FileIntentService.FileOpened += received.Add;
+        var received = new List<(string Path, string Name)>();
+        Action<string, string> listener = (p, n) => received.Add((p, n));
+        FileIntentService.FileOpened += listener;
         var handler = new IntentFileHandler();
 
         await handler.HandleViewIntentAsync("content://prov/doc/9", "content", "/doc/9", null);
         await handler.ProcessPendingAsync();
+        // Un Markdown compartido sin nombre (solo el numero del proveedor): el tipo MIME da la extension.
+        await handler.HandleViewIntentAsync("content://media/external/file/1000070244", "content", "/external/file/1000070244", "1000070244", "text/markdown");
+        await handler.ProcessPendingAsync();
+        FileIntentService.FileOpened -= listener;
 
-        Assert.Equal(new[] { "content://prov/doc/9" }, received);
+        Assert.Equal(new[] { ("content://prov/doc/9", "9"), ("content://media/external/file/1000070244", "1000070244.md") }, received);
     }
+
+    [Theory]
+    [InlineData("informe.md", "/x/1", "text/plain", "informe.md")]          // el nombre visible manda
+    [InlineData(" notas ", "/x/1", "text/markdown; charset=utf-8", "notas.md")]
+    [InlineData(null, "/x/datos", "application/json", "datos.json")]
+    [InlineData(null, "/x/datos", "text/csv", "datos.csv")]
+    [InlineData(null, "/x/ruta", "application/gpx+xml", "ruta.gpx")]
+    [InlineData(null, "/x/arbol", "text/xml", "arbol.xml")]
+    [InlineData(null, "/x/texto", "text/plain", "texto")]                    // texto plano: sin añadir nada
+    [InlineData(null, "/x/texto", null, "texto")]
+    [InlineData("", "content://p/doc/7/", null, "7")]
+    public void Name_shown_comes_from_the_display_name_or_the_mime_type(string? display, string path, string? mime, string expected) =>
+        Assert.Equal(expected, IntentFileHandler.FileNameFor(display, path, mime));
 
     [Fact]
     public async Task UnsupportedFile_IsIgnored()

@@ -29,14 +29,15 @@ namespace TXTReader.Pages
             FileIntentService.FileOpened += OnFileOpenedFromIntent;
         }
 
-        internal async void OnFileOpenedFromIntent(string filePath)
+        internal async void OnFileOpenedFromIntent(string filePath, string fileName)
         {
             try
             {
                 _ = MobileLogService.LogAsync($"MainPage: FileOpened event received with path: {filePath}");
 
-                // Asegurar que la navegación se ejecute en el hilo principal
-                await AppPlatform.RunOnMainThreadAsync(() => OpenFile(filePath, Path.GetFileName(filePath), true));
+                // Asegurar que la navegación se ejecute en el hilo principal. El nombre es el que da
+                // la otra app (en una URI content:// la ruta es un numero y no dice si es Markdown).
+                await AppPlatform.RunOnMainThreadAsync(() => OpenFile(filePath, fileName, true));
             }
             catch (Exception ex)
             {

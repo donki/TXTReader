@@ -127,7 +127,7 @@ dotnet publish -f net10.0-android -c Release
 
 ## 🧪 Pruebas
 
-227 pruebas automatizadas (xUnit), sin dispositivo ni red. Además de la lógica (detección de
+272 pruebas automatizadas (xUnit), sin dispositivo ni red. Además de la lógica (detección de
 codificación sobre ficheros temporales, recientes, resaltado de la búsqueda, idiomas con las mismas
 claves en `AppResources.resx` y `AppResources.es.resx`, comprobación de versión), recorren las
 pantallas con su XAML real compilado para `net10.0` con Microsoft.Maui.Controls: la principal
@@ -141,6 +141,7 @@ locales y remotas, política sin red, colores de los dos temas, enlaces y el bot
 
 | Fecha | Pruebas | Cobertura de lo instrumentado | Cobertura sobre toda la app | Tiempo del banco |
 |---|---|---|---|---|
+| 2026-11-25 | 272 (todas pasan) | 98,2 % | **93,5 %** (1580 / 1689 líneas ejecutables; desde este día solo cuenta código ejecutable, General §8.6, con `Mobile/Shared/cobertura-app.py`) | ~3 s de pruebas |
 | 2026-10-22 | 227 (todas pasan) | 98,1 % (1203 / 1226 líneas) | **94,1 %** (1203 / 1278 líneas) | ~1 s de pruebas, ~5 s con el arranque de `dotnet test` |
 | 2026-10-02 | 166 (todas pasan) | 97,9 % (889 / 908 líneas) | **92,6 %** (889 / 960 líneas) | ~1 s de pruebas, ~5 s con el arranque de `dotnet test` |
 | 2026-09-30 | 68 (todas pasan) | 90,4 % (171 / 189 líneas) | 10,1 % (171 / 1697 líneas, recuento anterior) | ~0,3 s de pruebas |

@@ -94,7 +94,10 @@ namespace TXTReader
                 && (intent.Flags & ActivityFlags.LaunchedFromHistory) == 0;
             if (intent?.Action != Intent.ActionView || intent.Data is not { } uri)
                 return;
-            _ = _intentFiles.HandleViewIntentAsync(uri.ToString() ?? string.Empty, uri.Scheme, uri.Path, GetDisplayName(uri));
+            // El tipo MIME da la extension cuando el proveedor no da nombre (p. ej. content://media/.../<id>).
+            string? mime = intent.Type;
+            try { mime ??= ContentResolver?.GetType(uri); } catch (Exception) { }
+            _ = _intentFiles.HandleViewIntentAsync(uri.ToString() ?? string.Empty, uri.Scheme, uri.Path, GetDisplayName(uri), mime);
         }
 
         // Nombre visible del fichero (el de la columna DISPLAY_NAME del proveedor o, si no, el

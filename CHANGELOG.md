@@ -5,6 +5,19 @@ Todos los cambios relevantes de TXT Reader se documentan en este archivo.
 El formato sigue las pautas de la constitucion del proyecto (versionado
 sincronizado entre `ApplicationDisplayVersion` y `ApplicationVersion`).
 
+## Sin publicar
+
+### Corregido
+- **Un fichero abierto desde otra app con una URI sin nombre** (por ejemplo
+  `content://media/external/file/1000070244`) enseñaba el número de título y un `.md` no pasaba a
+  la vista de Markdown. Ahora el título es el nombre visible que da la otra app y, si no lo da o no
+  tiene extensión, se deduce del tipo MIME (`text/markdown` → `.md`; también JSON, CSV, XML y GPX).
+  Visto en el Xiaomi el 2026-11-16; probado con pruebas, falta verlo en el móvil.
+
+### Pruebas
+- 272 pruebas; la cobertura de toda la app se mide con el script común y cuenta solo código
+  ejecutable (General §8.6): 93,5 %.
+
 ## [2026.10.31.0] (versionCode 2026103100)
 
 ### Cambiado

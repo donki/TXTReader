@@ -51,6 +51,33 @@ public class IntentFileHandler
         return Path.GetExtension(candidate).ToLowerInvariant();
     }
 
+    /// <summary>Extension que corresponde a un tipo MIME de texto con formato (no la de texto plano).</summary>
+    public static string? ExtensionForMime(string? mimeType) => mimeType?.Split(';')[0].Trim().ToLowerInvariant() switch
+    {
+        "text/markdown" or "text/x-markdown" => ".md",
+        "application/json" or "text/json" => ".json",
+        "text/csv" or "text/comma-separated-values" => ".csv",
+        "application/xml" or "text/xml" => ".xml",
+        "application/gpx+xml" => ".gpx",
+        _ => null,
+    };
+
+    /// <summary>
+    /// El nombre que se enseña y del que sale el formato: el nombre visible que da la otra app o, si
+    /// no lo da, el final de la ruta; sin extension, la de su tipo MIME (un .md compartido como
+    /// content://media/.../1000070244 se veia con el numero de titulo y sin la vista de Markdown).
+    /// </summary>
+    public static string FileNameFor(string? displayName, string filePath, string? mimeType)
+    {
+        var name = !string.IsNullOrWhiteSpace(displayName) ? displayName.Trim() : Path.GetFileName(filePath.TrimEnd('/'));
+        if (string.IsNullOrEmpty(Path.GetExtension(name)) && ExtensionForMime(mimeType) is { } extension)
+            name += extension;
+        return name;
+    }
+
+    /// <summary>Nombre que se enseña del fichero pendiente.</summary>
+    public string? PendingFileName { get; private set; }
+
     public static bool IsSupported(string extension) =>
         string.IsNullOrEmpty(extension) || SupportedExtensions.Contains(extension);
 
@@ -71,7 +98,7 @@ public class IntentFileHandler
     /// Intent de ver un fichero: si se puede leer y es de texto, queda pendiente; si no hay nada
     /// que leer, se enseña el consejo de la nube.
     /// </summary>
-    public async Task HandleViewIntentAsync(string uri, string? scheme, string? path, string? displayName)
+    public async Task HandleViewIntentAsync(string uri, string? scheme, string? path, string? displayName, string? mimeType = null)
     {
         try
         {
@@ -87,11 +114,13 @@ public class IntentFileHandler
                 return;
             }
 
-            var extension = GetExtension(displayName, filePath);
+            var fileName = FileNameFor(displayName, filePath, mimeType);
+            var extension = GetExtension(fileName, filePath);
             if (IsSupported(extension))
             {
                 _ = MobileLogService.LogAsync($"HandleIntent: Setting _pendingFilePath to: '{filePath}' (extension: {extension})");
                 PendingFilePath = filePath;
+                PendingFileName = fileName;
             }
             else
             {
@@ -113,7 +142,9 @@ public class IntentFileHandler
         var filePath = PendingFilePath;
         if (string.IsNullOrEmpty(filePath))
             return;
+        var fileName = PendingFileName ?? Path.GetFileName(filePath);
         PendingFilePath = null;
+        PendingFileName = null;
 
         try
         {
@@ -125,7 +156,7 @@ public class IntentFileHandler
                 await AppPlatform.RunOnMainThreadAsync(() =>
                 {
                     _ = MobileLogService.LogAsync($"OnResume: Notifying FileIntentService with: {filePath}");
-                    FileIntentService.NotifyFileOpened(filePath);
+                    FileIntentService.NotifyFileOpened(filePath, fileName);
                     return Task.CompletedTask;
                 });
             }

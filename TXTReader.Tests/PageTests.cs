@@ -170,7 +170,7 @@ public sealed class MainPageTests : IDisposable
         var file = _h.Temp.File("compartido.log", "x");
         var (page, nav) = Open();
 
-        FileIntentService.NotifyFileOpened(file);
+        FileIntentService.NotifyFileOpened(file, "compartido.log");
         await TestLog.WaitForAsync("Navigation to TextReaderPage completed");
 
         var reader = Assert.IsType<TextReaderPage>(nav.CurrentPage);
@@ -185,7 +185,7 @@ public sealed class MainPageTests : IDisposable
         var (page, _) = Open();
         AppPlatform.RunOnMainThreadAsync = _ => throw new InvalidOperationException("sin hilo");
 
-        page.OnFileOpenedFromIntent("/x.txt");
+        page.OnFileOpenedFromIntent("/x.txt", "x.txt");
 
         Assert.Contains("ERROR in FileOpened event: sin hilo", await TestLog.WaitForAsync("sin hilo"));
     }

@@ -410,20 +410,20 @@ public class FileIntentServiceTests
     [Fact]
     public void NotifyFileOpened_ReachesSubscribers_AndWorksWithoutThem()
     {
-        FileIntentService.NotifyFileOpened("/nobody/listening.txt");
+        FileIntentService.NotifyFileOpened("/nobody/listening.txt", "listening.txt");
 
         var received = new List<string>();
-        void Handler(string path) => received.Add(path);
+        void Handler(string path, string name) => received.Add(path + "|" + name);
         FileIntentService.FileOpened += Handler;
         try
         {
-            FileIntentService.NotifyFileOpened("/a.txt");
+            FileIntentService.NotifyFileOpened("/a.txt", "a.txt");
         }
         finally
         {
             FileIntentService.FileOpened -= Handler;
         }
 
-        Assert.Equal(new[] { "/a.txt" }, received);
+        Assert.Equal(new[] { "/a.txt|a.txt" }, received);
     }
 }
